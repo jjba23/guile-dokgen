@@ -12,15 +12,15 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 
 (define (get-file-paths directory)
-  #| Return a list of paths to Scheme files in the given directory.
+  "Return a list of paths to Scheme files in the given directory.
 
-  Scheme files are identified by their ".scm" extension.
+  Scheme files are identified by their «.scm» extension.
 
   DIRECTORY (string)
     Absolute path to a directory containing a Guile Scheme library.
 
   RETURN VALUE (list of string)
-    A list where every element represents a path to a Scheme file. |#
+    A list where every element represents a path to a Scheme file."
   ;; Enter to any directory.
   (define (enter? name stat result) #true)
 
@@ -47,13 +47,16 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 
 (define (file-path->module-name file-path lib-parent-path)
-  #| Convert the given Scheme file path into a module name. |#
+  "Convert the given Scheme file path into a module name."
   (let* [(extensionless-file-path (string-drop-right file-path 4))
          (relative-file-path
           (string-drop extensionless-file-path
                        (+ 1 (string-length lib-parent-path))))
          (module-name
-          (string-split relative-file-path
-                        (string->char-set file-name-separator-string)))]
+          (map
+           string->symbol
+           (string-split relative-file-path
+                         (string->char-set
+                          file-name-separator-string))))]
 
     module-name))
