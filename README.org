@@ -1,0 +1,18 @@
+#+TITLE: Guile Documentá
+
+
+* Summary
+
+/Guile Documentá/ is a command-line program and accompanying library
+to generate API documentation for [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme projects.
+
++ [[https://luis-felipe.gitlab.io/guile-documenta/][Website]]
++ [[https://luis-felipe.gitlab.io/guile-documenta/manual/][User manual]]
+
+
+* Copying
+
+Public domain 2023 [[https://luis-felipe.gitlab.io/][Luis Felipe López Acevedo]]. All rights waived.
+
+This work has been released into the public domain by its author. This
+applies universewide.

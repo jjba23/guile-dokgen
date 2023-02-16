@@ -1,0 +1,7 @@
+# Emacs
+*~
+[#]*[#]
+.\#*
+
+# Scheme SRFI-64
+*.log
