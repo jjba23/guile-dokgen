@@ -4,9 +4,7 @@ Procedures that accept data and present it in different ways depending
 on the target documentation format (texinfo, HTML, etc.). |#
 
 (define-module (documenta templates)
-  ;#:use-module (documenta utils)
   #:use-module (ice-9 format)
-  #:use-module (term ansi-color)
   #:use-module (texinfo string-utils)
   #:export (text:module-page))
 
