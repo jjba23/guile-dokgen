@@ -6,6 +6,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:declarative? #false  ; Because it loads modules.
   #:use-module ((documenta data) #:prefix data:)
   #:use-module (documenta templates)
+  #:use-module (documenta writer)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (texinfo serialize)
@@ -15,6 +16,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 ;;; CONSTANTS
 
 (define DEFAULT_DOC_PATH "doc/api")
+(define DEFAULT_API_FILE_INDEX "index.texi")
 
 
 ;;; COMMANDS
@@ -48,17 +50,21 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
                         (lambda (file-path)
                           (data:file-path->module-name file-path
                                                        lib-parent-path))
-                        file-paths))]
+                        file-paths))
+         (api-file-path (string-append destination
+                                       file-name-separator-string
+                                       DEFAULT_API_FILE_INDEX))]
 
     ;; Add the library to GUILE_LOAD_PATH so that it can be inspected.
     (add-to-load-path lib-parent-path)
 
     ;; Save API documentation to the destination directory.
     (format #true
-            "TODO: API documentation of ~a library saved to ~a~%"
+            "API documentation of ~a library saved to ~a~%"
             directory
             destination)
-    (display
+    (save
      (stexi->texi
       (stexi:api-chapter
-       (map stexi:module-section module-names))))))
+       (map stexi:module-section module-names)))
+     api-file-path)))
