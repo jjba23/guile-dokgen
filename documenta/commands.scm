@@ -56,5 +56,5 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     (format #true "Library: ~a~%" directory)
     (for-each
      (lambda (module-name)
-       (text:module-page module-name))
+       (display (texi:module-section module-name)))
      module-names)))

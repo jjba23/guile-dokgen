@@ -5,11 +5,24 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 (define-module (documenta templates)
   #:use-module (ice-9 format)
-  #:use-module (texinfo string-utils)
-  #:export (text:module-page))
+  #:use-module (texinfo reflection)
+  #:use-module (texinfo serialize)
+  #:export (texi:module-section
+            text:module-page))
 
 
 ;;; TEMPLATES
+
+(define (texi:module-section module-name)
+  "Return the module documentation as a Texinfo section.
+
+  MODULE-NAME (list of symbols)
+    For example: '(mylib amodule).
+
+  RETURN VALUE (string)
+    A Texinfo-formatted string representing the module documentation."
+  (stexi->texi (module-stexi-documentation module-name)))
+
 
 (define (text:module-page module-name)
   "Render the API of the given module in plain text."
