@@ -1,0 +1,157 @@
+\input texinfo
+@setfilename guile-documenta
+
+
+@c HEADER
+@settitle Guile Documentá
+@documentlanguage en
+@documentencoding UTF-8
+@afourpaper
+@c END HEADER
+
+
+
+@c COPYING INFO
+@copying
+Public domain 2023 Luis Felipe López Acevedo. All rights waived.
+@end copying
+@c END COPYING INFO
+
+
+
+@c MASTER MENU
+@ifnottex
+@node Top
+@top Guile Documentá's Manual
+
+This software is a command-line program and accompanying library
+to generate API documentation for
+@url{https://www.gnu.org/software/guile/, GNU Guile} Scheme projects.
+
+
+@itemize
+@item
+@url{https://luis-felipe.gitlab.io/guile-documenta/, Website}
+
+@item
+@url{https://codeberg.org/luis-felipe/guile-documenta, Source files}
+@end itemize
+
+@end ifnottex
+
+@menu
+* Usage::
+  Documenting source code and generating documentation from it.
+* CLI::
+  Command-line interface reference.
+* API::
+  Application programming interface reference.
+
+Appendices
+
+* Version History::
+  Versions released so far and summary of the changes introduced in each
+  of them.
+
+Indices
+
+* Concept Index::
+* Data Type Index::
+* Function Index::
+
+@c Here you can put a detailmenu command to add exactly that.
+
+@end menu
+@c END MASTER MENU
+
+
+
+@c TABLE OF CONTENTS
+@contents
+@c END TABLE OF CONTENTS
+
+
+
+@c CHAPTER: Usage
+@node Usage
+@chapter Usage
+
+Explain how documenting source code is usually done directly in
+documentation files in some format, and also directly in the source
+code using the language's documentation features. Show how all the
+documentation is put together in a single collection of documents.
+
+
+@section Writing documentation
+
+Pending.
+
+
+@section Extracting documentation from source
+
+Pending.
+@c END CHAPTER: Usage
+
+
+
+@c CHAPTER: CLI
+@node CLI
+@chapter CLI
+
+Guile Documentá comes with the @command{documenta} program, which
+recognizes the following subcommands:
+
+
+@deffn Command build source-path [destination-path]
+Build the documentation of the library in @var{source-path} and place the
+final result in @var{destination-path}.
+@end deffn
+@c END CHAPTER: CLI
+
+
+
+@c CHAPTER: API
+@include api/index.texi
+@c END CHAPTER: API
+
+
+
+@c APPENDICES
+@node Version History
+@appendix Version History
+
+@table @dfn
+
+@item Version 0.1.0, Month DD, 2023
+@itemize
+@item
+Initial release of the software providing a program to build API
+documentation of a library in Texinfo format.
+@end itemize
+@end table
+@c END APPENDICES
+
+
+
+@c INDICES
+@node Concept Index
+@unnumbered Concept Index
+
+@printindex cp
+
+
+@node Data Type Index
+@unnumbered Data Type Index
+
+@printindex tp
+
+
+@node Function Index
+@unnumbered Function Index
+
+@printindex fn
+@c END INDICES
+
+
+
+@bye
