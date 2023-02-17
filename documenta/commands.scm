@@ -10,7 +10,9 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (texinfo serialize)
-  #:export (build))
+  #:export (DEFAULT_DOC_PATH
+
+            build))
 
 
 ;;; CONSTANTS
@@ -21,7 +23,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 ;;; COMMANDS
 
-(define* (build directory #:key (destination DEFAULT_DOC_PATH))
+(define* (build directory #:optional (destination DEFAULT_DOC_PATH))
   "Build the API documentation for the library in the given directory.
 
   DIRECTORY (string)

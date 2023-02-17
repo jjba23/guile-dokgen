@@ -32,11 +32,17 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 ;;; ARGUMENTS AND FLAGS
 
-(define lib-directory
-  (argument (name 'lib-directory)
-            (synopsis "Absolute or relative path to a library directory.")
+(define sourcedir
+  (argument (name 'sourcedir)
+            (synopsis "Absolute or relative path to a library's directory.")
             (example "/home/user/project/mylib")
             (test directory?)))
+
+(define destdir
+  (argument (name 'destdir)
+            (synopsis "Absolute or relative path to a directory where the final documentation will be saved.")
+            (example "/home/user/project/doc/api")
+            (default DEFAULT_DOC_PATH)))
 
 
 
@@ -57,7 +63,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
      (configuration
       (name 'build)
       (synopsis "Build documentation for the given library.")
-      (arguments (list lib-directory)))))))
+      (arguments (list sourcedir destdir)))))))
 
 
 
@@ -78,12 +84,13 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     The COMMAND is followed. If the command is not recognized, display
     help information. |#
   (let* [(options (getopt-config-auto command spec))
-         (lib (option-ref options '(lib-directory)))]
+         (lib (option-ref options '(sourcedir)))
+         (destination (option-ref options '(destdir)))]
 
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "build") (build lib))))
+          ((_ "build") (build lib destination))))
 
       (lambda (. args)
         (begin (format #true "ERROR: Command not found: ~a~%~%" command)

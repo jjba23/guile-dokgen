@@ -1,6 +1,125 @@
+
+@c %start of fragment
+
 @node API
 @chapter API
-
 The following is the list of modules provided by this library.
 
-@c TODO: Include generated documentation for every module.
+
+
+@section Module (documenta writer)
+
+@anchor{documenta writer save}@defun save text path
+@verbatim
+Write TEXT to the file in PATH.
+
+  TEXT (string)
+    Arbitrary text.
+
+  PATH (string)
+    Absolute or relative path to the file the text will be written to.
+
+  RESULT
+    If the file doesn't exist, it will be created and the text will be
+    saved to it. If the file exists, its contents will be overwritten.
+@end verbatim
+
+@end defun
+
+
+@section Module (documenta templates)
+
+@anchor{documenta templates stexi:api-chapter}@defun stexi:api-chapter sections
+@verbatim
+Return a library API as an stexi chapter.
+
+  SECTIONS (list of stexi)
+    A list where every item is an stexi section.
+
+  RETURN VALUE (stexi)
+    A chapter documenting a library's API.
+@end verbatim
+
+@end defun
+
+@anchor{documenta templates stexi:module-section}@defun stexi:module-section module-name
+@verbatim
+Return the module documentation as an stexi section.
+
+  MODULE-NAME (list of symbols)
+    For example: '(mylib amodule).
+
+  RETURN VALUE (stexi)
+    A section documenting a module's API.
+@end verbatim
+
+@end defun
+
+@anchor{documenta templates text:module-page}@defun text:module-page module-name
+Render the API of the given module in plain text.
+
+@end defun
+
+
+
+@section Module (documenta data)
+
+@anchor{documenta data file-path->module-name}@defun file-path->module-name file-path lib-parent-path
+Convert the given Scheme file path into a module name.
+
+@end defun
+
+@anchor{documenta data get-file-paths}@defun get-file-paths directory
+@verbatim
+Return a list of paths to Scheme files in the given directory.
+
+  Scheme files are identified by their «.scm» extension.
+
+  DIRECTORY (string)
+    Absolute path to a directory containing a Guile Scheme library.
+
+  RETURN VALUE (list of string)
+    A list where every element represents a path to a Scheme file.
+@end verbatim
+
+@end defun
+
+
+
+@section Module (documenta cli)
+
+@anchor{documenta cli call}@defun call command spec
+@end defun
+
+@anchor{documenta cli spec}@defvar spec
+@end defvar
+
+
+
+@section Module (documenta commands)
+
+@anchor{documenta commands DEFAULT_DOC_PATH}@defvar DEFAULT_DOC_PATH
+@end defvar
+
+@anchor{documenta commands build}@defun build directory [destination]
+@verbatim
+Build the API documentation for the library in the given directory.
+
+  DIRECTORY (string)
+    Absolute or relative path to a directory containing a Guile Scheme
+    library.
+
+  DESTINATION (string)
+    Optional path to a directory where the documentation should be
+    saved. If not provided, the documentation will be saved in the
+    current working directory, in a subdirectory called «doc/api».
+
+  RESULT
+    A summary report is displayed in the standard output with the
+    results of running the test suite. A full report is saved to a log
+    file in LOG_PATH.
+@end verbatim
+
+@end defun
+
+@c %end of fragment
