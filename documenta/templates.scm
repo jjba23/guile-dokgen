@@ -6,22 +6,37 @@ on the target documentation format (texinfo, HTML, etc.). |#
 (define-module (documenta templates)
   #:use-module (ice-9 format)
   #:use-module (texinfo reflection)
-  #:use-module (texinfo serialize)
-  #:export (texi:module-section
+  #:export (stexi:api-chapter
+            stexi:module-section
             text:module-page))
 
 
 ;;; TEMPLATES
 
-(define (texi:module-section module-name)
-  "Return the module documentation as a Texinfo section.
+(define (stexi:api-chapter sections)
+  "Return a library API as an stexi chapter.
+
+  SECTIONS (list of stexi)
+    A list where every item is an stexi section.
+
+  RETURN VALUE (stexi)
+    A chapter documenting a library's API."
+  `(*fragment*
+    (node (% (name "API")))
+    (chapter "API")
+    (para "The following is the list of modules provided by this library.")
+    ,@sections))
+
+
+(define (stexi:module-section module-name)
+  "Return the module documentation as an stexi section.
 
   MODULE-NAME (list of symbols)
     For example: '(mylib amodule).
 
-  RETURN VALUE (string)
-    A Texinfo-formatted string representing the module documentation."
-  (stexi->texi (module-stexi-documentation module-name)))
+  RETURN VALUE (stexi)
+    A section documenting a module's API."
+  (module-stexi-documentation module-name))
 
 
 (define (text:module-page module-name)

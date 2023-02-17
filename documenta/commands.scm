@@ -8,6 +8,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:use-module (documenta templates)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
+  #:use-module (texinfo serialize)
   #:export (build))
 
 
@@ -53,8 +54,11 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     (add-to-load-path lib-parent-path)
 
     ;; Save API documentation to the destination directory.
-    (format #true "Library: ~a~%" directory)
-    (for-each
-     (lambda (module-name)
-       (display (texi:module-section module-name)))
-     module-names)))
+    (format #true
+            "TODO: API documentation of ~a library saved to ~a~%"
+            directory
+            destination)
+    (display
+     (stexi->texi
+      (stexi:api-chapter
+       (map stexi:module-section module-names))))))
