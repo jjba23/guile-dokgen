@@ -5,6 +5,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 (define-module (documenta templates)
   #:use-module (ice-9 format)
+  #:use-module (texinfo)
   #:use-module (texinfo reflection)
   #:export (stexi:api-binding
             stexi:api-chapter
@@ -34,7 +35,8 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (% (category "Procedure")
             (name ,name-string)
             (arguments ""))            ; TODO: List arguments.
-         (verbatim ,(procedure-documentation value)))]
+         ,@(cdr  ; To remove *fragment* atom.
+            (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
       `(deftp
          (% (category "Record") (name ,name-string) (attributes))

@@ -13,31 +13,28 @@ The following is the list of modules provided by this library.
 @section (documenta cli)
 This module provides the following interface.
 
-@deffn Procedure call 
-@verbatim 
-Call an appropriate procedure for the given command.
-
-  COMMAND (list of strings)
-    A list of strings that represent a command-line instruction passed
-    to the program (see Guile's command-line procedure).
-
-  SPEC (Configuration)
-    A <configuration> record as defined by the guile-config library,
-    which specifies the command-line interface of the program.
-
-  RESULT
-    The COMMAND is followed. If the command is not recognized, display
-    help information.
-@end verbatim
-
-@end deffn
-
 @defvr Variable spec
 @verbatim 
-#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7fbdf22c6a40 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fbdf22c6a20 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fbdf22c6a00 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fbdf22c69e0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fbdf22c69c0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7fbdf22c6a40 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fbdf22c6a20 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fbdf22c6a00 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fbdf22c69e0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fbdf22c69c0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
+#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7fc8032c6c20 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fc8032c6c00 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fc8032c6be0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fc8032c6bc0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fc8032c6ba0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7fc8032c6c20 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fc8032c6c00 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fc8032c6be0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fc8032c6bc0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fc8032c6ba0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
 @end verbatim
 
 @end defvr
+
+@deffn Procedure call 
+Call an appropriate procedure for the given command.
+
+COMMAND (list of strings) A list of strings that represent a
+command-line instruction passed to the program (see Guile's command-line
+procedure).
+
+SPEC (Configuration) A <configuration> record as defined by the
+guile-config library, which specifies the command-line interface of the
+program.
+
+RESULT The COMMAND is followed.  If the command is not recognized,
+display help information.
+
+@end deffn
 
 
 @c %end of fragment
@@ -49,23 +46,19 @@ Call an appropriate procedure for the given command.
 This module provides the following interface.
 
 @deffn Procedure build 
-@verbatim 
 Build the API documentation for the library in the given directory.
 
-  DIRECTORY (string)
-    Absolute or relative path to a directory containing a Guile Scheme
-    library.
+DIRECTORY (string) Absolute or relative path to a directory containing a
+Guile Scheme library.
 
-  DESTINATION (string)
-    Optional path to a directory where the documentation should be
-    saved. If not provided, the documentation will be saved in the
-    current working directory, in a subdirectory called «doc/api».
+DESTINATION (string) Optional path to a directory where the
+documentation should be saved.  If not provided, the documentation will
+be saved in the current working directory, in a subdirectory called
+«doc/api».
 
-  RESULT
-    A summary report is displayed in the standard output with the
-    results of running the test suite. A full report is saved to a log
-    file in LOG_PATH.
-@end verbatim
+RESULT A summary report is displayed in the standard output with the
+results of running the test suite.  A full report is saved to a log file
+in LOG_PATH.
 
 @end deffn
 
@@ -85,25 +78,21 @@ Build the API documentation for the library in the given directory.
 @section (documenta data)
 This module provides the following interface.
 
-@deffn Procedure get-file-paths 
-@verbatim 
-Return a list of paths to Scheme files in the given directory.
-
-  Scheme files are identified by their «.scm» extension.
-
-  DIRECTORY (string)
-    Absolute path to a directory containing a Guile Scheme library.
-
-  RETURN VALUE (list of string)
-    A list where every element represents a path to a Scheme file.
-@end verbatim
+@deffn Procedure file-path->module-name 
+Convert the given Scheme file path into a module name.
 
 @end deffn
 
-@deffn Procedure file-path->module-name 
-@verbatim 
-Convert the given Scheme file path into a module name.
-@end verbatim
+@deffn Procedure get-file-paths 
+Return a list of paths to Scheme files in the given directory.
+
+Scheme files are identified by their «.scm» extension.
+
+DIRECTORY (string) Absolute path to a directory containing a Guile
+Scheme library.
+
+RETURN VALUE (list of string) A list where every element represents a
+path to a Scheme file.
 
 @end deffn
 
@@ -116,47 +105,35 @@ Convert the given Scheme file path into a module name.
 @section (documenta templates)
 This module provides the following interface.
 
-@deffn Procedure stexi:api-binding 
-@verbatim 
-Return the API binding as an stexi definition.
-
-  NAME (symbol)
-    The name of the binding. For example, the name of a variable,
-    the name of a procedure, etc.
-
-  VALUE (anything)
-    Any kind of object. For example, a string, a list, a procedure, a
-    record, etc.
-
-  RETURN VALUE (stexi)
-    An stexi definition corresponding to the type of VALUE.
-@end verbatim
-
-@end deffn
-
 @deffn Procedure stexi:module-section 
-@verbatim 
 Return the module documentation as an stexi section.
 
-  MODULE-NAME (list of symbols)
-    For example: '(mylib amodule).
+MODULE-NAME (list of symbols) For example: '(mylib amodule).
 
-  RETURN VALUE (stexi)
-    A section documenting a module's API.
-@end verbatim
+RETURN VALUE (stexi) A section documenting a module's API.
 
 @end deffn
 
 @deffn Procedure stexi:api-chapter 
-@verbatim 
 Return a library API as an stexi chapter.
 
-  SECTIONS (list of stexi)
-    A list where every item is an stexi section.
+SECTIONS (list of stexi) A list where every item is an stexi section.
 
-  RETURN VALUE (stexi)
-    A chapter documenting a library's API.
-@end verbatim
+RETURN VALUE (stexi) A chapter documenting a library's API.
+
+@end deffn
+
+@deffn Procedure stexi:api-binding 
+Return the API binding as an stexi definition.
+
+NAME (symbol) The name of the binding.  For example, the name of a
+variable, the name of a procedure, etc.
+
+VALUE (anything) Any kind of object.  For example, a string, a list, a
+procedure, a record, etc.
+
+RETURN VALUE (stexi) An stexi definition corresponding to the type of
+VALUE.
 
 @end deffn
 
@@ -170,19 +147,15 @@ Return a library API as an stexi chapter.
 This module provides the following interface.
 
 @deffn Procedure save 
-@verbatim 
 Write TEXT to the file in PATH.
 
-  TEXT (string)
-    Arbitrary text.
+TEXT (string) Arbitrary text.
 
-  PATH (string)
-    Absolute or relative path to the file the text will be written to.
+PATH (string) Absolute or relative path to the file the text will be
+written to.
 
-  RESULT
-    If the file doesn't exist, it will be created and the text will be
-    saved to it. If the file exists, its contents will be overwritten.
-@end verbatim
+RESULT If the file doesn't exist, it will be created and the text will
+be saved to it.  If the file exists, its contents will be overwritten.
 
 @end deffn
 
