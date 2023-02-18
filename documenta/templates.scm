@@ -34,8 +34,8 @@ on the target documentation format (texinfo, HTML, etc.). |#
       `(deffn
          (% (category "Procedure")
             (name ,name-string)
-            (arguments ""))            ; TODO: List arguments.
-         ,@(cdr  ; To remove *fragment* atom.
+            (arguments ""))             ; TODO: List arguments.
+         ,@(cdr                         ; To remove *fragment* atom.
             (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
       `(deftp
