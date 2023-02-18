@@ -146,8 +146,8 @@ documentation of a library in Texinfo format.
 @printindex tp
 
 
-@node Function Index
-@unnumbered Function Index
+@node Procedure Index
+@unnumbered Procedure Index
 
 @printindex fn
 
