@@ -52,7 +52,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
                         (lambda (file-path)
                           (data:file-path->module-name file-path
                                                        lib-parent-path))
-                        file-paths))
+                        (sort file-paths string<?)))
          (api-file-path (string-append destination
                                        file-name-separator-string
                                        DEFAULT_API_FILE_INDEX))]

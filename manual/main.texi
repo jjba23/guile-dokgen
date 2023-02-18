@@ -150,6 +150,12 @@ documentation of a library in Texinfo format.
 @unnumbered Function Index
 
 @printindex fn
+
+
+@node Variable Index
+@unnumbered Variable Index
+
+@printindex vr
 @c END INDICES
 
 

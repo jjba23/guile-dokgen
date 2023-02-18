@@ -70,7 +70,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 ;;; COMMAND OBSERVER
 
 (define (call command spec)
-  #| Call an appropriate procedure for the given command.
+  "Call an appropriate procedure for the given command.
 
   COMMAND (list of strings)
     A list of strings that represent a command-line instruction passed
@@ -82,7 +82,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
   RESULT
     The COMMAND is followed. If the command is not recognized, display
-    help information. |#
+    help information."
   (let* [(options (getopt-config-auto command spec))
          (lib (option-ref options '(sourcedir)))
          (destination (option-ref options '(destdir)))]
