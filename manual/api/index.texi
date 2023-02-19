@@ -13,14 +13,7 @@ The following is the list of modules provided by this library.
 @section (documenta cli)
 This module provides the following interface.
 
-@defvr Variable spec
-@verbatim 
-#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7fc0bfcc6a40 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fc0bfcc6a20 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fc0bfcc6a00 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fc0bfcc69e0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fc0bfcc69c0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7fc0bfcc6a40 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fc0bfcc6a20 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fc0bfcc6a00 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fc0bfcc69e0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fc0bfcc69c0 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
-@end verbatim
-
-@end defvr
-
-@deffn Procedure call 
+@deffn Procedure call command spec
 Call an appropriate procedure for the given command.
 
 COMMAND (list of strings) A list of strings that represent a
@@ -36,6 +29,13 @@ display help information.
 
 @end deffn
 
+@defvr Variable spec
+@verbatim 
+#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7fdfd54a6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fdfd54a67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fdfd54a67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fdfd54a67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fdfd54a6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7fdfd54a6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7fdfd54a67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7fdfd54a67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7fdfd54a67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7fdfd54a6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
+@end verbatim
+
+@end defvr
+
 
 @c %end of fragment
 
@@ -45,7 +45,14 @@ display help information.
 @section (documenta commands)
 This module provides the following interface.
 
-@deffn Procedure build 
+@defvr Variable DEFAULT_DOC_PATH
+@verbatim 
+"doc/api"
+@end verbatim
+
+@end defvr
+
+@deffn Procedure build directory #:opt destination
 Build the API documentation for the library in the given directory.
 
 DIRECTORY (string) Absolute or relative path to a directory containing a
@@ -62,13 +69,6 @@ in LOG_PATH.
 
 @end deffn
 
-@defvr Variable DEFAULT_DOC_PATH
-@verbatim 
-"doc/api"
-@end verbatim
-
-@end defvr
-
 
 @c %end of fragment
 
@@ -78,12 +78,7 @@ in LOG_PATH.
 @section (documenta data)
 This module provides the following interface.
 
-@deffn Procedure file-path->module-name 
-Convert the given Scheme file path into a module name.
-
-@end deffn
-
-@deffn Procedure get-file-paths 
+@deffn Procedure get-file-paths directory
 Return a list of paths to Scheme files in the given directory.
 
 Scheme files are identified by their «.scm» extension.
@@ -96,6 +91,11 @@ path to a Scheme file.
 
 @end deffn
 
+@deffn Procedure file-path->module-name file-path lib-parent-path
+Convert the given Scheme file path into a module name.
+
+@end deffn
+
 
 @c %end of fragment
 
@@ -105,7 +105,7 @@ path to a Scheme file.
 @section (documenta templates)
 This module provides the following interface.
 
-@deffn Procedure stexi:api-binding 
+@deffn Procedure stexi:api-binding name value
 Return the API binding as an stexi definition.
 
 NAME (symbol) The name of the binding.  For example, the name of a
@@ -119,7 +119,12 @@ VALUE.
 
 @end deffn
 
-@deffn Procedure stexi:api-chapter 
+@deffn Procedure stexi:procedure-parameters proc
+Return the parameters of the procedure as stexi arguments.
+
+@end deffn
+
+@deffn Procedure stexi:api-chapter sections
 Return a library API as an stexi chapter.
 
 SECTIONS (list of stexi) A list where every item is an stexi section.
@@ -128,7 +133,7 @@ RETURN VALUE (stexi) A chapter documenting a library's API.
 
 @end deffn
 
-@deffn Procedure stexi:module-section 
+@deffn Procedure stexi:module-section module-name
 Return the module documentation as an stexi section.
 
 MODULE-NAME (list of symbols) For example: '(mylib amodule).
@@ -146,7 +151,7 @@ RETURN VALUE (stexi) A section documenting a module's API.
 @section (documenta writer)
 This module provides the following interface.
 
-@deffn Procedure save 
+@deffn Procedure save text path
 Write TEXT to the file in PATH.
 
 TEXT (string) Arbitrary text.

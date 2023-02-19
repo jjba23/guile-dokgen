@@ -5,11 +5,14 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 (define-module (documenta templates)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 session)
+  #:use-module (srfi srfi-1)
   #:use-module (texinfo)
   #:use-module (texinfo reflection)
   #:export (stexi:api-binding
             stexi:api-chapter
-            stexi:module-section))
+            stexi:module-section
+            stexi:procedure-parameters))
 
 
 ;;; TEMPLATES
@@ -34,7 +37,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
       `(deffn
          (% (category "Procedure")
             (name ,name-string)
-            (arguments ""))             ; TODO: List arguments.
+            ,(stexi:procedure-parameters value))
          ,@(cdr                         ; To remove *fragment* atom.
             (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
@@ -87,6 +90,30 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (lambda (key var)
            (stexi:api-binding key (variable-ref var)))
          api-bindings))))
+
+
+(define (stexi:procedure-parameters proc)
+  "Return the parameters of the procedure as stexi arguments."
+  (let* [(parameters (procedure-arguments proc))
+         (required-params (assoc-ref parameters 'required))
+         (optional-params (assoc-ref parameters 'optional))
+         (keyword-params (assoc-ref parameters 'keyword))
+         (rest-param (assoc-ref parameters 'rest))]
+
+    `(arguments
+      ,(string-join
+        (append
+         (map symbol->string required-params)
+         (if (null? optional-params)
+             (list)
+             (cons "#:opt" (map symbol->string optional-params)))
+         (if (null? keyword-params)
+             (list)
+             (cons "#:key" (map symbol->string keyword-params)))
+         (if rest-param
+             (list "." (symbol->string rest-param))
+             (list)))
+        " "))))
 
 
 
