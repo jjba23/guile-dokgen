@@ -75,9 +75,18 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
   RETURN VALUE (stexi)
     A section documenting a module's API."
+  ;; Helper.
+  (define (symbol-precedes? a b)
+    #| Return #true if symbol A goes before B alphabetically. |#
+    (string<? (symbol->string a) (symbol->string b)))
+  ;; Main body.
   (let* [(module-api (resolve-interface module-name))
          (api-descriptor (record-type-descriptor module-api))
-         (api-bindings (get-field module-api 'obarray))
+         (api-table (get-field module-api 'obarray))
+         (api-symbols (hash-map->list
+                       (lambda (key var) key)
+                       api-table))
+         (api-symbols-sorted (sort api-symbols symbol-precedes?))
          (node-name (string-join (map symbol->string module-name)
                                  "-"))]
 
@@ -86,10 +95,12 @@ on the target documentation format (texinfo, HTML, etc.). |#
       (section ,(format #f "~a" module-name))
       (para "This module provides the following interface.")
 
-      ,@(hash-map->list
-         (lambda (key var)
-           (stexi:api-binding key (variable-ref var)))
-         api-bindings))))
+      ;; Convert every API binding to stexi.
+      ,@(map
+         (lambda (key)
+           (let [(value (variable-ref (hashq-ref api-table key)))]
+             (stexi:api-binding key value)))
+         api-symbols-sorted))))
 
 
 (define (stexi:procedure-parameters proc)
