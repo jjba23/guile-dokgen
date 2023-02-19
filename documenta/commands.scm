@@ -60,12 +60,14 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     (add-to-load-path lib-parent-path)
 
     ;; Save API documentation to the destination directory.
-    (format #true
-            "API documentation of ~a library saved to ~a~%"
-            directory
-            destination)
     (save
      (stexi->texi
       (stexi:api-chapter
        (map stexi:module-section module-names)))
-     api-file-path)))
+     api-file-path)
+
+    (format
+     #true
+     "API documentation of ~a library saved to ~a~%"
+     directory
+     destination)))
