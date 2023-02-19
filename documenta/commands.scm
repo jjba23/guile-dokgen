@@ -33,12 +33,11 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   DESTINATION (string)
     Optional path to a directory where the documentation should be
     saved. If not provided, the documentation will be saved in the
-    current working directory, in a subdirectory called «doc/api».
+    current working directory, in a subdirectory defined by the constant
+    DEFAULT_DOC_PATH.
 
   RESULT
-    A summary report is displayed in the standard output with the
-    results of running the test suite. A full report is saved to a log
-    file in LOG_PATH."
+    The API documentation is saved to the DESTINATION directory."
   (let* [(canonical-lib-path
           (if (absolute-file-name? directory)
               (canonicalize-path directory)
