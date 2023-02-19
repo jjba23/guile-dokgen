@@ -7,8 +7,41 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define-module (documenta data)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
-  #:export (file-path->module-name
-            get-file-paths))
+  #:use-module (srfi srfi-1)
+  #:export (api-symbols
+            api-types
+            api-values
+            file-path->module-name
+            get-file-paths
+            record-field))
+
+
+(define (api-symbols interface)
+  "Returm the symbols provided by the interface."
+  (hash-map->list
+   (lambda (key var) key)
+   (record-field interface 'obarray)))
+
+
+(define (api-types interface)
+  "Return the kinds of objects provided by the interface."
+  (fold
+   (lambda (value result-so-far)
+     (let [(value-type (class-name (class-of value)))]
+
+       (if (member value-type result-so-far)
+           result-so-far
+           (cons value-type result-so-far))))
+   '()
+   (api-values interface)))
+
+
+(define (api-values interface)
+  "Return the list of values provided by the interface."
+  (hash-map->list
+   (lambda (key var)
+     (variable-ref var))
+   (record-field interface 'obarray)))
 
 
 (define (get-file-paths directory)
@@ -60,3 +93,22 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
                           file-name-separator-string))))]
 
     module-name))
+
+
+(define (record-field record field)
+  "Get the value of FIELD from RECORD.
+
+  RECORD (Guile record or SRFI 9 record)
+    A record of any type.
+
+  FIELD (symbol)
+    The name of the field.
+
+  RETURN VALUE (anything)
+    The value of the field.
+
+  If the FIELD does not exist, a no-such-field exception is raised."
+  (let* [(descriptor (record-type-descriptor record))
+         (access-field (record-accessor descriptor field))]
+
+    (access-field record)))

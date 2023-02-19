@@ -31,7 +31,7 @@ display help information.
 
 @defvr Variable spec
 @verbatim 
-#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7f2404ca6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7f2404ca67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7f2404ca67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7f2404ca67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7f2404ca6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7f2404ca6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7f2404ca67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7f2404ca67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7f2404ca67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7f2404ca6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
+#<<configuration> name: documenta synopsis: "Generate API documentation." description: "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme." wanted: () keywords: () arguments: () subcommands: (#<<configuration> name: build synopsis: "Build documentation for the given library." description: "" wanted: () keywords: () arguments: (#<<argument> name: sourcedir default: #<<empty>> test: #<procedure directory? (path)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a library's directory." description: "" example: "/home/user/project/mylib" error: #f> #<<argument> name: destdir default: "doc/api" test: #<procedure string? (_)> handler: #<procedure identity (x)> synopsis: "Absolute or relative path to a directory where the final documentation will be saved." description: "" example: "/home/user/project/doc/api" error: #f>) subcommands: () directory: #<<empty>> version: #<<empty>> license: #<<empty>> copyright: #<<empty>> author: #<<empty>> parser: #<<parser> file-proc: #<procedure 7f81a40c6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7f81a40c67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7f81a40c67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7f81a40c67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7f81a40c6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>) directory: #<<empty>> version: "0.1.0" license: #<<license> name: "Public Domain" uri: "http://directory.fsf.org/wiki/License:PublicDomain" comment: "https://www.gnu.org/licenses/license-list#PublicDomain"> copyright: #<<empty>> author: "Luis Felipe López Acevedo" parser: #<<parser> file-proc: #<procedure 7f81a40c6800 at ice-9/boot-9.scm:809:2 _> read-proc: #<procedure 7f81a40c67e0 at ice-9/boot-9.scm:809:2 _> write-proc: #<procedure 7f81a40c67c0 at ice-9/boot-9.scm:809:2 _> read-complete-proc: #<procedure 7f81a40c67a0 at ice-9/boot-9.scm:809:2 _> write-complete-proc: #<procedure 7f81a40c6780 at ice-9/boot-9.scm:809:2 _>> alias: #f generate-help?: #t generate-usage?: #t generate-version?: #t generate-cmdtree?: #t>
 @end verbatim
 
 @end defvr
@@ -76,6 +76,21 @@ RESULT The API documentation is saved to the DESTINATION directory.
 @section (documenta data)
 This module provides the following interface.
 
+@deffn Procedure api-symbols interface
+Returm the symbols provided by the interface.
+
+@end deffn
+
+@deffn Procedure api-types interface
+Return the kinds of objects provided by the interface.
+
+@end deffn
+
+@deffn Procedure api-values interface
+Return the list of values provided by the interface.
+
+@end deffn
+
 @deffn Procedure file-path->module-name file-path lib-parent-path
 Convert the given Scheme file path into a module name.
 
@@ -91,6 +106,19 @@ Scheme library.
 
 RETURN VALUE (list of string) A list where every element represents a
 path to a Scheme file.
+
+@end deffn
+
+@deffn Procedure record-field record field
+Get the value of FIELD from RECORD.
+
+RECORD (Guile record or SRFI 9 record) A record of any type.
+
+FIELD (symbol) The name of the field.
+
+RETURN VALUE (anything) The value of the field.
+
+If the FIELD does not exist, a no-such-field exception is raised.
 
 @end deffn
 
