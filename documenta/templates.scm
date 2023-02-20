@@ -34,6 +34,11 @@ on the target documentation format (texinfo, HTML, etc.). |#
   (let [(name-string (symbol->string name))]
 
     (cond
+     [(macro? value)
+      `(defmac
+         (% (name ,name-string)
+            (arguments))  ; TODO: Render arguments.
+         (verbatim ,(format #f "~s" value)))]
      [(procedure? value)
       `(deffn
          (% (category "Procedure")
@@ -43,7 +48,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
             (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
       `(deftp
-         (% (category "Record") (name ,name-string) (attributes))
+         (% (category "Record type") (name ,name-string) (attributes))
          (para "TODO: This record type has the following properties:"))]
      [else
       `(defvr
