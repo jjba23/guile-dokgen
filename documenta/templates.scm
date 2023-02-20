@@ -76,15 +76,8 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
   RETURN VALUE (stexi)
     A section documenting a module's API."
-  ;; Helper.
-  (define (symbol-precedes? a b)
-    #| Return #true if symbol A goes before B alphabetically. |#
-    (string<? (symbol->string a) (symbol->string b)))
-  ;; Main body.
   (let* [(module-api (resolve-interface module-name))
-         (api-table (record-field module-api 'obarray))
-         (api-symbols (api-symbols module-api))
-         (api-symbols-sorted (sort api-symbols symbol-precedes?))
+         (grouped-api-objects (group-api-objects module-api))
          (node-name (string-join (map symbol->string module-name)
                                  "-"))]
 
@@ -93,12 +86,37 @@ on the target documentation format (texinfo, HTML, etc.). |#
       (section ,(format #f "~a" module-name))
       (para "This module provides the following interface.")
 
-      ;; Convert every API binding to stexi.
       ,@(map
-         (lambda (key)
-           (let [(value (variable-ref (hashq-ref api-table key)))]
-             (stexi:api-binding key value)))
-         api-symbols-sorted))))
+         (lambda (group)
+           (let [(kind (first group))
+                 (objects (cdr group))]
+             (stexi:module-subsection kind objects)))
+         grouped-api-objects))))
+
+
+(define (stexi:module-subsection kind objects)
+  "Return an stexi subsection listing API objects of the given KIND.
+
+  KIND (string)
+    Any of the kinds defined by the procedure 'group-api-objects' from
+    the module (documenta data).
+
+  OBJECTS (alist)
+    Association list of API objects of the given KIND. Every key is the
+    symbol identifying an object, and every value is the object itself
+    (a procedure, a macro, a record, etc.).
+
+  RETURN VALUE (stexi)
+    An stexi subsection."
+  `(*fragment*
+    (subsection ,(string-capitalize kind))
+
+    ,@(map
+       (lambda (object)
+         (let [(key (first object))
+               (value (cdr object))]
+           (stexi:api-binding key value)))
+       objects)))
 
 
 (define (stexi:procedure-parameters proc)

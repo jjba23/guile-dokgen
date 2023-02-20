@@ -10,10 +10,9 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (api-symbols
-            api-types
-            api-values
             file-path->module-name
             get-file-paths
+            group-api-objects
             record-field))
 
 
@@ -21,27 +20,6 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   "Returm the symbols provided by the interface."
   (hash-map->list
    (lambda (key var) key)
-   (record-field interface 'obarray)))
-
-
-(define (api-types interface)
-  "Return the kinds of objects provided by the interface."
-  (fold
-   (lambda (value result-so-far)
-     (let [(value-type (class-name (class-of value)))]
-
-       (if (member value-type result-so-far)
-           result-so-far
-           (cons value-type result-so-far))))
-   '()
-   (api-values interface)))
-
-
-(define (api-values interface)
-  "Return the list of values provided by the interface."
-  (hash-map->list
-   (lambda (key var)
-     (variable-ref var))
    (record-field interface 'obarray)))
 
 
@@ -78,6 +56,69 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     result)
 
   (file-system-fold enter? leaf down up skip error (list) directory))
+
+
+(define (group-api-objects interface)
+  "Return the API objects grouped by kind.
+
+  A kind can be one of the following: macros, procedures, record types,
+  variables.
+
+  INTERFACE (<interface>)
+    An interface record as returned by Guile's procedure
+    'resolve-interface'.
+
+  RETURN VALUE (alist)
+    Association list where every entry corresponds to a kind of object
+    and a list of its members. Only groups with members are returned."
+  ;; Helpers.
+  (define (add object group catalog)
+    #| Add object to the group in catalog |#
+    (list (cons "macros"
+                (if (string=? group "macros")
+                    (append (assq-ref catalog group) (list object))
+                    (assq-ref catalog "macros")))
+          (cons "procedures"
+                (if (string=? group "procedures")
+                    (append (assq-ref catalog group) (list object))
+                    (assq-ref catalog "procedures")))
+          (cons "record types"
+                (if (string=? group "record types")
+                    (append (assq-ref catalog group) (list object))
+                    (assq-ref catalog "record types")))
+          (cons "variables"
+                (if (string=? group "variables")
+                    (append (assq-ref catalog group) (list object))
+                    (assq-ref catalog "variables")))))
+  (define (non-empty-group? group)
+    #| Return true if the group has members. |#
+    (not (null? (cdr group))))
+  (define (symbol-precedes? a b)
+    #| Return #true if symbol A goes before B alphabetically. |#
+    (string<? (symbol->string a) (symbol->string b)))
+  ;; Main body.
+  (let* [(api-table (record-field interface 'obarray))
+         (api-symbols (api-symbols interface))
+         (api-symbols-sorted (sort api-symbols symbol-precedes?))
+         (api-catalog (list (cons "macros" '())
+                            (cons "procedures" '())
+                            (cons "record types" '())
+                            (cons "variables" '())))]
+
+    (filter non-empty-group?
+     (fold
+      (lambda (key result-so-far)
+        (let* [(variable (hashq-ref api-table key))
+               (value (variable-ref variable))
+               (object (cons key value))]
+
+          (cond
+           [(macro? value) (add object "macros" result-so-far)]
+           [(procedure? value) (add object "procedures" result-so-far)]
+           [(record-type? value) (add object "record types" result-so-far)]
+           [else (add object "variables" result-so-far)])))
+      api-catalog
+      api-symbols-sorted))))
 
 
 (define (file-path->module-name file-path lib-parent-path)
