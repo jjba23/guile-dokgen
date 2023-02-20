@@ -129,6 +129,10 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 (define (stexi:procedure-parameters proc)
   "Return the parameters of the procedure as stexi arguments."
+  ;; Helper.
+  (define (symbol-or-pair->string obj)
+    (format #f "~s" obj))
+  ;; Main body.
   (let* [(parameters (procedure-arguments proc))
          (required-params (assoc-ref parameters 'required))
          (optional-params (assoc-ref parameters 'optional))
@@ -141,10 +145,12 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (map symbol->string required-params)
          (if (null? optional-params)
              (list)
-             (cons "#:opt" (map symbol->string optional-params)))
+             (cons "#:opt"
+                   (map symbol-or-pair->string optional-params)))
          (if (null? keyword-params)
              (list)
-             (cons "#:key" (map symbol->string keyword-params)))
+             (cons "#:key"
+                   (map symbol-or-pair->string keyword-params)))
          (if rest-param
              (list "." (symbol->string rest-param))
              (list)))
