@@ -7,6 +7,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define-module (documenta data)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (api-symbols
             api-types
