@@ -50,10 +50,13 @@ on the target documentation format (texinfo, HTML, etc.). |#
       `(deftp
          (% (category "Record type") (name ,name-string) (attributes))
          (para "TODO: This record type has the following properties:"))]
+     [(record? value)
+      `(defvr
+         (% (category "Variable") (name ,name-string))
+         (para "TODO: A record of type <?>. It has the following fields:"))]
      [else
       `(defvr
-         (% (category "Variable")
-            (name ,name-string))
+         (% (category "Variable") (name ,name-string))
          (verbatim ,(format #f "~s" value)))])))
 
 
