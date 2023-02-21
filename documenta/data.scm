@@ -17,21 +17,29 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 
 (define (api-symbols interface)
-  "Returm the symbols provided by the interface."
+  "Return the symbols provided by the interface.
+
+  INTERFACE (<interface>):
+    A module's interface record as returned by Guile's procedure
+    'resolve-interface'.
+
+  RETURN VALUE (list of symbols):
+    Where every symbol identifies a public object exported by the
+    interface."
   (hash-map->list
    (lambda (key var) key)
    (record-field interface 'obarray)))
 
 
 (define (get-file-paths directory)
-  "Return a list of paths to Scheme files in the given directory.
+  "Return a list of paths to Scheme files stored in the directory.
 
   Scheme files are identified by their «.scm» extension.
 
-  DIRECTORY (string)
+  DIRECTORY (string):
     Absolute path to a directory containing a Guile Scheme library.
 
-  RETURN VALUE (list of string)
+  RETURN VALUE (list of string):
     A list where every element represents a path to a Scheme file."
   ;; Enter to any directory.
   (define (enter? name stat result) #true)
@@ -64,11 +72,11 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   A kind can be one of the following: macros, procedures, record types,
   variables.
 
-  INTERFACE (<interface>)
+  INTERFACE (<interface>):
     An interface record as returned by Guile's procedure
     'resolve-interface'.
 
-  RETURN VALUE (alist)
+  RETURN VALUE (alist):
     Association list where every entry corresponds to a kind of object
     and a list of its members. Only groups with members are returned."
   ;; Helpers.
@@ -140,13 +148,13 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (record-field record field)
   "Get the value of FIELD from RECORD.
 
-  RECORD (Guile record or SRFI 9 record)
+  RECORD (Guile record or SRFI 9 record):
     A record of any type.
 
-  FIELD (symbol)
+  FIELD (symbol):
     The name of the field.
 
-  RETURN VALUE (anything)
+  RETURN VALUE (anything):
     The value of the field.
 
   If the FIELD does not exist, a no-such-field exception is raised."

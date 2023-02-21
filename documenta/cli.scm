@@ -18,11 +18,11 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (directory? path)
   #| Tell whether the given PATH leads to a directory.
 
-  PATH (string)
+  PATH (string):
     An absolute or relative path to something in the file system. For
     example: "/home/bob/videos", "images/sky/sunset.png".
 
-  RETURN VALUE (boolean)
+  RETURN VALUE (boolean):
     True if the PATH leads to a directory; false otherwise. |#
   (let [(type (stat:type (stat path)))]
 
@@ -72,15 +72,15 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (call command spec)
   "Call an appropriate procedure for the given command.
 
-  COMMAND (list of strings)
+  COMMAND (list of strings):
     A list of strings that represent a command-line instruction passed
     to the program (see Guile's command-line procedure).
 
-  SPEC (Configuration)
+  SPEC (Configuration):
     A <configuration> record as defined by the guile-config library,
     which specifies the command-line interface of the program.
 
-  RESULT
+  RESULT:
     The COMMAND is followed. If the command is not recognized, display
     help information."
   (let* [(options (getopt-config-auto command spec))

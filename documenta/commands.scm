@@ -26,17 +26,17 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define* (build directory #:optional (destination DEFAULT_DOC_PATH))
   "Build the API documentation for the library in the given directory.
 
-  DIRECTORY (string)
+  DIRECTORY (string):
     Absolute or relative path to a directory containing a Guile Scheme
     library.
 
-  DESTINATION (string)
+  DESTINATION (string):
     Optional path to a directory where the documentation should be
     saved. If not provided, the documentation will be saved in the
     current working directory, in a subdirectory defined by the constant
     DEFAULT_DOC_PATH.
 
-  RESULT
+  RESULT:
     The API documentation is saved to the DESTINATION directory."
   (let* [(canonical-lib-path
           (if (absolute-file-name? directory)
