@@ -25,6 +25,8 @@
 (define* (arbitrary-keyword-params #:key key1 key2 #:allow-other-keys)
   "...")
 
+(define (arbitrary-arguments . args) "...")
+
 
 
 ;;; TEST SUITE
@@ -57,9 +59,16 @@
     "KEY: #:key1 #:key2"
     (stexi:procedure-parameters keyword-params))
 
+
   (test-equal
       "Render note when arbitrary keyword parameters are allowed."
     "KEY: #:key1 #:key2 [arbitrary keys]"
-    (stexi:procedure-parameters arbitrary-keyword-params)))
+    (stexi:procedure-parameters arbitrary-keyword-params))
+
+
+  (test-equal
+      "Render note when arbitrary arguments are accepted."
+    "[arbitrary arguments]"
+    (stexi:procedure-parameters arbitrary-arguments)))
 
 (test-end SUITE_NAME)

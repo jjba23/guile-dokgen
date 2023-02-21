@@ -148,7 +148,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (optional-params (assoc-ref parameters 'optional))
          (keyword-params (assoc-ref parameters 'keyword))
          (arbitrary-keys? (assoc-ref parameters 'allow-other-keys?))
-         (rest-param (assoc-ref parameters 'rest))]
+         (rest? (assoc-ref parameters 'rest))]
 
     (string-join
      (append
@@ -163,7 +163,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
       (if arbitrary-keys?
           (list "[arbitrary keys]")
           (list))
-      (if rest-param
-          (list "." (symbol->string rest-param))
+      (if rest?
+          (list "[arbitrary arguments]")
           (list)))
      " ")))
