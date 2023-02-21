@@ -18,7 +18,7 @@
 
 (define (required-params param1 param2 param3) "...")
 
-(define* (optional-params req1 #:optional opt1 opt2) "...")
+(define* (optional-params #:optional opt1 opt2) "...")
 
 (define* (keyword-params #:key key1 key2) "...")
 
@@ -45,7 +45,7 @@
 
   (test-equal
       "Render optional parameters."
-    "req1 #:opt opt1 opt2"
+    "OPT: opt1 opt2"
     (stexi:procedure-parameters optional-params))
 
 

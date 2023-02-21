@@ -154,7 +154,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
       (map symbol->string required-params)
       (if (null? optional-params)
           (list)
-          (cons "#:opt"
+          (cons "OPT:"
                 (map symbol-or-pair->string optional-params)))
       (if (null? keyword-params)
           (list)

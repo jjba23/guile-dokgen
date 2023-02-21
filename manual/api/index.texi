@@ -59,7 +59,7 @@ This module provides the following interface.
 @c %start of fragment
 
 @subsection Procedures
-@deffn Procedure build directory #:opt destination
+@deffn Procedure build directory OPT: destination
 Build the API documentation for the library in the given directory.
 
 DIRECTORY (string) Absolute or relative path to a directory containing a
