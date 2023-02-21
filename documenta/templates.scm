@@ -140,6 +140,8 @@ on the target documentation format (texinfo, HTML, etc.). |#
   ;; Helper.
   (define (symbol-or-pair->string obj)
     (format #f "~s" obj))
+  (define (keyword->string keyword)
+    (format #f "~a" (car keyword)))
   ;; Main body.
   (let* [(parameters (procedure-arguments proc))
          (required-params (assoc-ref parameters 'required))
@@ -156,8 +158,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
                 (map symbol-or-pair->string optional-params)))
       (if (null? keyword-params)
           (list)
-          (cons "#:key"
-                (map symbol-or-pair->string keyword-params)))
+          (cons "KEY:" (map keyword->string keyword-params)))
       (if rest-param
           (list "." (symbol->string rest-param))
           (list)))

@@ -20,6 +20,8 @@
 
 (define* (optional-params req1 #:optional opt1 opt2) "...")
 
+(define* (keyword-params #:key key1 key2) "...")
+
 
 
 ;;; TEST SUITE
@@ -44,6 +46,12 @@
   (test-equal
       "Render optional parameters."
     "req1 #:opt opt1 opt2"
-    (stexi:procedure-parameters optional-params)))
+    (stexi:procedure-parameters optional-params))
+
+
+  (test-equal
+      "Render keyword parameters."
+    "KEY: #:key1 #:key2"
+    (stexi:procedure-parameters keyword-params)))
 
 (test-end SUITE_NAME)
