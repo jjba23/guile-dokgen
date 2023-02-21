@@ -136,7 +136,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
   RETURN VALUE (string):
     A string listing the names of all the required, optional, keyword,
     and rest of parameters of the procedure. Default values for optional
-    and keyword paramenters are also included, if any."
+    and keyword parameters are not included."
   ;; Helper.
   (define (symbol-or-pair->string obj)
     (format #f "~s" obj))

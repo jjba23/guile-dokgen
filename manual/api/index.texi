@@ -207,7 +207,7 @@ PROC (procedure): A procedure object.
 
 RETURN VALUE (string): A string listing the names of all the required,
 optional, keyword, and rest of parameters of the procedure.  Default
-values for optional and keyword paramenters are also included, if any.
+values for optional and keyword parameters are not included.
 
 @end deffn
 
