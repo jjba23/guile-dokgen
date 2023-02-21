@@ -128,7 +128,20 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 
 (define (stexi:procedure-parameters proc)
-  "Return the parameters of the procedure as stexi arguments."
+  "Return the parameters of the given procedure as stexi arguments.
+
+  Stexi arguments are strings used for the 'arguments' attribute of
+  stexi definition commands.
+
+  PROC (procedure):
+    A procedure object.
+
+  RETURN VALUE (string):
+    A string listing the names of all the required, optional, keyword,
+    and rest of parameters of the procedure.  Default values for
+    optional and keyword paramenters are included, if any. An empty
+    string is returned for procedures with no parameters (also known
+    as thunks)."
   ;; Helper.
   (define (symbol-or-pair->string obj)
     (format #f "~s" obj))
