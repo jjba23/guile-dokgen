@@ -7,7 +7,7 @@ create a profile or an environment to work on the project. |#
 
 
 (define DEV_PACKAGES
-  (list))
+  (list "guile-proba"))
 
 (define PRODUCTION_PACKAGES
   (list "guile"
