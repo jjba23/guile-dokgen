@@ -48,8 +48,15 @@ on the target documentation format (texinfo, HTML, etc.). |#
             (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
       `(deftp
-         (% (category "Record type") (name ,name-string) (attributes))
-         (para "TODO: This record type has the following properties:"))]
+         (% (category "Record type")
+            (name ,name-string)
+            (attributes))
+         (para "This record type has the following fields:")
+         (itemize
+          ,@(map
+             (lambda (field)
+               `(item (code ,(symbol->string field))))
+             (record-type-fields value))))]
      [(record? value)
       (let* [(descriptor (record-type-descriptor value))
              (type-name (record-type-name descriptor))

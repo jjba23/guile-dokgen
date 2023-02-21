@@ -44,6 +44,19 @@
     (unit-name stexi:api-binding)
 
   (test-equal
+      "Render a binding that holds a record type."
+    `(deftp
+       (% (category "Record type")
+          (name "<being>")
+          (attributes))
+       (para "This record type has the following fields:")
+       (itemize
+        (item (code "name"))
+        (item (code "binomial"))))
+    (stexi:api-binding '<being> <being>))
+
+
+  (test-equal
       "Render a binding that holds a record."
     `(defvar
        (% (name "panda"))
