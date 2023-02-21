@@ -147,6 +147,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (required-params (assoc-ref parameters 'required))
          (optional-params (assoc-ref parameters 'optional))
          (keyword-params (assoc-ref parameters 'keyword))
+         (arbitrary-keys? (assoc-ref parameters 'allow-other-keys?))
          (rest-param (assoc-ref parameters 'rest))]
 
     (string-join
@@ -159,6 +160,9 @@ on the target documentation format (texinfo, HTML, etc.). |#
       (if (null? keyword-params)
           (list)
           (cons "KEY:" (map keyword->string keyword-params)))
+      (if arbitrary-keys?
+          (list "[arbitrary keys]")
+          (list))
       (if rest-param
           (list "." (symbol->string rest-param))
           (list)))
