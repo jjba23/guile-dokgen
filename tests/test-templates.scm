@@ -2,6 +2,7 @@
 
 (use-modules (documenta templates)
              (proba utils)
+             (srfi srfi-9)
              (srfi srfi-64))
 
 
@@ -27,6 +28,12 @@
 
 (define (arbitrary-arguments . args) "...")
 
+(define-record-type <being>
+  (make-being name binomial)
+  being?
+  (name being-name)
+  (binomial being-binomial))
+
 
 
 ;;; TEST SUITE
@@ -34,12 +41,30 @@
 (test-begin SUITE_NAME)
 
 (test-group
+    (unit-name stexi:api-binding)
+
+  (test-equal
+      "Render a binding that holds a record."
+    `(defvar
+       (% (name "panda"))
+       (para "This is a record of the type " (code "<being>") ", "
+             "which has the following fields:")
+       (itemize
+        (item (code "name"))
+        (item (code "binomial"))))
+    (stexi:api-binding
+     'panda
+     (make-being "panda" "ailuropoda melanoleuca"))))
+
+
+
+(test-group
     (unit-name stexi:procedure-parameters)
 
   (test-equal
       "Render empty parameters."
-      ""
-      (stexi:procedure-parameters paramless-procedure))
+    ""
+    (stexi:procedure-parameters paramless-procedure))
 
 
   (test-equal

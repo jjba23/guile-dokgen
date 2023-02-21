@@ -20,15 +20,15 @@ This module provides the following interface.
 @deffn Procedure call command spec
 Call an appropriate procedure for the given command.
 
-COMMAND (list of strings) A list of strings that represent a
+COMMAND (list of strings): A list of strings that represent a
 command-line instruction passed to the program (see Guile's command-line
 procedure).
 
-SPEC (Configuration) A <configuration> record as defined by the
+SPEC (Configuration): A <configuration> record as defined by the
 guile-config library, which specifies the command-line interface of the
 program.
 
-RESULT The COMMAND is followed.  If the command is not recognized,
+RESULT: The COMMAND is followed.  If the command is not recognized,
 display help information.
 
 @end deffn
@@ -39,10 +39,32 @@ display help information.
 @c %start of fragment
 
 @subsection Variables
-@defvr Variable spec
-TODO: A record of type <?>.  It has the following fields:
+@defvar spec
+This is a record of the type @code{<configuration>}, which has the
+following fields:
 
-@end defvr
+@itemize 
+@item
+@code{name}@item
+@code{synopsis}@item
+@code{description}@item
+@code{wanted}@item
+@code{keywords}@item
+@code{arguments}@item
+@code{subcommands}@item
+@code{directory}@item
+@code{version}@item
+@code{license}@item
+@code{copyright}@item
+@code{author}@item
+@code{parser}@item
+@code{alias}@item
+@code{generate-help?}@item
+@code{generate-usage?}@item
+@code{generate-version?}@item
+@code{generate-cmdtree?}@end itemize
+
+@end defvar
 
 
 @c %end of fragment
@@ -62,15 +84,15 @@ This module provides the following interface.
 @deffn Procedure build directory OPT: destination
 Build the API documentation for the library in the given directory.
 
-DIRECTORY (string) Absolute or relative path to a directory containing a
-Guile Scheme library.
+DIRECTORY (string): Absolute or relative path to a directory containing
+a Guile Scheme library.
 
-DESTINATION (string) Optional path to a directory where the
+DESTINATION (string): Optional path to a directory where the
 documentation should be saved.  If not provided, the documentation will
 be saved in the current working directory, in a subdirectory defined by
 the constant DEFAULT_DOC_PATH.
 
-RESULT The API documentation is saved to the DESTINATION directory.
+RESULT: The API documentation is saved to the DESTINATION directory.
 
 @end deffn
 
@@ -103,7 +125,13 @@ This module provides the following interface.
 
 @subsection Procedures
 @deffn Procedure api-symbols interface
-Returm the symbols provided by the interface.
+Return the symbols provided by the interface.
+
+INTERFACE (<interface>): A module's interface record as returned by
+Guile's procedure 'resolve-interface'.
+
+RETURN VALUE (list of symbols): Where every symbol identifies a public
+object exported by the interface.
 
 @end deffn
 
@@ -113,14 +141,14 @@ Convert the given Scheme file path into a module name.
 @end deffn
 
 @deffn Procedure get-file-paths directory
-Return a list of paths to Scheme files in the given directory.
+Return a list of paths to Scheme files stored in the directory.
 
 Scheme files are identified by their «.scm» extension.
 
-DIRECTORY (string) Absolute path to a directory containing a Guile
+DIRECTORY (string): Absolute path to a directory containing a Guile
 Scheme library.
 
-RETURN VALUE (list of string) A list where every element represents a
+RETURN VALUE (list of string): A list where every element represents a
 path to a Scheme file.
 
 @end deffn
@@ -131,23 +159,23 @@ Return the API objects grouped by kind.
 A kind can be one of the following: macros, procedures, record types,
 variables.
 
-INTERFACE (<interface>) An interface record as returned by Guile's
+INTERFACE (<interface>): An interface record as returned by Guile's
 procedure 'resolve-interface'.
 
-RETURN VALUE (alist) Association list where every entry corresponds to a
-kind of object and a list of its members.  Only groups with members are
-returned.
+RETURN VALUE (alist): Association list where every entry corresponds to
+a kind of object and a list of its members.  Only groups with members
+are returned.
 
 @end deffn
 
 @deffn Procedure record-field record field
 Get the value of FIELD from RECORD.
 
-RECORD (Guile record or SRFI 9 record) A record of any type.
+RECORD (Guile record or SRFI 9 record): A record of any type.
 
-FIELD (symbol) The name of the field.
+FIELD (symbol): The name of the field.
 
-RETURN VALUE (anything) The value of the field.
+RETURN VALUE (anything): The value of the field.
 
 If the FIELD does not exist, a no-such-field exception is raised.
 
@@ -171,13 +199,13 @@ This module provides the following interface.
 @deffn Procedure stexi:api-binding name value
 Return the API binding as an stexi definition.
 
-NAME (symbol) The name of the binding.  For example, the name of a
+NAME (symbol): The name of the binding.  For example, the name of a
 variable, the name of a procedure, etc.
 
-VALUE (anything) Any kind of object.  For example, a string, a list, a
+VALUE (anything): Any kind of object.  For example, a string, a list, a
 procedure, a record, etc.
 
-RETURN VALUE (stexi) An stexi definition corresponding to the type of
+RETURN VALUE (stexi): An stexi definition corresponding to the type of
 VALUE.
 
 @end deffn
@@ -185,18 +213,18 @@ VALUE.
 @deffn Procedure stexi:api-chapter sections
 Return a library API as an stexi chapter.
 
-SECTIONS (list of stexi) A list where every item is an stexi section.
+SECTIONS (list of stexi): A list where every item is an stexi section.
 
-RETURN VALUE (stexi) A chapter documenting a library's API.
+RETURN VALUE (stexi): A chapter documenting a library's API.
 
 @end deffn
 
 @deffn Procedure stexi:module-section module-name
 Return the module documentation as an stexi section.
 
-MODULE-NAME (list of symbols) For example: '(mylib amodule).
+MODULE-NAME (list of symbols): For example: '(mylib amodule).
 
-RETURN VALUE (stexi) A section documenting a module's API.
+RETURN VALUE (stexi): A section documenting a module's API.
 
 @end deffn
 
@@ -229,12 +257,12 @@ This module provides the following interface.
 @deffn Procedure save text path
 Write TEXT to the file in PATH.
 
-TEXT (string) Arbitrary text.
+TEXT (string): Arbitrary text.
 
-PATH (string) Absolute or relative path to the file the text will be
+PATH (string): Absolute or relative path to the file the text will be
 written to.
 
-RESULT If the file doesn't exist, it will be created and the text will
+RESULT: If the file doesn't exist, it will be created and the text will
 be saved to it.  If the file exists, its contents will be overwritten.
 
 @end deffn

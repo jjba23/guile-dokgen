@@ -51,9 +51,20 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (% (category "Record type") (name ,name-string) (attributes))
          (para "TODO: This record type has the following properties:"))]
      [(record? value)
-      `(defvr
-         (% (category "Variable") (name ,name-string))
-         (para "TODO: A record of type <?>. It has the following fields:"))]
+      (let* [(descriptor (record-type-descriptor value))
+             (type-name (record-type-name descriptor))
+             (record-fields (record-type-fields descriptor))]
+
+        `(defvar
+           (% (name ,name-string))
+           (para "This is a record of the type "
+                 (code ,(symbol->string type-name)) ", "
+                 "which has the following fields:")
+           (itemize
+            ,@(map
+               (lambda (field)
+                 `(item (code ,(symbol->string field))))
+               record-fields))))]
      [else
       `(defvr
          (% (category "Variable") (name ,name-string))
