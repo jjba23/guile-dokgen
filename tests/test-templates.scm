@@ -16,6 +16,8 @@
 (define (paramless-procedure)
   "Hello, thunk!")
 
+(define (required-params param1 param2 param3) "...")
+
 
 
 ;;; TEST SUITE
@@ -26,8 +28,14 @@
     (unit-name stexi:procedure-parameters)
 
   (test-equal
-      "Render empty arguments for procedures with no parameters."
+      "Render empty parameters."
       ""
-      (stexi:procedure-parameters paramless-procedure)))
+      (stexi:procedure-parameters paramless-procedure))
+
+
+  (test-equal
+      "Render required parameters."
+    "param1 param2 param3"
+    (stexi:procedure-parameters required-params)))
 
 (test-end SUITE_NAME)
