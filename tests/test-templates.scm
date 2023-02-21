@@ -18,6 +18,8 @@
 
 (define (required-params param1 param2 param3) "...")
 
+(define* (optional-params req1 #:optional opt1 opt2) "...")
+
 
 
 ;;; TEST SUITE
@@ -36,6 +38,12 @@
   (test-equal
       "Render required parameters."
     "param1 param2 param3"
-    (stexi:procedure-parameters required-params)))
+    (stexi:procedure-parameters required-params))
+
+
+  (test-equal
+      "Render optional parameters."
+    "req1 #:opt opt1 opt2"
+    (stexi:procedure-parameters optional-params)))
 
 (test-end SUITE_NAME)
