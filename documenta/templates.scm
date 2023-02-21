@@ -43,7 +43,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
       `(deffn
          (% (category "Procedure")
             (name ,name-string)
-            ,(stexi:procedure-parameters value))
+            (arguments ,(stexi:procedure-parameters value)))
          ,@(cdr                         ; To remove *fragment* atom.
             (texi-fragment->stexi (procedure-documentation value))))]
      [(record-type? value)
@@ -128,20 +128,15 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 
 (define (stexi:procedure-parameters proc)
-  "Return the parameters of the given procedure as stexi arguments.
-
-  Stexi arguments are strings used for the 'arguments' attribute of
-  stexi definition commands.
+  "Return the parameters of the given procedure as a string.
 
   PROC (procedure):
     A procedure object.
 
   RETURN VALUE (string):
     A string listing the names of all the required, optional, keyword,
-    and rest of parameters of the procedure.  Default values for
-    optional and keyword paramenters are included, if any. An empty
-    string is returned for procedures with no parameters (also known
-    as thunks)."
+    and rest of parameters of the procedure. Default values for optional
+    and keyword paramenters are also included, if any."
   ;; Helper.
   (define (symbol-or-pair->string obj)
     (format #f "~s" obj))
@@ -152,19 +147,18 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (keyword-params (assoc-ref parameters 'keyword))
          (rest-param (assoc-ref parameters 'rest))]
 
-    `(arguments
-      ,(string-join
-        (append
-         (map symbol->string required-params)
-         (if (null? optional-params)
-             (list)
-             (cons "#:opt"
-                   (map symbol-or-pair->string optional-params)))
-         (if (null? keyword-params)
-             (list)
-             (cons "#:key"
-                   (map symbol-or-pair->string keyword-params)))
-         (if rest-param
-             (list "." (symbol->string rest-param))
-             (list)))
-        " "))))
+    (string-join
+     (append
+      (map symbol->string required-params)
+      (if (null? optional-params)
+          (list)
+          (cons "#:opt"
+                (map symbol-or-pair->string optional-params)))
+      (if (null? keyword-params)
+          (list)
+          (cons "#:key"
+                (map symbol-or-pair->string keyword-params)))
+      (if rest-param
+          (list "." (symbol->string rest-param))
+          (list)))
+     " ")))

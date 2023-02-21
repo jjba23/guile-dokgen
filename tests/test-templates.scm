@@ -1,6 +1,7 @@
 #| Test suite for the module (documenta templates). |#
 
 (use-modules (documenta templates)
+             (proba utils)
              (srfi srfi-64))
 
 
@@ -10,9 +11,10 @@
 
 
 
-;;; STUBS
+;;; TEST DATA
 
-;;; ...
+(define (paramless-procedure)
+  "Hello, thunk!")
 
 
 
@@ -24,8 +26,8 @@
     (unit-name stexi:procedure-parameters)
 
   (test-equal
-      "Test name"
-      'expected
-      (stexi:procedure-parameters)))
+      "Render empty arguments for procedures with no parameters."
+      ""
+      (stexi:procedure-parameters paramless-procedure)))
 
 (test-end SUITE_NAME)
