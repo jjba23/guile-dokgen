@@ -72,6 +72,24 @@
 
 
 (test-group
+    (unit-name stexi:module-description)
+
+  (test-equal
+      "Render standard module commentary."
+    `(*fragment*
+      (para "This is an empty module with a standard commentary."))
+    (stexi:module-description '(tests test-module-commentary)))
+
+
+  (test-equal
+      "Render block-commented module commentary."
+    `(*fragment*
+      (para "This is an empty module with block commentary."))
+    (stexi:module-description '(tests test-module-commentary-block))))
+
+
+
+(test-group
     (unit-name stexi:procedure-parameters)
 
   (test-equal

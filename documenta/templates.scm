@@ -6,12 +6,14 @@ on the target documentation format (texinfo, HTML, etc.). |#
 (define-module (documenta templates)
   #:use-module (documenta data)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (srfi srfi-1)
   #:use-module (texinfo)
   #:use-module (texinfo reflection)
   #:export (stexi:api-binding
             stexi:api-chapter
+            stexi:module-description
             stexi:module-section
             stexi:procedure-parameters))
 
@@ -94,6 +96,26 @@ on the target documentation format (texinfo, HTML, etc.). |#
     ,@sections))
 
 
+(define (stexi:module-description module-name)
+  "Return the module's commentary or description as stexi.
+
+  MODULE-NAME (list of symbols):
+    For example: '(mylib amodule).
+
+  RETURN VALUE (stexi):
+    An stexi fragment."
+  (let* [(commentary (module-commentary module-name))
+         ;; FIXME: Ignore delimiters, capture the comment only.
+         ;; Maybe "(?<=#\|\s)(.*)(?=\s\|#$)" but the ? of lookahead and
+         ;; look behind makes the regex invalid in Guile...
+         (comment-regex ".*#\\|\\s(.*)\\s\\|#.*$")  ; TODO: Improve regex.
+         (block-commentary (string-match comment-regex commentary))]
+
+    (if block-commentary
+        (texi-fragment->stexi (match:substring block-commentary 1))
+        (texi-fragment->stexi commentary))))
+
+
 (define (stexi:module-section module-name)
   "Return the module documentation as an stexi section.
 
@@ -110,6 +132,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
     `(*fragment*
       (node (% (name ,node-name)))
       (section ,(format #f "~a" module-name))
+      ,(stexi:module-description module-name)
       (para "This module provides the following interface.")
 
       ,@(map

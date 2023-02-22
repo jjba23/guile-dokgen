@@ -11,6 +11,11 @@ The following is the list of modules provided by this library.
 
 @node documenta-cli
 @section (documenta cli)
+
+@c %start of fragment
+
+
+@c %end of fragment
 This module provides the following interface.
 
 
@@ -75,6 +80,11 @@ following fields:
 
 @node documenta-commands
 @section (documenta commands)
+
+@c %start of fragment
+
+
+@c %end of fragment
 This module provides the following interface.
 
 
@@ -118,6 +128,11 @@ RESULT: The API documentation is saved to the DESTINATION directory.
 
 @node documenta-data
 @section (documenta data)
+
+@c %start of fragment
+
+
+@c %end of fragment
 This module provides the following interface.
 
 
@@ -190,6 +205,11 @@ If the FIELD does not exist, a no-such-field exception is raised.
 
 @node documenta-templates
 @section (documenta templates)
+
+@c %start of fragment
+
+
+@c %end of fragment
 This module provides the following interface.
 
 
@@ -216,6 +236,15 @@ Return a library API as an stexi chapter.
 SECTIONS (list of stexi): A list where every item is an stexi section.
 
 RETURN VALUE (stexi): A chapter documenting a library's API.
+
+@end deffn
+
+@deffn Procedure stexi:module-description module-name
+Return the module's commentary or description as stexi.
+
+MODULE-NAME (list of symbols): For example: '(mylib amodule).
+
+RETURN VALUE (stexi): An stexi fragment.
 
 @end deffn
 
@@ -248,6 +277,11 @@ values for optional and keyword parameters are not included.
 
 @node documenta-writer
 @section (documenta writer)
+
+@c %start of fragment
+
+
+@c %end of fragment
 This module provides the following interface.
 
 
