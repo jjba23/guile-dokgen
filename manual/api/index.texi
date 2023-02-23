@@ -275,6 +275,91 @@ values for optional and keyword parameters are not included.
 
 @c %start of fragment
 
+@node documenta-utils
+@section (documenta utils)
+
+@c %start of fragment
+
+
+@c %end of fragment
+This module provides the following interface.
+
+
+@c %start of fragment
+
+@subsection Procedures
+@deffn Procedure min-indent string
+Return the shorter number of spaces used for indentation.
+
+This procedure assumes indentation is space-based, not tab-based.
+
+STRING (string): The text to inspect.
+
+RETURN VALUE (integer): The number of spaces representing the shorter
+indentation.
+
+@end deffn
+
+@deffn Procedure tabs->spaces string OPT: tabsize
+Convert tabs to spaces in the given string.
+
+STRING (string): The original text.
+
+TABSIZE (integer): Optional.  The number of spaces that will replace a
+single tab.  If not provided, DEFAULT_SPACE_INDENT_SIZE is used.
+
+RETURN VALUE (string): A new string where all tabs are replaced by
+spaces.
+
+@end deffn
+
+@deffn Procedure trim string spaces
+Trim off the given number of spaces at the beginning of the string.
+
+STRING (string): The original text.
+
+SPACES (integer): The number of spaces to trim off.
+
+RETURN VALUE (string): A new string with the exact number of spaces
+removed, if they exist.  Otherwise, the original string is returned.
+
+@end deffn
+
+@deffn Procedure unindent docstring
+Remove unwanted indentation from the given documentation string.
+
+'Unwanted' indentation is what results from aligning documentation lines
+to the first line of the documentation string so that they look
+aesthetic.
+
+DOCSTRING (string): A string that documents a procedure or any other
+object.
+
+RETURN VALUE (string): A new string with the undesired indentation
+removed.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Variables
+@defvr Variable DEFAULT_SPACE_INDENT_SIZE
+@verbatim 
+2
+@end verbatim
+
+@end defvr
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
 @node documenta-writer
 @section (documenta writer)
 

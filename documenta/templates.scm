@@ -5,6 +5,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
 
 (define-module (documenta templates)
   #:use-module (documenta data)
+  #:use-module (documenta utils)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
@@ -47,7 +48,8 @@ on the target documentation format (texinfo, HTML, etc.). |#
             (name ,name-string)
             (arguments ,(stexi:procedure-parameters value)))
          ,@(cdr                         ; To remove *fragment* atom.
-            (texi-fragment->stexi (procedure-documentation value))))]
+            (texi-fragment->stexi
+             (unindent (procedure-documentation value)))))]
      [(record-type? value)
       `(deftp
          (% (category "Record type")
