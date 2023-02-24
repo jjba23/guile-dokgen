@@ -158,6 +158,18 @@
       "\n"
       "\t\tIndented paragraph.\n"
       "\n"
-      "\tLast paragraph."))))
+      "\tLast paragraph.")))
+
+
+  (test-equal
+      "Handle empty docstring."
+    ""
+    (unindent ""))
+
+
+  (test-equal
+      "Handle one-line docstring."
+    "One line."
+    (unindent "One line.")))
 
 (test-end SUITE_NAME)
