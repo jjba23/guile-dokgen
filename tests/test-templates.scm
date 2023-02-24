@@ -29,6 +29,9 @@
 
 (define (arbitrary-arguments . args) "...")
 
+(define (undocumented-procedure)
+  #true)
+
 (define (verbatim-in-docstring)
   "This procedure contains verbatim examples.
 
@@ -122,7 +125,17 @@
             (arguments ""))
          (para "This procedure contains verbatim examples.")
          (verbatim "(+ 3 5)\n"))
-      (stexi:api-binding 'verbatim-in-docstring verbatim-in-docstring))))
+      (stexi:api-binding 'verbatim-in-docstring verbatim-in-docstring)))
+
+
+  (test-equal
+      "Render undocumented procedure."
+    '(deffn
+       (% (category "Procedure")
+          (name "undocumented-procedure")
+          (arguments ""))
+       (para "Undocumented procedure."))
+    (stexi:api-binding 'undocumented-procedure undocumented-procedure)))
 
 
 
