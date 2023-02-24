@@ -15,6 +15,7 @@
 ;;; TEST DATA
 
 (define (paramless-procedure)
+  "This thunk says hi to another thunk."
   "Hello, thunk!")
 
 (define (required-params param1 param2 param3) "...")
@@ -27,6 +28,14 @@
   "...")
 
 (define (arbitrary-arguments . args) "...")
+
+(define (verbatim-in-docstring)
+  "This procedure contains verbatim examples.
+
+  @verbatim
+  (+ 3 5)
+  @end verbatim"
+  #true)
 
 (define-record-type <being>
   (make-being name binomial)
@@ -67,7 +76,53 @@
         (item (code "binomial"))))
     (stexi:api-binding
      'panda
-     (make-being "panda" "ailuropoda melanoleuca"))))
+     (make-being "panda" "ailuropoda melanoleuca")))
+
+
+  (let [(test-name "Render a parameterless procedure.")]
+
+    (test-equal
+        test-name
+      '(deffn
+         (% (category "Procedure")
+            (name "paramless-procedure")
+            (arguments ""))
+         (para "This thunk says hi to another thunk."))
+      (stexi:api-binding 'paramless-procedure paramless-procedure)))
+
+
+  (let [(test-name "Render a procedure containing @verbatim examples.")]
+    #| Rendering procedures whose documentation strings included Texinfo
+    @verbatim commands failed with the following error:
+
+    (parser-error #<input: string 7f80903492a0>
+     EOF while reading a token  reading verbatim)
+
+    This error comes from calling texi-fragment->stexi. The following
+    fails in the same way:
+
+    (texi-fragment->stexi "Example:
+
+    @verbatim
+    (+ 3 5)
+    @end verbatim")
+
+    Verbatim seems to be the only block enclosing command that triggers
+    the error. Quotation, example and lisp commands are parsed
+    correctly.
+
+    Ending the little reproducer above with a newline character solves
+    the problem. But I wonder if this is a defect upstream. |#
+
+    (test-equal
+        test-name
+      '(deffn
+         (% (category "Procedure")
+            (name "verbatim-in-docstring")
+            (arguments ""))
+         (para "This procedure contains verbatim examples.")
+         (verbatim "(+ 3 5)\n"))
+      (stexi:api-binding 'verbatim-in-docstring verbatim-in-docstring))))
 
 
 

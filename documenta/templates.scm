@@ -49,7 +49,12 @@ on the target documentation format (texinfo, HTML, etc.). |#
             (arguments ,(stexi:procedure-parameters value)))
          ,@(cdr                         ; To remove *fragment* atom.
             (texi-fragment->stexi
-             (unindent (procedure-documentation value)))))]
+             ;; NOTE: Append newline to avoid parsing error.
+             ;; The error occurs when parsing verbatim commands.
+             ;; See reproducer in test-templates.scm for more info.
+             (string-append
+              (unindent (procedure-documentation value))
+              "\n"))))]
      [(record-type? value)
       `(deftp
          (% (category "Record type")
