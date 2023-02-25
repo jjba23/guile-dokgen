@@ -1,6 +1,6 @@
-#| Test suite for the module (documenta templates). |#
+#| Test suite for the module (documenta templates stexi). |#
 
-(use-modules (documenta templates)
+(use-modules ((documenta templates stexi) #:prefix stexi:)
              (proba utils)
              (srfi srfi-9)
              (srfi srfi-64))

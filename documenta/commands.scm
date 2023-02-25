@@ -5,7 +5,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define-module (documenta commands)
   #:declarative? #false  ; Because it loads modules.
   #:use-module ((documenta data) #:prefix data:)
-  #:use-module (documenta templates)
+  #:use-module ((documenta templates stexi) #:prefix stexi:)
   #:use-module (documenta writer)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)

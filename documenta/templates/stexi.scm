@@ -1,9 +1,9 @@
-#| Templates.
+#| Stexi templates.
 
-Procedures that accept data and present it in different ways depending
-on the target documentation format (texinfo, HTML, etc.). |#
+Procedures that accept data and present it in symbolic texinfo (stexi)
+format. |#
 
-(define-module (documenta templates)
+(define-module (documenta templates stexi)
   #:use-module (documenta data)
   #:use-module (documenta utils)
   #:use-module (ice-9 format)
@@ -12,16 +12,16 @@ on the target documentation format (texinfo, HTML, etc.). |#
   #:use-module (srfi srfi-1)
   #:use-module (texinfo)
   #:use-module (texinfo reflection)
-  #:export (stexi:api-binding
-            stexi:api-chapter
-            stexi:module-description
-            stexi:module-section
-            stexi:procedure-parameters))
+  #:export (api-binding
+            api-chapter
+            module-description
+            module-section
+            procedure-parameters))
 
 
 ;;; TEMPLATES
 
-(define (stexi:api-binding name value)
+(define (api-binding name value)
   "Return the API binding as an stexi definition.
 
   NAME (symbol):
@@ -46,7 +46,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
       `(deffn
          (% (category "Procedure")
             (name ,name-string)
-            (arguments ,(stexi:procedure-parameters value)))
+            (arguments ,(procedure-parameters value)))
          ,@(cdr                         ; To remove *fragment* atom.
             (texi-fragment->stexi
              ;; NOTE: Append newline to avoid parsing error.
@@ -89,7 +89,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
          (verbatim ,(format #f "~s" value)))])))
 
 
-(define (stexi:api-chapter sections)
+(define (api-chapter sections)
   "Return a library API as an stexi chapter.
 
   SECTIONS (list of stexi):
@@ -105,7 +105,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
     ,@sections))
 
 
-(define (stexi:module-description module-name)
+(define (module-description module-name)
   "Return the module's commentary or description as stexi.
 
   MODULE-NAME (list of symbols):
@@ -125,7 +125,7 @@ on the target documentation format (texinfo, HTML, etc.). |#
         (texi-fragment->stexi commentary))))
 
 
-(define (stexi:module-section module-name)
+(define (module-section module-name)
   "Return the module documentation as an stexi section.
 
   MODULE-NAME (list of symbols):
@@ -141,18 +141,18 @@ on the target documentation format (texinfo, HTML, etc.). |#
     `(*fragment*
       (node (% (name ,node-name)))
       (section ,(format #f "~a" module-name))
-      ,(stexi:module-description module-name)
+      ,(module-description module-name)
       (para "This module provides the following interface.")
 
       ,@(map
          (lambda (group)
            (let [(kind (first group))
                  (objects (cdr group))]
-             (stexi:module-subsection kind objects)))
+             (module-subsection kind objects)))
          grouped-api-objects))))
 
 
-(define (stexi:module-subsection kind objects)
+(define (module-subsection kind objects)
   "Return an stexi subsection listing API objects of the given KIND.
 
   KIND (string):
@@ -173,11 +173,11 @@ on the target documentation format (texinfo, HTML, etc.). |#
        (lambda (object)
          (let [(key (first object))
                (value (cdr object))]
-           (stexi:api-binding key value)))
+           (api-binding key value)))
        objects)))
 
 
-(define (stexi:procedure-parameters proc)
+(define (procedure-parameters proc)
   "Return the parameters of the given procedure as a string.
 
   PROC (procedure):

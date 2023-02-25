@@ -203,8 +203,8 @@ If the FIELD does not exist, a no-such-field exception is raised.
 
 @c %start of fragment
 
-@node documenta-templates
-@section (documenta templates)
+@node documenta-templates-stexi
+@section (documenta templates stexi)
 
 @c %start of fragment
 
@@ -216,7 +216,7 @@ This module provides the following interface.
 @c %start of fragment
 
 @subsection Procedures
-@deffn Procedure stexi:api-binding name value
+@deffn Procedure api-binding name value
 Return the API binding as an stexi definition.
 
 NAME (symbol): The name of the binding.  For example, the name of a
@@ -230,7 +230,7 @@ VALUE.
 
 @end deffn
 
-@deffn Procedure stexi:api-chapter sections
+@deffn Procedure api-chapter sections
 Return a library API as an stexi chapter.
 
 SECTIONS (list of stexi): A list where every item is an stexi section.
@@ -239,7 +239,7 @@ RETURN VALUE (stexi): A chapter documenting a library's API.
 
 @end deffn
 
-@deffn Procedure stexi:module-description module-name
+@deffn Procedure module-description module-name
 Return the module's commentary or description as stexi.
 
 MODULE-NAME (list of symbols): For example: '(mylib amodule).
@@ -248,7 +248,7 @@ RETURN VALUE (stexi): An stexi fragment.
 
 @end deffn
 
-@deffn Procedure stexi:module-section module-name
+@deffn Procedure module-section module-name
 Return the module documentation as an stexi section.
 
 MODULE-NAME (list of symbols): For example: '(mylib amodule).
@@ -257,7 +257,7 @@ RETURN VALUE (stexi): A section documenting a module's API.
 
 @end deffn
 
-@deffn Procedure stexi:procedure-parameters proc
+@deffn Procedure procedure-parameters proc
 Return the parameters of the given procedure as a string.
 
 PROC (procedure): A procedure object.
