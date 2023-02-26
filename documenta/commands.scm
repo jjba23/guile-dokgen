@@ -12,7 +12,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:use-module (texinfo serialize)
   #:export (DEFAULT_DOC_PATH
 
-            build))
+            extract))
 
 
 ;;; CONSTANTS
@@ -23,28 +23,26 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 ;;; COMMANDS
 
-(define* (build directory #:optional (destination DEFAULT_DOC_PATH))
-  "Build the API documentation for the library in the given directory.
+(define* (extract source #:optional (destination DEFAULT_DOC_PATH))
+  "Extract the documentation of the library defined in source.
 
-  DIRECTORY (string):
-    Absolute or relative path to a directory containing a Guile Scheme
-    library.
+  SOURCE (string):
+    A path to a directory containing Guile Scheme modules.
 
   DESTINATION (string):
-    Optional path to a directory where the documentation should be
-    saved. If not provided, the documentation will be saved in the
-    current working directory, in a subdirectory defined by the constant
-    DEFAULT_DOC_PATH.
+    Optional path to a directory where the final Texinfo files will be
+    saved. If not provided, DEFAULT_DOC_PATH is used (see the module
+    @ref{documenta-commands}).
 
   RESULT:
-    The API documentation is saved to the DESTINATION directory."
+    The API documentation is saved to the destination directory."
   (let* [(canonical-lib-path
-          (if (absolute-file-name? directory)
-              (canonicalize-path directory)
+          (if (absolute-file-name? source)
+              (canonicalize-path source)
               (canonicalize-path
                (string-append (getcwd)
                               file-name-separator-string
-                              directory))))
+                              source))))
          (lib-parent-path (dirname canonical-lib-path))
          (file-paths (data:get-file-paths canonical-lib-path))
          (module-names (map
@@ -69,5 +67,5 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     (format
      #true
      "API documentation of ~a library saved to ~a~%"
-     directory
+     source
      destination)))

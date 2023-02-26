@@ -32,14 +32,14 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 ;;; ARGUMENTS AND FLAGS
 
-(define sourcedir
-  (argument (name 'sourcedir)
+(define source
+  (argument (name 'source)
             (synopsis "Absolute or relative path to a library's directory.")
             (example "/home/user/project/mylib")
             (test directory?)))
 
-(define destdir
-  (argument (name 'destdir)
+(define destination
+  (argument (name 'destination)
             (synopsis "Absolute or relative path to a directory where the final documentation will be saved.")
             (example "/home/user/project/doc/api")
             (default DEFAULT_DOC_PATH)))
@@ -61,9 +61,9 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
    (subcommands
     (list
      (configuration
-      (name 'build)
-      (synopsis "Build documentation for the given library.")
-      (arguments (list sourcedir destdir)))))))
+      (name 'extract)
+      (synopsis "Extract the documentation of the given library.")
+      (arguments (list source destination)))))))
 
 
 
@@ -84,13 +84,13 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
     The COMMAND is followed. If the command is not recognized, display
     help information."
   (let* [(options (getopt-config-auto command spec))
-         (lib (option-ref options '(sourcedir)))
-         (destination (option-ref options '(destdir)))]
+         (source (option-ref options '(source)))
+         (destination (option-ref options '(destination)))]
 
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "build") (build lib destination))))
+          ((_ "extract") (extract source destination))))
 
       (lambda (. args)
         (begin (format #true "ERROR: Command not found: ~a~%~%" command)

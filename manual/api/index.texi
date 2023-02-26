@@ -91,18 +91,16 @@ This module provides the following interface.
 @c %start of fragment
 
 @subsection Procedures
-@deffn Procedure build directory OPT: destination
-Build the API documentation for the library in the given directory.
+@deffn Procedure extract source OPT: destination
+Extract the documentation of the library defined in source.
 
-DIRECTORY (string): Absolute or relative path to a directory containing
-a Guile Scheme library.
+SOURCE (string): A path to a directory containing Guile Scheme modules.
 
-DESTINATION (string): Optional path to a directory where the
-documentation should be saved.  If not provided, the documentation will
-be saved in the current working directory, in a subdirectory defined by
-the constant DEFAULT_DOC_PATH.
+DESTINATION (string): Optional path to a directory where the final
+Texinfo files will be saved.  If not provided, DEFAULT_DOC_PATH is used
+(see the module @ref{documenta-commands}).
 
-RESULT: The API documentation is saved to the DESTINATION directory.
+RESULT: The API documentation is saved to the destination directory.
 
 @end deffn
 

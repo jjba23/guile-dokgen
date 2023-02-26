@@ -102,9 +102,15 @@ Guile Documentá comes with the @command{documenta} program, which
 recognizes the following subcommands:
 
 
-@deffn Command build source-path [destination-path]
-Build the documentation of the library in @var{source-path} and place the
-final result in @var{destination-path}.
+@deffn Command extract source [destination]
+Extract the documentation of the library defined in the @var{source}
+directory.
+
+@var{source}: A path to a directory containing Guile Scheme modules.
+
+@var{destination}: Optional path to a directory where the final
+Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
+is used (see the module @ref{documenta-commands}).
 @end deffn
 @c END CHAPTER: CLI
 
