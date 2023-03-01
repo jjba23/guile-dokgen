@@ -198,7 +198,7 @@ format. |#
          (optional-params (assoc-ref parameters 'optional))
          (keyword-params (assoc-ref parameters 'keyword))
          (arbitrary-keys? (assoc-ref parameters 'allow-other-keys?))
-         (rest? (assoc-ref parameters 'rest))]
+         (rest-param (assoc-ref parameters 'rest))]
 
     (string-join
      (append
@@ -213,7 +213,7 @@ format. |#
       (if arbitrary-keys?
           (list "[arbitrary keys]")
           (list))
-      (if rest?
-          (list "[arbitrary arguments]")
+      (if rest-param
+          (list "." (symbol->string rest-param))
           (list)))
      " ")))

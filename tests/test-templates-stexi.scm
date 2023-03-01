@@ -1,6 +1,7 @@
 #| Test suite for the module (documenta templates stexi). |#
 
 (use-modules ((documenta templates stexi) #:prefix stexi:)
+             (ice-9 session)
              (proba utils)
              (srfi srfi-9)
              (srfi srfi-64))
@@ -27,7 +28,7 @@
 (define* (arbitrary-keyword-params #:key key1 key2 #:allow-other-keys)
   "...")
 
-(define (arbitrary-arguments . args) "...")
+(define (arbitrary-arguments . parts) "...")
 
 (define (undocumented-procedure)
   #true)
@@ -190,9 +191,13 @@
     (stexi:procedure-parameters arbitrary-keyword-params))
 
 
-  (test-equal
-      "Render note when arbitrary arguments are accepted."
-    "[arbitrary arguments]"
-    (stexi:procedure-parameters arbitrary-arguments)))
+  (let* [(test-name "Render args parameter.")
+         (params (procedure-arguments arbitrary-arguments))
+         (rest-name (assoc-ref params 'rest))]
+
+    (test-equal
+        test-name
+      (string-append "." " " (symbol->string rest-name))
+      (stexi:procedure-parameters arbitrary-arguments))))
 
 (test-end SUITE_NAME)

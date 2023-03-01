@@ -37,6 +37,9 @@ to generate API documentation for
 @url{https://codeberg.org/luis-felipe/guile-documenta, Source files}
 @end itemize
 
+Public domain 2023 @url{https://luis-felipe.gitlab.io/, Luis Felipe
+López Acevedo}. All rights waived.
+
 @end ifnottex
 
 @menu
@@ -67,7 +70,9 @@ Indices
 
 
 @c TABLE OF CONTENTS
+@iftex
 @contents
+@end iftex
 @c END TABLE OF CONTENTS
 
 
