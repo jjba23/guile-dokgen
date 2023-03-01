@@ -60,7 +60,8 @@ Indices
 
 * Concept Index::
 * Data Type Index::
-* Function Index::
+* Procedure Index::
+* Variable Index::
 
 @c Here you can put a detailmenu command to add exactly that.
 
