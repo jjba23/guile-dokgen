@@ -11,18 +11,9 @@
 
 
 
-@c COPYING INFO
-@copying
-Public domain 2023 Luis Felipe López Acevedo. All rights waived.
-@end copying
-@c END COPYING INFO
-
-
-
 @c MASTER MENU
-@ifnottex
 @node Top
-@top Guile Documentá's Manual
+@top Overview
 
 This software is a command-line program and accompanying library
 to generate API documentation for
@@ -37,12 +28,14 @@ to generate API documentation for
 @url{https://codeberg.org/luis-felipe/guile-documenta, Source files}
 @end itemize
 
+
 Public domain 2023 @url{https://luis-felipe.gitlab.io/, Luis Felipe
 López Acevedo}. All rights waived.
 
-@end ifnottex
 
 @menu
+Chapters
+
 * Usage::
   Documenting source code and generating documentation from it.
 * CLI::
@@ -71,9 +64,7 @@ Indices
 
 
 @c TABLE OF CONTENTS
-@iftex
 @contents
-@end iftex
 @c END TABLE OF CONTENTS
 
 
@@ -169,7 +160,6 @@ documentation of a library in Texinfo format.
 
 @printindex vr
 @c END INDICES
-
 
 
 @bye
