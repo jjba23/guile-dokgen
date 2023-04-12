@@ -99,16 +99,29 @@ Pending.
 Guile Documentá comes with the @command{documenta} program, which
 recognizes the following subcommands:
 
+@quotation Note
+Guile Documentá does not currently extract @abbr{CLI, Command Line
+Interface} documentation from the source code, but it is intended to
+do so in the future. The following documentation is (re)written by
+hand (sadly).
+@end quotation
+
 
 @deffn Command extract source [destination]
 Extract the documentation of the library defined in the @var{source}
-directory.
+path.
 
-@var{source}: A path to a directory containing Guile Scheme modules.
+@defvr Argument source
+A path to a Guile Scheme module file or to a directory
+containing Guile Scheme modules. For example:
+@code{"project-x/libx.scm"}, @code{"project-z/libz"}.
+@end defvr
 
-@var{destination}: Optional path to a directory where the final
+@defvr Argument destination
+Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
 is used (see the module @ref{documenta-commands}).
+@end defvr
 @end deffn
 @c END CHAPTER: CLI
 
