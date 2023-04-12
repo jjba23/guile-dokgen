@@ -18,19 +18,20 @@
 This software is a command-line program and accompanying library
 to generate API documentation for
 @url{https://www.gnu.org/software/guile/, GNU Guile} Scheme projects.
+You can find additional information in
+@url{https://codeberg.org/luis-felipe/guile-documenta, Guile Documentá's website}.
 
+Note that a copy of this documentation (in @code{info} format),
+should also be available locally in your device once you install the
+program. You can browse it with any info reader. For example:
 
-@itemize
-@item
-@url{https://luis-felipe.gitlab.io/guile-documenta/, Website}
+@example
+$ info guile-documenta
+@end example
 
-@item
-@url{https://codeberg.org/luis-felipe/guile-documenta, Source files}
-@end itemize
-
-
-Public domain 2023 @url{https://luis-felipe.gitlab.io/, Luis Felipe
-López Acevedo}. All rights waived.
+Guile Documentá is a
+@url{https://freedomdefined.org/Definition, Free Cultural Work}
+(@pxref{Copying Information}).
 
 
 @menu
@@ -193,6 +194,16 @@ Announce the release to the world.
 @end enumerate
 
 @end enumerate
+
+
+@node Copying Information
+@appendix Copying Information
+
+Public domain 2023 @url{https://luis-felipe.gitlab.io/, Luis Felipe
+López Acevedo}. All rights waived.
+
+Guile Documentá has been released into the public domain by its
+author. This applies universewide.
 @c END APPENDICES
 
 
