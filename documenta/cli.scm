@@ -13,30 +13,13 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
             spec))
 
 
-;;; VALIDATORS
-
-(define (directory? path)
-  #| Tell whether the given PATH leads to a directory.
-
-  PATH (string):
-    An absolute or relative path to something in the file system. For
-    example: "/home/bob/videos", "images/sky/sunset.png".
-
-  RETURN VALUE (boolean):
-    True if the PATH leads to a directory; false otherwise. |#
-  (let [(type (stat:type (stat path)))]
-
-    (equal? type 'directory)))
-
-
-
 ;;; ARGUMENTS AND FLAGS
 
 (define source
   (argument (name 'source)
-            (synopsis "Absolute or relative path to a library's directory.")
-            (example "/home/user/project/mylib")
-            (test directory?)))
+            (synopsis "Absolute or relative path to a library (directory or file).")
+            (example "/home/user/project-z/libz")
+            (test file-exists?)))
 
 (define destination
   (argument (name 'destination)

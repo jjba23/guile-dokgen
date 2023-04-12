@@ -94,7 +94,9 @@ This module provides the following interface.
 @deffn Procedure extract source OPT: destination
 Extract the documentation of the library defined in source.
 
-SOURCE (string): A path to a directory containing Guile Scheme modules.
+SOURCE (string): An absolute or relative path to a single Guile Scheme
+module file or to a directory containing a collection of modules.  For
+example: «projects/project-x/libx.scm», «projects/project-z/libz».
 
 DESTINATION (string): Optional path to a directory where the final
 Texinfo files will be saved.  If not provided, DEFAULT_DOC_PATH is used
@@ -150,6 +152,15 @@ object exported by the interface.
 
 @deffn Procedure file-path->module-name file-path lib-parent-path
 Convert the given Scheme file path into a module name.
+
+FILE-PATH (string): Absolute path to Guile Scheme module file.  For
+example: «/home/user/project-x/libx/module-a.scm».
+
+LIB-PARENT-PATH (string): Absolute path to the directory containing the
+library FILE-PATH belongs to.  For example: «/home/user/project-x/».
+
+RETURN VALUE (symbol): The name of the module.  For example: (libx
+module-a).
 
 @end deffn
 

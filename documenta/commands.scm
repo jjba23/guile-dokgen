@@ -27,7 +27,9 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   "Extract the documentation of the library defined in source.
 
   SOURCE (string):
-    A path to a directory containing Guile Scheme modules.
+    An absolute or relative path to a single Guile Scheme module file
+    or to a directory containing a collection of modules. For example:
+    «projects/project-x/libx.scm», «projects/project-z/libz».
 
   DESTINATION (string):
     Optional path to a directory where the final Texinfo files will be
@@ -43,8 +45,12 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
                (string-append (getcwd)
                               file-name-separator-string
                               source))))
+         (lib-path-type (stat:type (stat canonical-lib-path)))  ; File, dir?
          (lib-parent-path (dirname canonical-lib-path))
-         (file-paths (data:get-file-paths canonical-lib-path))
+         (file-paths            ; Files to extract documentation from.
+          (if (equal? lib-path-type 'directory)
+              (data:get-file-paths canonical-lib-path)
+              (list canonical-lib-path)))
          (module-names (map
                         (lambda (file-path)
                           (data:file-path->module-name file-path

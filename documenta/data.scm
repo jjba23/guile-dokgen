@@ -130,9 +130,20 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 
 (define (file-path->module-name file-path lib-parent-path)
-  "Convert the given Scheme file path into a module name."
+  "Convert the given Scheme file path into a module name.
+
+  FILE-PATH (string):
+    Absolute path to Guile Scheme module file. For example:
+    «/home/user/project-x/libx/module-a.scm».
+
+  LIB-PARENT-PATH (string):
+    Absolute path to the directory containing the library FILE-PATH
+    belongs to. For example: «/home/user/project-x/».
+
+  RETURN VALUE (symbol):
+    The name of the module. For example: (libx module-a)."
   (let* [(extensionless-file-path (string-drop-right file-path 4))
-         (relative-file-path
+         (relative-file-path  ; Relative to lib-parent-path.
           (string-drop extensionless-file-path
                        (+ 1 (string-length lib-parent-path))))
          (module-name
