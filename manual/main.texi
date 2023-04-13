@@ -180,11 +180,11 @@ is used (see the module @ref{documenta-commands}).
 
 @table @dfn
 
-@item Version 0.1.0, Month DD, 2023
+@item Version 0.1.0, April 13, 2023
 @itemize
 @item
-Initial release of the software providing a program to build API
-documentation of a library in Texinfo format.
+Initial release of the software providing a program to generate API
+documentation of Guile Scheme libraries in Texinfo format.
 @end itemize
 @end table
 
