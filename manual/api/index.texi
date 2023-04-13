@@ -14,6 +14,10 @@ The following is the list of modules provided by this library.
 
 @c %start of fragment
 
+This module defines the command-line interface of the
+@command{documenta} program.  See the @ref{CLI} section for additional
+information.
+
 
 @c %end of fragment
 This module provides the following interface.
@@ -82,6 +86,11 @@ following fields:
 
 @c %start of fragment
 
+This module defines procedures that are associated to every command
+provided by the command-line interface of the @command{documenta}
+program.  See the @ref{CLI} and @xref{documenta-cli,(documenta cli)}
+sections for additional information.
+
 
 @c %end of fragment
 This module provides the following interface.
@@ -131,6 +140,14 @@ directory.
 @section (documenta data)
 
 @c %start of fragment
+
+This module defines procedures to retrieve data from Guile Scheme
+libraries (e.g.  the names and attributes of their Scheme modules and
+the objects these modules export).  This data is then passed to template
+procedures to render API documentation in different formats.  See, for
+example, the templates used to work with the
+@uref{https://www.gnu.org/software/texinfo/,Texinfo format}:
+@ref{documenta-templates-stexi,(documenta templates stexi)}.
 
 
 @c %end of fragment
@@ -219,6 +236,11 @@ If the FIELD does not exist, a @var{no-such-field} exception is raised.
 
 @c %start of fragment
 
+This module defines procedures that structure @ref{documenta-data,API
+data} as @emph{stexi} (symbolic texinfo), which can later be translated
+into Texinfo and integrated with the rest of the Texinfo documentation
+of a given software project.
+
 
 @c %end of fragment
 This module provides the following interface.
@@ -293,6 +315,9 @@ Default values for optional and keyword parameters are not included.
 @section (documenta utils)
 
 @c %start of fragment
+
+This module defines helper procedures that didn't quite fit anywhere
+else.
 
 
 @c %end of fragment
@@ -381,6 +406,8 @@ indentation removed.
 @section (documenta writer)
 
 @c %start of fragment
+
+Procedures for writing data to disk.
 
 
 @c %end of fragment

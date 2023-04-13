@@ -1,8 +1,14 @@
-#| Data.
+;;; Commentary:
 
-Procedures to retrieve data from libraries and their modules.
+#| This module defines procedures to retrieve data from Guile Scheme
+libraries (e.g. the names and attributes of their Scheme modules and
+the objects these modules export). This data is then passed to
+template procedures to render API documentation in different
+formats. See, for example, the templates used to work with the
+@url{https://www.gnu.org/software/texinfo/, Texinfo format}:
+@ref{documenta-templates-stexi, (documenta templates stexi)}. |#
 
-Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
+;;; Code:
 
 (define-module (documenta data)
   #:use-module (ice-9 format)

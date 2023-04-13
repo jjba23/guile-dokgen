@@ -1,7 +1,11 @@
-#| Stexi templates.
+;;; Commentary:
 
-Procedures that accept data and present it in symbolic texinfo (stexi)
-format. |#
+#| This module defines procedures that structure
+@ref{documenta-data, API data} as @emph{stexi} (symbolic texinfo),
+which can later be translated into Texinfo and integrated with the rest
+of the Texinfo documentation of a given software project. |#
+
+;;; Code:
 
 (define-module (documenta templates stexi)
   #:use-module (documenta data)
@@ -40,7 +44,7 @@ format. |#
      [(macro? value)
       `(defmac
          (% (name ,name-string)
-            (arguments))  ; TODO: Render arguments.
+            (arguments))                ; TODO: Render arguments.
          (verbatim ,(format #f "~s" value)))]
      [(procedure? value)
       `(deffn

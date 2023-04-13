@@ -1,9 +1,14 @@
-#| Documentation commands.
+;;; Commentary:
 
-Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
+#| This module defines procedures that are associated to every command
+provided by the command-line interface of the @command{documenta}
+program. See the @ref{CLI} and @xref{documenta-cli, (documenta cli)}
+sections for additional information. |#
+
+;;; Code:
 
 (define-module (documenta commands)
-  #:declarative? #false  ; Because it loads modules.
+  #:declarative? #false                 ; Because it loads modules.
   #:use-module ((documenta data) #:prefix data:)
   #:use-module ((documenta templates stexi) #:prefix stexi:)
   #:use-module (documenta writer)
@@ -12,7 +17,7 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   #:use-module (texinfo serialize)
   #:export (DEFAULT_DOC_PATH
 
-            extract))
+             extract))
 
 
 ;;; CONSTANTS

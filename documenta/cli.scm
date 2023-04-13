@@ -1,6 +1,10 @@
-#| Command-line interface
+;;; Commentary:
 
-Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
+#| This module defines the command-line interface of the
+@command{documenta} program. See the @ref{CLI} section for additional
+information. |#
+
+;;; Code:
 
 (define-module (documenta cli)
   #:use-module (config)

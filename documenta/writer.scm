@@ -1,6 +1,8 @@
-#| Writing data to disk.
+;;; Commentary:
 
-Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
+#| Procedures for writing data to disk. |#
+
+;;; Code:
 
 (define-module (documenta writer)
   #:export (save))

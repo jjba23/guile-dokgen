@@ -1,4 +1,9 @@
-#| Helper procedures. |#
+;;; Commentary:
+
+#| This module defines helper procedures that didn't quite fit anywhere
+else. |#
+
+;;; Code:
 
 (define-module (documenta utils)
   #:use-module (srfi srfi-1)

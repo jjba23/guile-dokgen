@@ -38,7 +38,7 @@ Guile Documentá is a
 Chapters
 
 * Usage::
-  Documenting source code and generating documentation from it.
+  Generating documentation from source code.
 * CLI::
   Command-line interface reference.
 * API::
@@ -74,20 +74,60 @@ Indices
 @node Usage
 @chapter Usage
 
-Explain how documenting source code is usually done directly in
-documentation files in some format, and also directly in the source
-code using the language's documentation features. Show how all the
-documentation is put together in a single collection of documents.
+Guile Documentá comes with a program called @command{documenta}, which
+you can use to generate API documentation for your Guile Scheme project.
+The resulting documentation will be written in
+@url{https://www.gnu.org/software/texinfo/, Texinfo} format.
+
+For example, let's suppose we have a project called @sc{Bogus X} and
+that we keep its source files in a folder as follows:
+
+@example
+bogus-x
+├── bogusx             ← Guile Scheme modules
+│   ├── module-a.scm
+│   └── module-b.scm
+├── doc                ← Project documentation in Texinfo format
+│   └── main.texi
+├── tests
+└── README.org
+@end example
 
 
-@section Writing documentation
+The project already has some documentation written manually into the
+@file{main.texi} file, and we want to complement it with API
+documentation. We can generate the latter as follows:
 
-Pending.
+@example
+$ cd bogus-x
+$ documenta extract bogusx
+@end example
 
 
-@section Extracting documentation from source
+The @ref{cli-extract, extract} subcommand will inspect all the modules
+in the @file{bogusx} "package" and build API reference documentation
+that will then be saved to the @file{doc/api} folder in Texinfo
+format:
 
-Pending.
+@example
+bogus-x
+├── bogusx
+├── doc
+│   ├── api             ← Newly extracted API documentation
+│   │   └── index.texi
+│   └── main.texi
+├── tests
+└── README.org
+@end example
+
+
+Finally, you can integrate the API documentation into the
+@file{main.texi} documentation using Texinfo's @code{@@include}
+command. For example:
+
+@verbatim
+@include api/index.texi
+@end verbatim
 @c END CHAPTER: Usage
 
 
@@ -107,6 +147,7 @@ hand (sadly).
 @end quotation
 
 
+@anchor{cli-extract}
 @deffn Command extract source [destination]
 Extract the documentation of the library defined in the @var{source}
 path.
