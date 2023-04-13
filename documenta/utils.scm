@@ -19,14 +19,15 @@
 ;;; PROCEDURES
 
 (define (min-indent string)
-  "Return the shorter number of spaces used for indentation.
+  "Return the shorter number of spaces used for indentation in the given
+  string.
 
   This procedure assumes indentation is space-based, not tab-based.
 
-  STRING (string):
+  @strong{string} (string):
     The text to inspect.
 
-  RETURN VALUE (integer):
+  @strong{Return value} (integer):
     The number of spaces representing the shorter indentation."
   (if (or (string-null? string) (not (string-contains string "\n")))
       0
@@ -46,14 +47,14 @@
 (define* (tabs->spaces string #:optional (tabsize DEFAULT_SPACE_INDENT_SIZE))
   "Convert tabs to spaces in the given string.
 
-  STRING (string):
+  @strong{string} (string):
     The original text.
 
-  TABSIZE (integer):
+  @strong{tabsize} (integer):
     Optional. The number of spaces that will replace a single tab.
-    If not provided, DEFAULT_SPACE_INDENT_SIZE is used.
+    If not provided, @var{DEFAULT_SPACE_INDENT_SIZE} is used.
 
-  RETURN VALUE (string):
+  @strong{Return value} (string):
     A new string where all tabs are replaced by spaces."
   (string-concatenate
    (map
@@ -67,13 +68,13 @@
 (define (trim string spaces)
   "Trim off the given number of spaces at the beginning of the string.
 
-  STRING (string):
+  @strong{string} (string):
     The original text.
 
-  SPACES (integer):
+  @strong{spaces} (integer):
     The number of spaces to trim off.
 
-  RETURN VALUE (string):
+  @strong{Return value} (string):
     A new string with the exact number of spaces removed, if they exist.
     Otherwise, the original string is returned."
   (let [(indent (make-string spaces #\space))]
@@ -86,14 +87,14 @@
 (define (unindent docstring)
   "Remove unwanted indentation from the given documentation string.
 
-  'Unwanted' indentation is what results from aligning documentation
-  lines to the first line of the documentation string so that they look
-  aesthetic.
+  'Unwanted' indentation is what results, for example, from aligning
+  documentation lines to the first line of the documentation string so
+  that they look aesthetic in the source code.
 
-  DOCSTRING (string):
+  @strong{docstring} (string):
     A string that documents a procedure or any other object.
 
-  RETURN VALUE (string):
+  @strong{Return value} (string):
     A new string with the undesired indentation removed."
   (let* [(untabbed-docstring (tabs->spaces docstring))
          (min-indent (min-indent untabbed-docstring))

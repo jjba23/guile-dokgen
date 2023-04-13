@@ -55,17 +55,17 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (call command spec)
   "Call an appropriate procedure for the given command.
 
-  COMMAND (list of strings):
+  @strong{command} (list):
     A list of strings that represent a command-line instruction passed
     to the program (see Guile's command-line procedure).
 
-  SPEC (Configuration):
-    A <configuration> record as defined by the guile-config library,
-    which specifies the command-line interface of the program.
+  @strong{spec} (Configuration):
+    A @code{<configuration>} record as defined by the guile-config
+    library, which specifies the command-line interface of the program.
 
-  RESULT:
-    The COMMAND is followed. If the command is not recognized, display
-    help information."
+  @strong{Result}:
+    The @var{command} is followed. If the command is not recognized,
+    display help information."
   (let* [(options (getopt-config-auto command spec))
          (source (option-ref options '(source)))
          (destination (option-ref options '(destination)))]

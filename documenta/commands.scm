@@ -26,18 +26,18 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define* (extract source #:optional (destination DEFAULT_DOC_PATH))
   "Extract the documentation of the library defined in source.
 
-  SOURCE (string):
+  @strong{source} (string):
     An absolute or relative path to a single Guile Scheme module file
     or to a directory containing a collection of modules. For example:
     «projects/project-x/libx.scm», «projects/project-z/libz».
 
-  DESTINATION (string):
+  @strong{destination} (string):
     Optional path to a directory where the final Texinfo files will be
-    saved. If not provided, DEFAULT_DOC_PATH is used (see the module
-    @ref{documenta-commands}).
+    saved. If not provided, @var{DEFAULT_DOC_PATH} is used (see the
+    module @ref{documenta-commands}).
 
-  RESULT:
-    The API documentation is saved to the destination directory."
+  @strong{Result}:
+    The API documentation is saved to the @var{destination} directory."
   (let* [(canonical-lib-path
           (if (absolute-file-name? source)
               (canonicalize-path source)

@@ -19,13 +19,13 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (api-symbols interface)
   "Return the symbols provided by the interface.
 
-  INTERFACE (<interface>):
-    A module's interface record as returned by Guile's procedure
-    'resolve-interface'.
+  @strong{interface} (interface):
+    A module's @code{<interface>} record as returned by Guile's
+    procedure @code{resolve-interface}.
 
-  RETURN VALUE (list of symbols):
+  @strong{Return value} (list of symbols):
     Where every symbol identifies a public object exported by the
-    interface."
+    @var{interface}."
   (hash-map->list
    (lambda (key var) key)
    (record-field interface 'obarray)))
@@ -34,12 +34,12 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (get-file-paths directory)
   "Return a list of paths to Scheme files stored in the directory.
 
-  Scheme files are identified by their «.scm» extension.
+  Scheme files are identified by their @code{.scm} extension.
 
-  DIRECTORY (string):
+  @strong{directory} (string):
     Absolute path to a directory containing a Guile Scheme library.
 
-  RETURN VALUE (list of string):
+  @strong{Return value} (list of strings):
     A list where every element represents a path to a Scheme file."
   ;; Enter to any directory.
   (define (enter? name stat result) #true)
@@ -72,11 +72,11 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
   A kind can be one of the following: macros, procedures, record types,
   variables.
 
-  INTERFACE (<interface>):
-    An interface record as returned by Guile's procedure
-    'resolve-interface'.
+  @strong{interface} (interface):
+    An @code{<interface>} record as returned by Guile's procedure
+    @code{resolve-interface}.
 
-  RETURN VALUE (alist):
+  @strong{Return value} (alist):
     Association list where every entry corresponds to a kind of object
     and a list of its members. Only groups with members are returned."
   ;; Helpers.
@@ -132,16 +132,17 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 (define (file-path->module-name file-path lib-parent-path)
   "Convert the given Scheme file path into a module name.
 
-  FILE-PATH (string):
+  @strong{file-path} (string):
     Absolute path to Guile Scheme module file. For example:
-    «/home/user/project-x/libx/module-a.scm».
+    @samp{/home/user/project-x/libx/module-a.scm}.
 
-  LIB-PARENT-PATH (string):
-    Absolute path to the directory containing the library FILE-PATH
-    belongs to. For example: «/home/user/project-x/».
+  @strong{lib-parent-path} (string):
+    Absolute path to the directory containing the library
+    @var{file-path} belongs to. For example:
+    @samp{/home/user/project-x/}.
 
-  RETURN VALUE (symbol):
-    The name of the module. For example: (libx module-a)."
+  @strong{Return value} (symbol):
+    The name of the module. For example: @code{(libx module-a)}."
   (let* [(extensionless-file-path (string-drop-right file-path 4))
          (relative-file-path  ; Relative to lib-parent-path.
           (string-drop extensionless-file-path
@@ -157,18 +158,19 @@ Public domain 2023 Luis Felipe López Acevedo. All rights waived. |#
 
 
 (define (record-field record field)
-  "Get the value of FIELD from RECORD.
+  "Get the value of @var{field} from @var{record}.
 
-  RECORD (Guile record or SRFI 9 record):
+  @strong{record} (Guile record or SRFI 9 record):
     A record of any type.
 
-  FIELD (symbol):
+  @strong{field} (symbol):
     The name of the field.
 
-  RETURN VALUE (anything):
+  @strong{Return value} (anything):
     The value of the field.
 
-  If the FIELD does not exist, a no-such-field exception is raised."
+  If the FIELD does not exist, a @var{no-such-field} exception is
+  raised."
   (let* [(descriptor (record-type-descriptor record))
          (access-field (record-accessor descriptor field))]
 

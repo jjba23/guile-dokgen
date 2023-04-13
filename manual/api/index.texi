@@ -25,16 +25,15 @@ This module provides the following interface.
 @deffn Procedure call command spec
 Call an appropriate procedure for the given command.
 
-COMMAND (list of strings): A list of strings that represent a
-command-line instruction passed to the program (see Guile's command-line
-procedure).
+@strong{command} (list): A list of strings that represent a command-line
+instruction passed to the program (see Guile's command-line procedure).
 
-SPEC (Configuration): A <configuration> record as defined by the
-guile-config library, which specifies the command-line interface of the
-program.
+@strong{spec} (Configuration): A @code{<configuration>} record as
+defined by the guile-config library, which specifies the command-line
+interface of the program.
 
-RESULT: The COMMAND is followed.  If the command is not recognized,
-display help information.
+@strong{Result}: The @var{command} is followed.  If the command is not
+recognized, display help information.
 
 @end deffn
 
@@ -94,15 +93,17 @@ This module provides the following interface.
 @deffn Procedure extract source OPT: destination
 Extract the documentation of the library defined in source.
 
-SOURCE (string): An absolute or relative path to a single Guile Scheme
-module file or to a directory containing a collection of modules.  For
-example: «projects/project-x/libx.scm», «projects/project-z/libz».
+@strong{source} (string): An absolute or relative path to a single Guile
+Scheme module file or to a directory containing a collection of modules.
+For example: «projects/project-x/libx.scm», «projects/project-z/libz».
 
-DESTINATION (string): Optional path to a directory where the final
-Texinfo files will be saved.  If not provided, DEFAULT_DOC_PATH is used
-(see the module @ref{documenta-commands}).
+@strong{destination} (string): Optional path to a directory where the
+final Texinfo files will be saved.  If not provided,
+@var{DEFAULT_DOC_PATH} is used (see the module
+@ref{documenta-commands}).
 
-RESULT: The API documentation is saved to the destination directory.
+@strong{Result}: The API documentation is saved to the @var{destination}
+directory.
 
 @end deffn
 
@@ -142,38 +143,39 @@ This module provides the following interface.
 @deffn Procedure api-symbols interface
 Return the symbols provided by the interface.
 
-INTERFACE (<interface>): A module's interface record as returned by
-Guile's procedure 'resolve-interface'.
+@strong{interface} (interface): A module's @code{<interface>} record as
+returned by Guile's procedure @code{resolve-interface}.
 
-RETURN VALUE (list of symbols): Where every symbol identifies a public
-object exported by the interface.
+@strong{Return value} (list of symbols): Where every symbol identifies a
+public object exported by the @var{interface}.
 
 @end deffn
 
 @deffn Procedure file-path->module-name file-path lib-parent-path
 Convert the given Scheme file path into a module name.
 
-FILE-PATH (string): Absolute path to Guile Scheme module file.  For
-example: «/home/user/project-x/libx/module-a.scm».
+@strong{file-path} (string): Absolute path to Guile Scheme module file.
+For example: @samp{/home/user/project-x/libx/module-a.scm}.
 
-LIB-PARENT-PATH (string): Absolute path to the directory containing the
-library FILE-PATH belongs to.  For example: «/home/user/project-x/».
+@strong{lib-parent-path} (string): Absolute path to the directory
+containing the library @var{file-path} belongs to.  For example:
+@samp{/home/user/project-x/}.
 
-RETURN VALUE (symbol): The name of the module.  For example: (libx
-module-a).
+@strong{Return value} (symbol): The name of the module.  For example:
+@code{(libx module-a)}.
 
 @end deffn
 
 @deffn Procedure get-file-paths directory
 Return a list of paths to Scheme files stored in the directory.
 
-Scheme files are identified by their «.scm» extension.
+Scheme files are identified by their @code{.scm} extension.
 
-DIRECTORY (string): Absolute path to a directory containing a Guile
-Scheme library.
+@strong{directory} (string): Absolute path to a directory containing a
+Guile Scheme library.
 
-RETURN VALUE (list of string): A list where every element represents a
-path to a Scheme file.
+@strong{Return value} (list of strings): A list where every element
+represents a path to a Scheme file.
 
 @end deffn
 
@@ -183,25 +185,25 @@ Return the API objects grouped by kind.
 A kind can be one of the following: macros, procedures, record types,
 variables.
 
-INTERFACE (<interface>): An interface record as returned by Guile's
-procedure 'resolve-interface'.
+@strong{interface} (interface): An @code{<interface>} record as returned
+by Guile's procedure @code{resolve-interface}.
 
-RETURN VALUE (alist): Association list where every entry corresponds to
-a kind of object and a list of its members.  Only groups with members
-are returned.
+@strong{Return value} (alist): Association list where every entry
+corresponds to a kind of object and a list of its members.  Only groups
+with members are returned.
 
 @end deffn
 
 @deffn Procedure record-field record field
-Get the value of FIELD from RECORD.
+Get the value of @var{field} from @var{record}.
 
-RECORD (Guile record or SRFI 9 record): A record of any type.
+@strong{record} (Guile record or SRFI 9 record): A record of any type.
 
-FIELD (symbol): The name of the field.
+@strong{field} (symbol): The name of the field.
 
-RETURN VALUE (anything): The value of the field.
+@strong{Return value} (anything): The value of the field.
 
-If the FIELD does not exist, a no-such-field exception is raised.
+If the FIELD does not exist, a @var{no-such-field} exception is raised.
 
 @end deffn
 
@@ -226,54 +228,57 @@ This module provides the following interface.
 
 @subsection Procedures
 @deffn Procedure api-binding name value
-Return the API binding as an stexi definition.
+Return the API binding name-value as an stexi definition.
 
-NAME (symbol): The name of the binding.  For example, the name of a
-variable, the name of a procedure, etc.
+@strong{name} (symbol): The name of the binding.  For example, the name
+of a variable, the name of a procedure, etc.
 
-VALUE (anything): Any kind of object.  For example, a string, a list, a
-procedure, a record, etc.
+@strong{value} (anything): Any kind of object.  For example, a string, a
+list, a procedure, a record, etc.
 
-RETURN VALUE (stexi): An stexi definition corresponding to the type of
-VALUE.
+@strong{Return value} (stexi): An stexi definition appropriate for the
+type of @var{value}.
 
 @end deffn
 
 @deffn Procedure api-chapter sections
 Return a library API as an stexi chapter.
 
-SECTIONS (list of stexi): A list where every item is an stexi section.
+@strong{sections} (list of stexi): A list where every item is an stexi
+section.
 
-RETURN VALUE (stexi): A chapter documenting a library's API.
+@strong{Return value} (stexi): A chapter documenting a library's API.
 
 @end deffn
 
 @deffn Procedure module-description module-name
 Return the module's commentary or description as stexi.
 
-MODULE-NAME (list of symbols): For example: '(mylib amodule).
+@strong{module-name} (list of symbols): For example: @code{'(mylib
+amodule)}.
 
-RETURN VALUE (stexi): An stexi fragment.
+@strong{Return value} (stexi): An stexi fragment.
 
 @end deffn
 
 @deffn Procedure module-section module-name
 Return the module documentation as an stexi section.
 
-MODULE-NAME (list of symbols): For example: '(mylib amodule).
+@strong{module-name} (list of symbols): For example: @code{'(mylib
+amodule)}.
 
-RETURN VALUE (stexi): A section documenting a module's API.
+@strong{Return value} (stexi): A section documenting a module's API.
 
 @end deffn
 
 @deffn Procedure procedure-parameters proc
 Return the parameters of the given procedure as a string.
 
-PROC (procedure): A procedure object.
+@strong{proc} (procedure): A procedure object.
 
-RETURN VALUE (string): A string listing the names of all the required,
-optional, keyword, and rest of parameters of the procedure.  Default
-values for optional and keyword parameters are not included.
+@strong{Return value} (string): A string listing the names of all the
+required, optional, keyword, and rest of parameters of the procedure.
+Default values for optional and keyword parameters are not included.
 
 @end deffn
 
@@ -298,54 +303,57 @@ This module provides the following interface.
 
 @subsection Procedures
 @deffn Procedure min-indent string
-Return the shorter number of spaces used for indentation.
+Return the shorter number of spaces used for indentation in the given
+string.
 
 This procedure assumes indentation is space-based, not tab-based.
 
-STRING (string): The text to inspect.
+@strong{string} (string): The text to inspect.
 
-RETURN VALUE (integer): The number of spaces representing the shorter
-indentation.
+@strong{Return value} (integer): The number of spaces representing the
+shorter indentation.
 
 @end deffn
 
 @deffn Procedure tabs->spaces string OPT: tabsize
 Convert tabs to spaces in the given string.
 
-STRING (string): The original text.
+@strong{string} (string): The original text.
 
-TABSIZE (integer): Optional.  The number of spaces that will replace a
-single tab.  If not provided, DEFAULT_SPACE_INDENT_SIZE is used.
+@strong{tabsize} (integer): Optional.  The number of spaces that will
+replace a single tab.  If not provided, @var{DEFAULT_SPACE_INDENT_SIZE}
+is used.
 
-RETURN VALUE (string): A new string where all tabs are replaced by
-spaces.
+@strong{Return value} (string): A new string where all tabs are replaced
+by spaces.
 
 @end deffn
 
 @deffn Procedure trim string spaces
 Trim off the given number of spaces at the beginning of the string.
 
-STRING (string): The original text.
+@strong{string} (string): The original text.
 
-SPACES (integer): The number of spaces to trim off.
+@strong{spaces} (integer): The number of spaces to trim off.
 
-RETURN VALUE (string): A new string with the exact number of spaces
-removed, if they exist.  Otherwise, the original string is returned.
+@strong{Return value} (string): A new string with the exact number of
+spaces removed, if they exist.  Otherwise, the original string is
+returned.
 
 @end deffn
 
 @deffn Procedure unindent docstring
 Remove unwanted indentation from the given documentation string.
 
-'Unwanted' indentation is what results from aligning documentation lines
-to the first line of the documentation string so that they look
-aesthetic.
+'Unwanted' indentation is what results, for example, from aligning
+documentation lines to the first line of the documentation string so
+that they look aesthetic in the source code.
 
-DOCSTRING (string): A string that documents a procedure or any other
-object.
+@strong{docstring} (string): A string that documents a procedure or any
+other object.
 
-RETURN VALUE (string): A new string with the undesired indentation
-removed.
+@strong{Return value} (string): A new string with the undesired
+indentation removed.
 
 @end deffn
 
@@ -383,15 +391,16 @@ This module provides the following interface.
 
 @subsection Procedures
 @deffn Procedure save text path
-Write TEXT to the file in PATH.
+Write @var{text} to the file in @var{path}.
 
-TEXT (string): Arbitrary text.
+@strong{text} (string): Arbitrary text.
 
-PATH (string): Absolute or relative path to the file the text will be
-written to.
+@strong{path} (string): Absolute or relative path to the file the text
+will be written to.
 
-RESULT: If the file doesn't exist, it will be created and the text will
-be saved to it.  If the file exists, its contents will be overwritten.
+@strong{Result}: If the file doesn't exist, it will be created and the
+text will be saved to it.  If the file exists, its contents will be
+overwritten.
 
 @end deffn
 
