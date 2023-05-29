@@ -99,8 +99,9 @@ This module provides the following interface.
 @c %start of fragment
 
 @subsection Procedures
-@deffn Procedure extract source OPT: destination
-Extract the documentation of the library defined in source.
+@deffn Procedure api source OPT: destination
+Extract the API documentation of the Guile Scheme source package or
+module.
 
 @strong{source} (string): An absolute or relative path to a single Guile
 Scheme module file or to a directory containing a collection of modules.

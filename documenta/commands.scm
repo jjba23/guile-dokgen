@@ -17,7 +17,7 @@ sections for additional information. |#
   #:use-module (texinfo serialize)
   #:export (DEFAULT_DOC_PATH
 
-             extract))
+             api))
 
 
 ;;; CONSTANTS
@@ -28,8 +28,9 @@ sections for additional information. |#
 
 ;;; COMMANDS
 
-(define* (extract source #:optional (destination DEFAULT_DOC_PATH))
-  "Extract the documentation of the library defined in source.
+(define* (api source #:optional (destination DEFAULT_DOC_PATH))
+  "Extract the API documentation of the Guile Scheme source package or
+   module.
 
   @strong{source} (string):
     An absolute or relative path to a single Guile Scheme module file
@@ -65,7 +66,8 @@ sections for additional information. |#
                                        file-name-separator-string
                                        DEFAULT_API_FILE_INDEX))]
 
-    ;; Add the library to GUILE_LOAD_PATH so that it can be inspected.
+    ;; Add the source module(s) to GUILE_LOAD_PATH so that it can be
+    ;; inspected.
     (add-to-load-path lib-parent-path)
 
     ;; Save API documentation to the destination directory.
@@ -77,6 +79,6 @@ sections for additional information. |#
 
     (format
      #true
-     "API documentation of ~a library saved to ~a~%"
+     "API documentation of ~a saved to ~a~%"
      source
      destination)))

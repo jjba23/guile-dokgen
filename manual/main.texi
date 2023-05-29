@@ -21,9 +21,9 @@ to generate API documentation for
 You can find additional information in
 @url{https://codeberg.org/luis-felipe/guile-documenta, Guile Documentá's website}.
 
-Note that a copy of this documentation (in @code{info} format),
-should also be available locally in your device once you install the
-program. You can browse it with any info reader. For example:
+Note that a copy of this documentation should also be available locally
+in your device, in @code{info} format, once you install the program. You
+can browse it with any info reader. For example:
 
 @example
 $ info guile-documenta
@@ -32,6 +32,9 @@ $ info guile-documenta
 Guile Documentá is a
 @url{https://freedomdefined.org/Definition, Free Cultural Work}
 (@pxref{Copying Information}).
+
+(The word @emph{documentá} is an imperative form of the Spanish verb
+@emph{documentar}, which means @emph{to document}.)
 
 
 @menu
@@ -83,9 +86,9 @@ For example, let's suppose we have a project called @sc{Bogus X} and
 that we keep its source files in a folder as follows:
 
 @example
-bogus-x
-├── bogusx             ← Guile Scheme modules
-│   ├── module-a.scm
+bogus-x                ← Project directory
+├── bogusx             ← Guile Scheme "package"
+│   ├── module-a.scm   ← Guile Scheme module
 │   └── module-b.scm
 ├── doc                ← Project documentation in Texinfo format
 │   └── main.texi
@@ -94,20 +97,19 @@ bogus-x
 @end example
 
 
-The project already has some documentation written manually into the
-@file{main.texi} file, and we want to complement it with API
-documentation. We can generate the latter as follows:
+In the example, the project already has some documentation written by
+hand in @file{doc/main.texi}, and we want to complement it with API
+documentation. To do so, we generate it as follows:
 
 @example
 $ cd bogus-x
-$ documenta extract bogusx
+$ documenta api bogusx
 @end example
 
 
-The @ref{cli-extract, extract} subcommand will inspect all the modules
-in the @file{bogusx} "package" and build API reference documentation
-that will then be saved to the @file{doc/api} folder in Texinfo
-format:
+The @ref{cli-api, api} subcommand will inspect all the modules in the
+@file{bogusx} "package" and build API reference documentation that
+will then be saved in Texinfo format to the @file{doc/api} folder:
 
 @example
 bogus-x
@@ -121,7 +123,7 @@ bogus-x
 @end example
 
 
-Finally, you can integrate the API documentation into the
+Finally, we can integrate the API documentation into the
 @file{main.texi} documentation using Texinfo's @code{@@include}
 command. For example:
 
@@ -147,9 +149,10 @@ hand (sadly).
 @end quotation
 
 
-@anchor{cli-extract}
-@deffn Command extract source [destination]
-Extract the documentation of the library defined in the @var{source}
+@anchor{cli-api}
+@deffn Command api source [destination]
+Extract the @abbr{API, Application Programming Interface}
+documentation of the Guile Scheme modules defined in the @var{source}
 path.
 
 @defvr Argument source
@@ -179,6 +182,13 @@ is used (see the module @ref{documenta-commands}).
 @appendix Version History
 
 @table @dfn
+
+@item Version 0.2.0, June DD, 2023
+@itemize
+@item
+Rename @command{extract} command to @command{api} so that it is
+easier to separate API documentation and CLI documentation extraction.
+@end itemize
 
 @item Version 0.1.0, April 13, 2023
 @itemize

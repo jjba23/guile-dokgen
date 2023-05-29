@@ -48,8 +48,8 @@ information. |#
    (subcommands
     (list
      (configuration
-      (name 'extract)
-      (synopsis "Extract the documentation of the given library.")
+      (name 'api)
+      (synopsis "Extract the API documentation of the given Guile Scheme package or module.")
       (arguments (list source destination)))))))
 
 
@@ -77,7 +77,7 @@ information. |#
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "extract") (extract source destination))))
+          ((_ "api") (api source destination))))
 
       (lambda (. args)
         (begin (format #true "ERROR: Command not found: ~a~%~%" command)
