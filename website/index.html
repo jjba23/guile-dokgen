@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Guile Documentá</title>
+
+    <meta charset="UTF-8" />
+    <meta name="author" content="Luis Felipe López Acevedo" />
+    <meta name="description"
+          content="Generate API documentation for GNU Guile Scheme projects." />
+    <meta name="keywords"
+          content="GNU Guile, Scheme, API documentation extraction" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png"
+          href="https://luis-felipe.gitlab.io/media/branding/guile-documenta.png" />
+    <link rel="alternate" type="application/atom+xml" title="Guile Documentá (English)"
+          href="https://luis-felipe.gitlab.io/en/topics/gnu-guile/feed.atom" />
+  </head>
+
+  <body>
+    <section class="cover">
+      <h1>
+        <img class="block-image block-centered"
+             src="img/logo.svg"
+             alt="Guile Documentá version 0.2.0" />
+      </h1>
+
+      <p>
+        Generate <abbr title="Application Programming
+        Interface">API</abbr> documentation for
+        <a href="https://www.gnu.org/software/guile/"
+        target="_blank">GNU Guile</a> Scheme projects.
+      </p>
+
+
+      <ul class="button-group text-centered">
+        <li>
+          <a class="button-featured button-simple"
+             href="#installation">
+            <b>INSTALL</b>
+          </a>
+        </li>
+        <li>
+          <a class="button-featured button-simple"
+             href="manual/">
+            <b>MANUAL</b>
+          </a>
+        </li>
+        <li>
+          <a class="button-featured button-simple"
+             href="https://luis-felipe.gitlab.io/en/topics/gnu-guile/">
+            <b>BLOG</b>
+          </a>
+        </li>
+        <li>
+          <a class="button-featured button-simple"
+             href="#contact">
+            <b>CONTACT</b>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+
+
+    <div class="info-box">
+      <div class="info">
+        <h2>BASIC USAGE</h2>
+
+        <p>
+          Guile <span lang="es">Documentá</span> can extract the
+          <a href="https://www.gnu.org/software/texinfo/">Texinfo</a>
+          documentation of a single Guile Scheme module or all the
+          modules in a Guile "package". For example:
+        </p>
+
+        <div class="shell">
+          <div class="cmd">documenta api some-module.scm</div>
+          <div class="cmd">documenta api some-package</div>
+        </div>
+
+        <p>
+          The resulting documentation is saved to
+          <code>doc/api/index.texi</code> by default. Check out
+          <a href="manual/">Guile Documentá API documentation</a> for
+          an example of the structure of the generated documentation.
+        </p>
+
+
+
+        <h2 id="installation">INSTALLATION</h2>
+
+        <p>
+          Guile <span lang="es">Documentá</span> can be installed on any
+          GNU/Linux device using the
+          <a href="https://guix.gnu.org/">GNU Guix</a> package manager
+          as follows:
+        </p>
+
+        <div class="shell">
+          <div class="cmd">git clone https://codeberg.org/luis-felipe/guile-documenta.git</div>
+          <div class="cmd">cd guile-documenta</div>
+          <div class="cmd">guix install -L . guile guile-documenta</div>
+        </div>
+
+
+
+        <h2 id="contact">CONTACT</h2>
+
+        <p>
+          You can send any questions or feedback by email to
+          <a href="https://luis-felipe.gitlab.io/en/contact/">
+            the maintainer</a>.
+        </p>
+      </div>
+    </div>
+
+
+
+    <div class="footer">
+      <a href="https://luis-felipe.gitlab.io/">
+        <img src="img/author-stamp.svg"
+             alt="Brought to you by Luis Felipe" />
+      </a>
+
+      <p class="fineprint">This software is in the public domain. Get the
+        <a href="https://codeberg.org/luis-felipe/guile-documenta">source files</a>.
+      </p>
+    </div>
+  </body>
+</html>

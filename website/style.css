@@ -1,0 +1,165 @@
+@font-face {
+    font-family: "Pacifico";
+    src: url(fonts/Pacifico/Pacifico-Regular.ttf);
+}
+
+:root {
+    /* Colors */
+    --green: #71C837;
+
+    --accent: var(--green);
+    --background-color: #1A1A1A;
+    --text-color: white;
+}
+
+
+a:link,
+a:visited {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-style: none none dotted none;
+    border-width: thin;
+    text-decoration: none;
+}
+
+a:active,
+a:focus,
+a:hover {
+    border-style: none none solid none;
+}
+
+abbr {
+    cursor: help;
+}
+
+body {
+    color: var(--text-color);
+    font-family: Helvetica, sans-serif;
+    font-size: 130%;
+    margin: 0em;
+}
+
+.cover {
+    background-color: var(--background-color);
+    background-image: url(img/header-bg.svg);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    padding: 3em;
+    text-align: center;
+}
+
+html {
+    background-color: var(--background-color);
+    margin: 0em;
+}
+
+h1, h2 {
+    color: var(--accent);
+    font-weight: normal;
+}
+
+h2 {
+    font-family: "Pacifico", sans-serif;
+    margin-bottom: 1em;
+    margin-top: 3em;
+}
+
+.block-centered {
+    display: block;
+    margin: auto;
+}
+
+.block-image {
+    display: block;
+    max-width: 100%;
+}
+
+.button-group {
+    margin-top: 2em;
+}
+
+.button-group li {
+    display: inline-block;
+}
+
+.button-featured:link,
+.button-featured:visited {
+    border-radius: 5px;
+    border-style: solid;
+    border-width: thin;
+    display: inline-block;
+    font-size: 0.8em;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    width: 150px;
+}
+
+.button-simple:link,
+.button-simple:visited {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+.button-simple:active,
+.button-simple:focus,
+.button-simple:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.fineprint {
+    font-size: 0.7em;
+}
+
+.footer {
+    background-color: var(--background-color);
+    background-image: url(img/footer-bg.svg);
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    padding: 1em;
+    padding-top: 3em;
+    text-align: center;
+}
+
+.info-box {
+    background-image:
+        url(img/shadow-downwards-bg.svg),
+        url(img/shadow-upwards-bg.svg);
+    background-position: top, bottom;
+    background-repeat: repeat-x, repeat-x;
+}
+
+.info {
+    margin: auto;
+    max-width: 800px;
+    padding: 1em 1em 3em 1em;
+    text-align: left;
+}
+
+.shell {
+    background-color: #0F0F0F;
+    border-radius: 0.3em;
+    font-family: monospace;
+    font-size: 1.2em;
+    margin-top: 1.2em;
+    padding: 0.3em;
+}
+
+.cmd {
+    background-image: url("img/prompt.svg");
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    padding-left: 24px;
+}
+
+.usage-list {
+    text-align: left;
+}
+
+.usage-list > div {
+    margin: 1em 0em;
+}
