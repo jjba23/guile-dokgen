@@ -40,8 +40,8 @@ information. |#
    (name 'documenta)
    (synopsis "Generate API documentation.")
    (description
-    "This is the command-line interface of Guile Documentá, a piece of software to generate API documentation for libraries written in GNU Guile Scheme.")
-   (version "0.1.0")
+    "This is the command-line interface of Guile Documentá, a software to generate API documentation for GNU Guile Scheme projects.")
+   (version "0.2.0")
    (license public-domain)
    (author "Luis Felipe López Acevedo")
 
