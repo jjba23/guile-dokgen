@@ -183,11 +183,13 @@ is used (see the module @ref{documenta-commands}).
 
 @table @dfn
 
-@item Version 0.2.0, June DD, 2023
+@item Version 0.2.0, May 31, 2023
 @itemize
 @item
 Rename @command{extract} command to @command{api} so that it is
 easier to separate API documentation and CLI documentation extraction.
+@item
+Add project website.
 @end itemize
 
 @item Version 0.1.0, April 13, 2023
