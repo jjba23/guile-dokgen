@@ -52,6 +52,8 @@ Appendices
 * Version History::
   Versions released so far and summary of the changes introduced in each
   of them.
+* Copying Information::
+  About the dedication of Guile Documentá to the public domain.
 
 Indices
 
@@ -200,66 +202,6 @@ documentation of Guile Scheme libraries in Texinfo format.
 @end itemize
 @end table
 
-
-@node Development
-@appendix Development
-
-The development of this project happens in a private
-@abbr{PMS, Project Management System}, but the source files are
-publicly available in a
-@url{https://codeberg.org/luis-felipe/guile-documenta, git repository}.
-
-To start working on a new version of the software (say @samp{X.Y.Z}):
-
-@enumerate
-@item
-Add the new version to the PMS.
-
-@item
-Define goals for the new version.
-
-@item
-Report to the issue tracker the work to be done to achieve those
-goals.
-
-@item
-For each issue reported to the tracker:
-@enumerate
-@item
-Make the necessary changes to the source files.
-
-@item
-Test the changes.
-
-@item
-Document the changes.
-
-@item
-Mention the changes in the version history if they are important
-(@pxref{Version History}).
-@end enumerate
-
-@item
-Release version @samp{X.Y.Z}:
-@enumerate
-@item
-Update the release date of version @samp{X.Y.Z} in the version history
-of the documentation (@pxref{Version History}).
-
-@item
-Update online manuals (for all supported languages).
-
-@item
-Update the project website (if any).
-
-@item
-Tag the latest revision as version @samp{X.Y.Z}.
-
-@item
-Announce the release to the world.
-@end enumerate
-
-@end enumerate
 
 
 @node Copying Information
