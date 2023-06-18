@@ -52,6 +52,7 @@ pre {
     border-width: thin;
     font-family: monospace;
     margin: 1.2em auto;
+    overflow: auto;
     padding: 0.5em 1em;
 }
 
