@@ -75,16 +75,19 @@
           modules in a Guile "package". For example:
         </p>
 
-        <div class="shell">
-          <div class="cmd">documenta api some-module.scm</div>
-          <div class="cmd">documenta api some-package</div>
-        </div>
+        <pre>
+<span class="comment"># Save API documentation of "some-module" to doc/api/index.texi (default)</span>
+documenta api path/to/some-module.scm
+
+<span class="comment"># Save API documentation of "some-package" to doc/api/index.texi (default)</span>
+documenta api path/to/some-package
+
+<span class="comment"># Save API documentation of "mylib" to a specific directory</span>
+documenta api mylib /tmp/mylib-doc/api</pre>
 
         <p>
-          The resulting documentation is saved to
-          <code>doc/api/index.texi</code> by default. Check out
-          <a href="manual/">Guile Documentá API documentation</a> for
-          an example of the structure of the generated documentation.
+          Check out <a href="manual/">Guile Documentá API documentation</a>
+          for an example of the structure of the generated documentation.
         </p>
 
 
@@ -95,15 +98,26 @@
           Guile <span lang="es">Documentá</span> can be installed on any
           GNU/Linux device using the
           <a href="https://guix.gnu.org/">GNU Guix</a> package manager
-          as follows:
+          and <a href="https://codeberg.org/luis-felipe/guix-channel-x">luis-felipe-x</a>
+          (my personal <a href="https://guix.gnu.org/es/manual/devel/en/html_node/Channels.html">Guix channel</a>). For example, to try out the software without affecting your
+          personal environment:
         </p>
 
-        <div class="shell">
-          <div class="cmd">git clone https://codeberg.org/luis-felipe/guile-documenta.git</div>
-          <div class="cmd">cd guile-documenta</div>
-          <div class="cmd">guix install -L . guile guile-documenta</div>
-        </div>
+        <pre>
+<span class="comment"># Clone the channel to a temporary directory</span>
+cd /tmp
+git clone https://codeberg.org/luis-felipe/guix-channel-x luis-felipe-x
+<span class="comment"># Start a Guix shell providing guile-documenta</span>
+guix shell -L luis-felipe-x guile guile-documenta
+<span class="comment"># Now you can use the "documenta" program</span></pre>
 
+        <p>
+          Eventually, Guile <span lang="es">Documentá</span> will be
+          available from Guix's official channel and the installation
+          will be simply:
+        </p>
+
+        <pre>guix install guile guile-documenta</pre>
 
 
         <h2 id="contact">CONTACT</h2>
