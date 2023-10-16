@@ -185,6 +185,18 @@ is used (see the module @ref{documenta-commands}).
 
 @table @dfn
 
+@item Version 0.2.1, Oct 16, 2023
+@itemize
+@item
+Enable installing Guile Documentá from the package provided by my
+personal Guix Channel X. Two unit tests that pass in Guile Documentá's
+development environment (which uses Guix shell) were failing when
+building the package with Guix. Both tests were marked as expected
+fails to make the test suite pass regardless of the issues and be able
+to install the package successfully. This is a temporary fix until the
+origin of the issues is found.
+@end itemize
+
 @item Version 0.2.0, May 31, 2023
 @itemize
 @item
