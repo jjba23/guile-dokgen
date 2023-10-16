@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
-   sodipodi:docname="logotype.svg"
+   sodipodi:docname="logo.svg"
    inkscape:export-filename="design.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
@@ -32,7 +32,7 @@
      inkscape:showpageshadow="false"
      borderlayer="true"
      inkscape:zoom="1"
-     inkscape:cx="306"
+     inkscape:cx="270.5"
      inkscape:cy="163"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
@@ -50,7 +50,7 @@
      showguides="false" /><defs
      id="defs2"><color-profile
        xlink:href="file:///usr/share/color/icc/ghostscript/ps_cmyk.icc"
-       id="color-profile1030"
+       id="color-profile380"
        name="Artifex-PS-CMYK-Profile" /></defs><g
      inkscape:label="background"
      inkscape:groupmode="layer"
@@ -242,7 +242,7 @@
            id="tspan19787"
            x="882.50201"
            y="149.05093"
-           style="font-size:15.8855px;fill:#ffffff;fill-opacity:1;stroke-width:0.992838">version 0.2.0</tspan></text><g
+           style="font-size:15.8855px;fill:#ffffff;fill-opacity:1;stroke-width:0.992838">version 0.2.1</tspan></text><g
          id="g2731"
          transform="translate(750.54367,715.57616)"><path
            id="path2727"
