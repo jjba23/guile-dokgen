@@ -68,22 +68,32 @@
       <div class="info">
         <h2>BASIC USAGE</h2>
 
-        <p>
-          Guile <span lang="es">Documentá</span> can extract the
-          <a href="https://www.gnu.org/software/texinfo/">Texinfo</a>
-          documentation of a single Guile Scheme module or all the
-          modules in a Guile "package". For example:
-        </p>
+        <div class="usage-list">
+          <div>
+            ❶ Document your source code in <a target="_blank"
+            href="https://www.gnu.org/software/texinfo/">Texinfo</a>
+            format (see <a href="https://codeberg.org/luis-felipe/guile-documenta/src/branch/trunk/documenta/data.scm"><code>an example</code></a>).
+          </div>
 
-        <pre>
-<span class="comment"># Save API documentation of "some-module" to doc/api/index.texi (default)</span>
-documenta api path/to/some-module.scm
+          <div>
+            <p>❷ Extract the documentation with Guile <span lang="es">Documentá</span>.</p>
 
+            <pre>
 <span class="comment"># Save API documentation of "some-package" to doc/api/index.texi (default)</span>
-documenta api path/to/some-package
+documenta api path/to/some-package</pre>
+          </div>
 
-<span class="comment"># Save API documentation of "mylib" to a specific directory</span>
-documenta api mylib /tmp/mylib-doc/api</pre>
+          <div>
+            <p>
+              ❸ Include the generated API docs in the main Texinfo
+              file of your project documentation. For example:
+            </p>
+
+            <pre>@include api/index.texi</pre>
+          </div>
+
+          <div>❹ Build your project documentation (using <a target="_blank"href="https://www.gnu.org/software/texinfo/manual/texinfo/html_node/Generic-Translator-texi2any.html"><code>texi2any</code></a>, for example).</div>
+        </div>
 
         <p>
           Check out <a href="manual/">Guile Documentá API documentation</a>
