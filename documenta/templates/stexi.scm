@@ -43,17 +43,7 @@ of the Texinfo documentation of a given software project. |#
     (cond
      [(macro? value) (macro name value)]
      [(procedure? value) (procedure name value)]
-     [(record-type? value)
-      `(deftp
-         (% (category "Record type")
-            (name ,name-string)
-            (attributes))
-         (para "This record type has the following fields:")
-         (itemize
-          ,@(map
-             (lambda (field)
-               `(item (code ,(symbol->string field))))
-             (record-type-fields value))))]
+     [(record-type? value) (record-type name value)]
      [(record? value)
       (let* [(descriptor (record-type-descriptor value))
              (type-name (record-type-name descriptor))
@@ -253,3 +243,29 @@ of the Texinfo documentation of a given software project. |#
           (list "." (symbol->string rest-param))
           (list)))
      " ")))
+
+
+(define (record-type name value)
+  "Return the record type represented by name-value as an stexi
+  definition.
+
+  @strong{name} (symbol):
+    The name of the record type.
+
+  @strong{value} (record-type descriptor):
+    A representation of a record type.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@deftp} definition."
+  (let [(name-string (symbol->string name))]
+
+    `(deftp
+       (% (category "Record type")
+          (name ,name-string)
+          (attributes))
+       (para "This record type has the following fields:")
+       (itemize
+        ,@(map
+           (lambda (field)
+             `(item (code ,(symbol->string field))))
+           (record-type-fields value))))))
