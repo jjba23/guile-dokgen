@@ -41,11 +41,7 @@ of the Texinfo documentation of a given software project. |#
   (let [(name-string (symbol->string name))]
 
     (cond
-     [(macro? value)
-      `(defmac
-         (% (name ,name-string)
-            (arguments))                ; TODO: Render arguments.
-         (verbatim ,(format #f "~s" value)))]
+     [(macro? value) (macro name value)]
      [(procedure? value)
       `(deffn
          (% (category "Procedure")
@@ -180,6 +176,25 @@ of the Texinfo documentation of a given software project. |#
                (value (cdr object))]
            (api-binding key value)))
        objects)))
+
+
+(define (macro name value)
+  "Return the macro represented by name-value as an stexi definition.
+
+  @strong{name} (symbol):
+    The name of the macro (its keyword part).
+
+  @strong{value} (syntax transformer):
+    The other part of the macro, its syntax transformer.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@defmac} definition."
+  (let [(name-string (symbol->string name))]
+
+    `(defmac
+       (% (name ,name-string)
+          (arguments))                  ; TODO: Render arguments.
+       (verbatim ,(format #f "~s" value)))))
 
 
 (define (procedure-parameters proc)
