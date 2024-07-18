@@ -185,6 +185,14 @@ is used (see the module @ref{documenta-commands}).
 
 @table @dfn
 
+@item Version 0.Y.0, Month DD, 20YY
+@itemize
+@item
+Macros are now documented with name, arguments and documentation
+strings instead of simply copied verbatim to the exported
+documentation.
+@end itemize
+
 @item Version 0.2.1, Oct 16, 2023
 @itemize
 @item

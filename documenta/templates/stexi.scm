@@ -147,12 +147,22 @@ of the Texinfo documentation of a given software project. |#
 
   @strong{Return value} (stexi):
     An stexi @code{@@defmac} definition."
-  (let [(name-string (symbol->string name))]
+  (let [(name-string (symbol->string name))
+        (transformer (macro-transformer value))]
 
     `(defmac
        (% (name ,name-string)
-          (arguments))                  ; TODO: Render arguments.
-       (verbatim ,(format #f "~s" value)))))
+          (arguments ,(procedure-parameters transformer)))
+       ,@(cdr                           ; To remove *fragment* atom.
+          (texi-fragment->stexi
+           ;; NOTE: Append newline to avoid parsing error.
+           ;; The error occurs when parsing verbatim commands.
+           ;; See reproducer in test-templates.scm for more info.
+           (if (procedure-documentation transformer)
+               (string-append
+                (unindent (procedure-documentation transformer))
+                "\n")
+               "Undocumented macro."))))))
 
 
 (define (procedure name value)

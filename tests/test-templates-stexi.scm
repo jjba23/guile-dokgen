@@ -41,6 +41,21 @@
   @end verbatim"
   #true)
 
+(define-syntax add1
+  ;; Example of a documented macro.
+  (lambda (x)
+    "Add 1 to the given number."
+    (syntax-case x ()
+      ((_ exp)
+       (syntax (+ exp 1))))))
+
+(define-syntax sub1
+  ;; Example of an undocumented macro.
+  (lambda (x)
+    (syntax-case x ()
+      ((_ exp)
+       (syntax (- exp 1))))))
+
 (define-record-type <being>
   (make-being name binomial)
   being?
@@ -136,7 +151,24 @@
           (name "undocumented-procedure")
           (arguments ""))
        (para "Undocumented procedure."))
-    (stexi:api-binding 'undocumented-procedure undocumented-procedure)))
+    (stexi:api-binding 'undocumented-procedure undocumented-procedure))
+
+
+  (test-equal
+      "Render a documented macro."
+    '(defmac
+       (% (name "add1")
+          (arguments "x"))
+       (para "Add 1 to the given number."))
+    (stexi:api-binding 'add1 (module-ref (current-module) 'add1)))
+
+  (test-equal
+      "Render an undocumented macro."
+    '(defmac
+       (% (name "sub1")
+          (arguments "x"))
+       (para "Undocumented macro."))
+    (stexi:api-binding 'sub1 (module-ref (current-module) 'sub1))))
 
 
 
