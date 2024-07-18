@@ -44,21 +44,7 @@ of the Texinfo documentation of a given software project. |#
      [(macro? value) (macro name value)]
      [(procedure? value) (procedure name value)]
      [(record-type? value) (record-type name value)]
-     [(record? value)
-      (let* [(descriptor (record-type-descriptor value))
-             (type-name (record-type-name descriptor))
-             (record-fields (record-type-fields descriptor))]
-
-        `(defvar
-           (% (name ,name-string))
-           (para "This is a record of the type "
-                 (code ,(symbol->string type-name)) ", "
-                 "which has the following fields:")
-           (itemize
-            ,@(map
-               (lambda (field)
-                 `(item (code ,(symbol->string field))))
-               record-fields))))]
+     [(record? value) (record-variable name value)]
      [else
       `(defvr
          (% (category "Variable") (name ,name-string))
@@ -269,3 +255,31 @@ of the Texinfo documentation of a given software project. |#
            (lambda (field)
              `(item (code ,(symbol->string field))))
            (record-type-fields value))))))
+
+
+(define (record-variable name value)
+  "Return the variable represented by name-value as an stexi definition.
+
+  @strong{name} (symbol):
+    The name of the variable holding a record.
+
+  @strong{value} (record):
+    A record.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@defvar} definition."
+  (let* [(name-string (symbol->string name))
+         (descriptor (record-type-descriptor value))
+         (type-name (record-type-name descriptor))
+         (record-fields (record-type-fields descriptor))]
+
+    `(defvar
+       (% (name ,name-string))
+       (para "This is a record of the type "
+             (code ,(symbol->string type-name)) ", "
+             "which has the following fields:")
+       (itemize
+        ,@(map
+           (lambda (field)
+             `(item (code ,(symbol->string field))))
+           record-fields)))))
