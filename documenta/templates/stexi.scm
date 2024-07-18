@@ -42,21 +42,7 @@ of the Texinfo documentation of a given software project. |#
 
     (cond
      [(macro? value) (macro name value)]
-     [(procedure? value)
-      `(deffn
-         (% (category "Procedure")
-            (name ,name-string)
-            (arguments ,(procedure-parameters value)))
-         ,@(cdr                         ; To remove *fragment* atom.
-            (texi-fragment->stexi
-             ;; NOTE: Append newline to avoid parsing error.
-             ;; The error occurs when parsing verbatim commands.
-             ;; See reproducer in test-templates.scm for more info.
-             (if (procedure-documentation value)
-                 (string-append
-                  (unindent (procedure-documentation value))
-                  "\n")
-                 "Undocumented procedure."))))]
+     [(procedure? value) (procedure name value)]
      [(record-type? value)
       `(deftp
          (% (category "Record type")
@@ -195,6 +181,36 @@ of the Texinfo documentation of a given software project. |#
        (% (name ,name-string)
           (arguments))                  ; TODO: Render arguments.
        (verbatim ,(format #f "~s" value)))))
+
+
+(define (procedure name value)
+  "Return the procedure represented by name-value as an stexi
+  definition.
+
+  @strong{name} (symbol):
+    The name of the procedure.
+
+  @strong{value} (procedure):
+    The procedure.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@deffn} definition."
+  (let [(name-string (symbol->string name))]
+
+    `(deffn
+       (% (category "Procedure")
+          (name ,name-string)
+          (arguments ,(procedure-parameters value)))
+       ,@(cdr                           ; To remove *fragment* atom.
+          (texi-fragment->stexi
+           ;; NOTE: Append newline to avoid parsing error.
+           ;; The error occurs when parsing verbatim commands.
+           ;; See reproducer in test-templates.scm for more info.
+           (if (procedure-documentation value)
+               (string-append
+                (unindent (procedure-documentation value))
+                "\n")
+               "Undocumented procedure."))))))
 
 
 (define (procedure-parameters proc)
