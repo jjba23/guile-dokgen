@@ -38,17 +38,13 @@ of the Texinfo documentation of a given software project. |#
 
   @strong{Return value} (stexi):
     An stexi definition appropriate for the type of @var{value}."
-  (let [(name-string (symbol->string name))]
-
-    (cond
-     [(macro? value) (macro name value)]
-     [(procedure? value) (procedure name value)]
-     [(record-type? value) (record-type name value)]
-     [(record? value) (record-variable name value)]
-     [else
-      `(defvr
-         (% (category "Variable") (name ,name-string))
-         (verbatim ,(format #f "~s" value)))])))
+  (cond
+   [(macro? value) (macro name value)]
+   [(procedure? value) (procedure name value)]
+   [(record-type? value) (record-type name value)]
+   [(record? value) (record-variable name value)]
+   [else
+    (variable name value)]))
 
 
 (define (api-chapter sections)
@@ -283,3 +279,21 @@ of the Texinfo documentation of a given software project. |#
            (lambda (field)
              `(item (code ,(symbol->string field))))
            record-fields)))))
+
+
+(define (variable name value)
+  "Return the variable represented by name-value as an stexi definition.
+
+  @strong{name} (symbol):
+    The name of the variable.
+
+  @strong{value} (anything):
+    Any kind of object. For example, a string, a number, a list, etc.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@defvr} definition."
+  (let [(name-string (symbol->string name))]
+
+    `(defvr
+       (% (category "Variable") (name ,name-string))
+       (verbatim ,(format #f "~s" value)))))
