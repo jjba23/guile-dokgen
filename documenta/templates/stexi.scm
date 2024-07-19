@@ -100,7 +100,6 @@ of the Texinfo documentation of a given software project. |#
       (node (% (name ,node-name)))
       (section ,(format #f "~a" module-name))
       ,(module-description module-name)
-      (para "This module provides the following interface.")
 
       ,@(map
          (lambda (group)
