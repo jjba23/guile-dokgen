@@ -73,41 +73,56 @@
 
   (test-equal
       "Render a binding that holds a record type."
-    `(deftp
-       (% (category "Record type")
-          (name "<being>")
-          (attributes))
-       (para "This record type has the following fields:")
-       (itemize
-        (item (code "name"))
-        (item (code "binomial"))))
-    (stexi:api-binding '<being> <being>))
+    `(*fragment*
+      ;; FIXME: The anchor text becomes empty in stexi->texi process.
+      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+      ;; (anchor "somelib_amodule_<being>")
+      (deftp
+        (% (category "Record type")
+           (name "<being>")
+           (attributes))
+        (para "This record type has the following fields:")
+        (itemize
+         (item (code "name"))
+         (item (code "binomial")))))
+    (stexi:api-binding '<being> <being> '(somelib amodule)))
 
 
   (test-equal
       "Render a binding that holds a record."
-    `(defvar
-       (% (name "panda"))
-       (para "This is a record of the type " (code "<being>") ", "
-             "which has the following fields:")
-       (itemize
-        (item (code "name"))
-        (item (code "binomial"))))
+    `(*fragment*
+      ;; FIXME: The anchor text becomes empty in stexi->texi process.
+      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+      ;; (anchor "somelib_amodule_panda")
+      (defvar
+        (% (name "panda"))
+        (para "This is a record of the type " (code "<being>") ", "
+              "which has the following fields:")
+        (itemize
+         (item (code "name"))
+         (item (code "binomial")))))
     (stexi:api-binding
      'panda
-     (make-being "panda" "ailuropoda melanoleuca")))
+     (make-being "panda" "ailuropoda melanoleuca")
+     '(somelib amodule)))
 
 
   (let [(test-name "Render a parameterless procedure.")]
 
     (test-equal
         test-name
-      '(deffn
-         (% (category "Procedure")
-            (name "paramless-procedure")
-            (arguments ""))
-         (para "This thunk says hi to another thunk."))
-      (stexi:api-binding 'paramless-procedure paramless-procedure)))
+      '(*fragment*
+        ;; FIXME: The anchor text becomes empty in stexi->texi process.
+        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+        ;; (anchor "somelib_amodule_paramless-procedure")
+        (deffn
+          (% (category "Procedure")
+             (name "paramless-procedure")
+             (arguments ""))
+          (para "This thunk says hi to another thunk.")))
+      (stexi:api-binding 'paramless-procedure
+                         paramless-procedure
+                         '(somelib amodule))))
 
 
   (let [(test-name "Render a procedure containing @verbatim examples.")]
@@ -135,40 +150,64 @@
 
     (test-equal
         test-name
-      '(deffn
-         (% (category "Procedure")
-            (name "verbatim-in-docstring")
-            (arguments ""))
-         (para "This procedure contains verbatim examples.")
-         (verbatim "(+ 3 5)\n"))
-      (stexi:api-binding 'verbatim-in-docstring verbatim-in-docstring)))
+      '(*fragment*
+        ;; FIXME: The anchor text becomes empty in stexi->texi process.
+        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+        ;; (anchor "somelib_amodule_verbatim-in-docstring")
+        (deffn
+          (% (category "Procedure")
+             (name "verbatim-in-docstring")
+             (arguments ""))
+          (para "This procedure contains verbatim examples.")
+          (verbatim "(+ 3 5)\n")))
+      (stexi:api-binding 'verbatim-in-docstring
+                         verbatim-in-docstring
+                         '(somelib amodule))))
 
 
   (test-equal
       "Render undocumented procedure."
-    '(deffn
-       (% (category "Procedure")
-          (name "undocumented-procedure")
-          (arguments ""))
-       (para "Undocumented procedure."))
-    (stexi:api-binding 'undocumented-procedure undocumented-procedure))
+    '(*fragment*
+      ;; FIXME: The anchor text becomes empty in stexi->texi process.
+      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+      ;; (anchor "somelib_amodule_undocumented-procedure")
+      (deffn
+        (% (category "Procedure")
+           (name "undocumented-procedure")
+           (arguments ""))
+        (para "Undocumented procedure.")))
+    (stexi:api-binding 'undocumented-procedure
+                       undocumented-procedure
+                       '(somelib amodule)))
 
 
   (test-equal
       "Render a documented macro."
-    '(defmac
-       (% (name "add1")
-          (arguments "x"))
-       (para "Add 1 to the given number."))
-    (stexi:api-binding 'add1 (module-ref (current-module) 'add1)))
+    '(*fragment*
+      ;; FIXME: The anchor text becomes empty in stexi->texi process.
+      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+      ;; (anchor "somelib_amodule_add1")
+      (defmac
+        (% (name "add1")
+           (arguments "x"))
+        (para "Add 1 to the given number.")))
+    (stexi:api-binding 'add1
+                       (module-ref (current-module) 'add1)
+                       '(somelib amodule)))
 
   (test-equal
       "Render an undocumented macro."
-    '(defmac
-       (% (name "sub1")
-          (arguments "x"))
-       (para "Undocumented macro."))
-    (stexi:api-binding 'sub1 (module-ref (current-module) 'sub1))))
+    '(*fragment*
+      ;; FIXME: The anchor text becomes empty in stexi->texi process.
+      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+      ;; (anchor "somelib_amodule_sub1")
+      (defmac
+        (% (name "sub1")
+           (arguments "x"))
+        (para "Undocumented macro.")))
+    (stexi:api-binding 'sub1
+                       (module-ref (current-module) 'sub1)
+                       '(somelib amodule))))
 
 
 

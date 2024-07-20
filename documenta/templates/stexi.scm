@@ -25,8 +25,8 @@ of the Texinfo documentation of a given software project. |#
 
 ;;; TEMPLATES
 
-(define (api-binding name value)
-  "Return the API binding name-value as an stexi definition.
+(define (api-binding name value module-name)
+  "Return the API binding name-value as an stexi fragment.
 
   @strong{name} (symbol):
     The name of the binding. For example, the name of a variable,
@@ -36,15 +36,30 @@ of the Texinfo documentation of a given software project. |#
     Any kind of object. For example, a string, a list, a procedure, a
     record, etc.
 
+  @strong{module-name} (list of symbols):
+    The name of the module where the binding is defined. For example:
+    @code{'(mylib amodule)}.
+
   @strong{Return value} (stexi):
-    An stexi definition appropriate for the type of @var{value}."
-  (cond
-   [(macro? value) (macro name value)]
-   [(procedure? value) (procedure name value)]
-   [(record-type? value) (record-type name value)]
-   [(record? value) (record-variable name value)]
-   [else
-    (variable name value)]))
+    An stexi fragment that documents the @var{value}."
+  (let* [(name-string (symbol->string name))
+         (anchor-id (string-append
+                     (string-join (map symbol->string module-name) "_")
+                     "_"
+                     name-string))]
+
+      `(*fragment*
+        ;; FIXME: The anchor text becomes empty in stexi->texi process.
+        ;; Enable it once the issue is fixed upstream. See the report
+        ;; at https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209.
+        ;; (anchor ,anchor-id)
+        ,(cond
+          [(macro? value) (macro name value)]
+          [(procedure? value) (procedure name value)]
+          [(record-type? value) (record-type name value)]
+          [(record? value) (record-variable name value)]
+          [else
+           (variable name value)]))))
 
 
 (define (api-chapter sections)
@@ -93,8 +108,13 @@ of the Texinfo documentation of a given software project. |#
     A section documenting a module's API."
   (let* [(module-api (resolve-interface module-name))
          (grouped-api-objects (group-api-objects module-api))
+         #| NOTE: I'd like to use colons to build the parts of
+         node name of modules and the objects they define, but
+         Texinfo manual recommends to avoid them, along with period
+         and commas, because the Info reader gets confused with
+         those. |#
          (node-name (string-join (map symbol->string module-name)
-                                 "-"))]
+                                 "_"))]
 
     `(*fragment*
       (node (% (name ,node-name)))
@@ -105,11 +125,11 @@ of the Texinfo documentation of a given software project. |#
          (lambda (group)
            (let [(kind (first group))
                  (objects (cdr group))]
-             (module-subsection kind objects)))
+             (module-subsection kind objects module-name)))
          grouped-api-objects))))
 
 
-(define (module-subsection kind objects)
+(define (module-subsection kind objects module-name)
   "Return an stexi subsection listing API objects of the given
   @var{kind}.
 
@@ -122,6 +142,10 @@ of the Texinfo documentation of a given software project. |#
     is the symbol identifying an object, and every value is the object
     itself (a procedure, a macro, a record, etc.).
 
+  @strong{module-name} (list of symbols):
+    The name of the module where the @var{objects} are defined. For
+    example: @code{'(mylib amodule)}.
+
   @strong{Return value} (stexi):
     An stexi subsection."
   `(*fragment*
@@ -131,7 +155,7 @@ of the Texinfo documentation of a given software project. |#
        (lambda (object)
          (let [(key (first object))
                (value (cdr object))]
-           (api-binding key value)))
+           (api-binding key value module-name)))
        objects)))
 
 
