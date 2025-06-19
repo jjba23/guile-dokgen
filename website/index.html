@@ -107,28 +107,12 @@ documenta api path/to/some-package</pre>
         <p>
           Guile <span lang="es">Documentá</span> can be installed on any
           GNU/Linux device using the
-          <a href="https://guix.gnu.org/">GNU Guix</a> package manager
-          and <a href="https://codeberg.org/luis-felipe/guix-channel-x">luis-felipe-x</a>
-          (my personal <a href="https://guix.gnu.org/es/manual/devel/en/html_node/Channels.html">Guix channel</a>). For example, to try out the software without affecting your
-          personal environment:
+          <a href="https://guix.gnu.org/">GNU Guix</a> package manager.  If the package is unknown, you may need to <code>guix pull</code> then
+          try again.
         </p>
 
-        <pre>
-<span class="comment"># Clone the channel to a temporary directory</span>
-cd /tmp
-git clone https://codeberg.org/luis-felipe/guix-channel-x luis-felipe-x
-<span class="comment"># Start a Guix shell providing guile-documenta</span>
-guix shell -L luis-felipe-x guile guile-documenta
+        <pre>guix install guile-documenta
 <span class="comment"># Now you can use the "documenta" program</span></pre>
-
-        <p>
-          Eventually, Guile <span lang="es">Documentá</span> will be
-          available from Guix's official channel and the installation
-          will be simply:
-        </p>
-
-        <pre>guix install guile guile-documenta</pre>
-
 
         <h2 id="contact">CONTACT</h2>
 
