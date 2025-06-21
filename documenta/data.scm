@@ -75,8 +75,8 @@ formats. See, for example, the templates used to work with the
 (define (group-api-objects interface)
   "Return the API objects grouped by kind.
 
-  A kind can be one of the following: macros, procedures, record types,
-  variables.
+  A kind can be one of the following: macros, parameters, procedures,
+  record types, variables.
 
   @strong{interface} (interface):
     An @code{<interface>} record as returned by Guile's procedure
@@ -92,6 +92,10 @@ formats. See, for example, the templates used to work with the
                 (if (string=? group "macros")
                     (append (assq-ref catalog group) (list object))
                     (assq-ref catalog "macros")))
+          (cons "parameters"
+                (if (string=? group "parameters")
+                    (append (assq-ref catalog group) (list object))
+                    (assq-ref catalog "parameters")))
           (cons "procedures"
                 (if (string=? group "procedures")
                     (append (assq-ref catalog group) (list object))
@@ -115,6 +119,7 @@ formats. See, for example, the templates used to work with the
          (api-symbols (api-symbols interface))
          (api-symbols-sorted (sort api-symbols symbol-precedes?))
          (api-catalog (list (cons "macros" '())
+                            (cons "parameters" '())
                             (cons "procedures" '())
                             (cons "record types" '())
                             (cons "variables" '())))]
@@ -123,11 +128,15 @@ formats. See, for example, the templates used to work with the
      (fold
       (lambda (key result-so-far)
         (let* [(variable (hashq-ref api-table key))
+               ;; FIXME: Handle "Unbound variable" exceptions.
+               ;; These can occur when modules export symbols that
+               ;; are not bound to any defined values.
                (value (variable-ref variable))
                (object (cons key value))]
 
           (cond
            [(macro? value) (add object "macros" result-so-far)]
+           [(parameter? value) (add object "parameters" result-so-far)]
            [(procedure? value) (add object "procedures" result-so-far)]
            [(record-type? value) (add object "record types" result-so-far)]
            [else (add object "variables" result-so-far)])))

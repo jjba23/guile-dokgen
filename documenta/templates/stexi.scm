@@ -55,6 +55,11 @@ of the Texinfo documentation of a given software project. |#
         ;; (anchor ,anchor-id)
         ,(cond
           [(macro? value) (macro name value)]
+          ;; NOTE: Parameter detection must come before procedure
+          ;; detection because parameters are ambiguous objects: they
+          ;; are both parameters and procedures, and we want to render
+          ;; them as the former.
+          [(parameter? value) (parameter name value)]
           [(procedure? value) (procedure name value)]
           [(record-type? value) (record-type name value)]
           [(record? value) (record-variable name value)]
@@ -186,6 +191,25 @@ of the Texinfo documentation of a given software project. |#
                 (unindent (procedure-documentation transformer))
                 "\n")
                "Undocumented macro."))))))
+
+
+(define (parameter name value)
+  "Return the parameter represented by name-value as an stexi definition.
+
+  @strong{name} (symbol):
+    The name of the parameter.
+
+  @strong{value} (anything):
+    Any kind of object. For example, a string, a number, a list, etc.
+
+  @strong{Return value} (stexi):
+    An stexi @code{@@defvr} definition."
+  (let [(name-string (symbol->string name))]
+
+    `(defvr
+       (% (category "Parameter") (name ,name-string))
+       (para "Default value:")
+       (verbatim ,(format #f "~s" (value))))))
 
 
 (define (procedure name value)

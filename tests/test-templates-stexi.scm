@@ -207,7 +207,26 @@
         (para "Undocumented macro.")))
     (stexi:api-binding 'sub1
                        (module-ref (current-module) 'sub1)
-                       '(somelib amodule))))
+                       '(somelib amodule)))
+
+  (let [(test-name "Render a parameter.")
+        (parameter-name 'bogus-parameter)
+        (bogus-parameter (make-parameter "default value"))]
+
+    (test-equal
+        test-name
+      `(*fragment*
+        ;; FIXME: The anchor text becomes empty in stexi->texi process.
+        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
+        ;; (anchor "somelib_amodule_bogus-parameter")
+        (defvr
+          (% (category "Parameter")
+             (name ,(symbol->string parameter-name)))
+          (para "Default value:")
+          (verbatim ,(format #f "~s" (bogus-parameter)))))
+      (stexi:api-binding parameter-name
+                         bogus-parameter
+                         '(somelib amodule)))))
 
 
 
