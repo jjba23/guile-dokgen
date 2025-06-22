@@ -1,6 +1,7 @@
 #| Test suite for the module (documenta data). |#
 
 (use-modules (documenta data)
+             (documenta exceptions)
              (proba utils)
              (srfi srfi-1)
              (srfi srfi-64))
@@ -61,6 +62,11 @@
          (parameters (assoc-ref grouped-objects "parameters"))]
 
     (test-assert test-name
-      (every (lambda (object) (parameter? (cdr object))) parameters))))
+      (every (lambda (object) (parameter? (cdr object))) parameters)))
+
+  (test-error "Raise &residual-export-exception when unbound export is found."
+              &residual-export-exception
+              (group-api-objects
+               (resolve-interface '(tests boguslibs unbound)))))
 
 (test-end SUITE_NAME)

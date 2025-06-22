@@ -11,10 +11,13 @@ formats. See, for example, the templates used to work with the
 ;;; Code:
 
 (define-module (documenta data)
+  #:use-module (documenta exceptions)
+  #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:export (api-symbols
             file-path->module-name
             get-file-paths
@@ -128,10 +131,15 @@ formats. See, for example, the templates used to work with the
      (fold
       (lambda (key result-so-far)
         (let* [(variable (hashq-ref api-table key))
-               ;; FIXME: Handle "Unbound variable" exceptions.
-               ;; These can occur when modules export symbols that
-               ;; are not bound to any defined values.
-               (value (variable-ref variable))
+               (value
+                (guard
+                    (problem [(exception? problem)
+                              (raise-exception
+                               (make-residual-export-exception
+                                "Possible residual export found."
+                                key
+                                (record-field interface 'name)))])
+                    (variable-ref variable)))
                (object (cons key value))]
 
           (cond
