@@ -2,7 +2,7 @@
 
 #| This module defines procedures that are associated to every command
 provided by the command-line interface of the @command{documenta}
-program. See the @ref{CLI} and @xref{documenta-cli, (documenta cli)}
+program. See the @ref{CLI} and @xref{documenta_cli, (documenta cli)}
 sections for additional information. |#
 
 ;;; Code:
@@ -40,7 +40,7 @@ sections for additional information. |#
   @strong{destination} (string):
     Optional path to a directory where the final Texinfo files will be
     saved. If not provided, @var{DEFAULT_DOC_PATH} is used (see the
-    module @ref{documenta-commands}).
+    module @ref{documenta_commands}).
 
   @strong{Result}:
     The API documentation is saved to the @var{destination} directory."

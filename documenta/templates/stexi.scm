@@ -1,7 +1,7 @@
 ;;; Commentary:
 
 #| This module defines procedures that structure
-@ref{documenta-data, API data} as @emph{stexi} (symbolic texinfo),
+@ref{documenta_data, API data} as @emph{stexi} (symbolic texinfo),
 which can later be translated into Texinfo and integrated with the rest
 of the Texinfo documentation of a given software project. |#
 

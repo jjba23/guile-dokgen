@@ -166,7 +166,7 @@ containing Guile Scheme modules. For example:
 @defvr Argument destination
 Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
-is used (see the module @ref{documenta-commands}).
+is used (see the module @ref{documenta_commands}).
 @end defvr
 @end deffn
 @c END CHAPTER: CLI

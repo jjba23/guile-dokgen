@@ -6,7 +6,7 @@ the objects these modules export). This data is then passed to
 template procedures to render API documentation in different
 formats. See, for example, the templates used to work with the
 @url{https://www.gnu.org/software/texinfo/, Texinfo format}:
-@ref{documenta-templates-stexi, (documenta templates stexi)}. |#
+@ref{documenta_templates_stexi, (documenta templates stexi)}. |#
 
 ;;; Code:
 

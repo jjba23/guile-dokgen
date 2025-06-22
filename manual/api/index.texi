@@ -9,7 +9,7 @@ The following is the list of modules provided by this library.
 
 @c %start of fragment
 
-@node documenta-cli
+@node documenta_cli
 @section (documenta cli)
 
 @c %start of fragment
@@ -20,12 +20,13 @@ information.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
+
+@c %start of fragment
+
 @deffn Procedure call command spec
 Call an appropriate procedure for the given command.
 
@@ -44,9 +45,14 @@ recognized, display help information.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
 @subsection Variables
+
+@c %start of fragment
+
 @defvar spec
 This is a record of the type @code{<configuration>}, which has the
 following fields:
@@ -79,26 +85,29 @@ following fields:
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
-@node documenta-commands
+@node documenta_commands
 @section (documenta commands)
 
 @c %start of fragment
 
 This module defines procedures that are associated to every command
 provided by the command-line interface of the @command{documenta}
-program.  See the @ref{CLI} and @xref{documenta-cli,(documenta cli)}
+program.  See the @ref{CLI} and @xref{documenta_cli,(documenta cli)}
 sections for additional information.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
+
+@c %start of fragment
+
 @deffn Procedure api source OPT: destination
 Extract the API documentation of the Guile Scheme source package or
 module.
@@ -110,7 +119,7 @@ For example: «projects/project-x/libx.scm», «projects/project-z/libz».
 @strong{destination} (string): Optional path to a directory where the
 final Texinfo files will be saved.  If not provided,
 @var{DEFAULT_DOC_PATH} is used (see the module
-@ref{documenta-commands}).
+@ref{documenta_commands}).
 
 @strong{Result}: The API documentation is saved to the @var{destination}
 directory.
@@ -120,9 +129,14 @@ directory.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
 @subsection Variables
+
+@c %start of fragment
+
 @defvr Variable DEFAULT_DOC_PATH
 @verbatim 
 "doc/api"
@@ -135,9 +149,11 @@ directory.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
-@node documenta-data
+@node documenta_data
 @section (documenta data)
 
 @c %start of fragment
@@ -148,16 +164,17 @@ the objects these modules export).  This data is then passed to template
 procedures to render API documentation in different formats.  See, for
 example, the templates used to work with the
 @uref{https://www.gnu.org/software/texinfo/,Texinfo format}:
-@ref{documenta-templates-stexi,(documenta templates stexi)}.
+@ref{documenta_templates_stexi,(documenta templates stexi)}.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
+
+@c %start of fragment
+
 @deffn Procedure api-symbols interface
 Return the symbols provided by the interface.
 
@@ -168,6 +185,11 @@ returned by Guile's procedure @code{resolve-interface}.
 public object exported by the @var{interface}.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure file-path->module-name file-path lib-parent-path
 Convert the given Scheme file path into a module name.
@@ -184,6 +206,11 @@ containing the library @var{file-path} belongs to.  For example:
 
 @end deffn
 
+
+@c %end of fragment
+
+@c %start of fragment
+
 @deffn Procedure get-file-paths directory
 Return a list of paths to Scheme files stored in the directory.
 
@@ -197,11 +224,16 @@ represents a path to a Scheme file.
 
 @end deffn
 
+
+@c %end of fragment
+
+@c %start of fragment
+
 @deffn Procedure group-api-objects interface
 Return the API objects grouped by kind.
 
-A kind can be one of the following: macros, procedures, record types,
-variables.
+A kind can be one of the following: macros, parameters, procedures,
+record types, variables.
 
 @strong{interface} (interface): An @code{<interface>} record as returned
 by Guile's procedure @code{resolve-interface}.
@@ -211,6 +243,11 @@ corresponds to a kind of object and a list of its members.  Only groups
 with members are returned.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure record-field record field
 Get the value of @var{field} from @var{record}.
@@ -230,28 +267,121 @@ If the FIELD does not exist, a @var{no-such-field} exception is raised.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
-@node documenta-templates-stexi
+@node documenta_exceptions
+@section (documenta exceptions)
+
+@c %start of fragment
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Procedures
+
+@c %start of fragment
+
+@deffn Procedure make-residual-export-exception a b c
+Undocumented procedure.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deffn Procedure residual-export-exception-exported-residue obj
+Undocumented procedure.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deffn Procedure residual-export-exception-exporter-module obj
+Undocumented procedure.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deffn Procedure residual-export-exception-reason obj
+Undocumented procedure.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deffn Procedure residual-export-exception? obj
+Undocumented procedure.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Record Types
+
+@c %start of fragment
+
+@deftp {Record type} &residual-export-exception 
+This record type has the following fields:
+
+@itemize 
+@item
+@code{reason}@item
+@code{exported-residue}@item
+@code{exporter-module}@end itemize
+
+@end deftp
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
+@node documenta_templates_stexi
 @section (documenta templates stexi)
 
 @c %start of fragment
 
-This module defines procedures that structure @ref{documenta-data,API
+This module defines procedures that structure @ref{documenta_data,API
 data} as @emph{stexi} (symbolic texinfo), which can later be translated
 into Texinfo and integrated with the rest of the Texinfo documentation
 of a given software project.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
-@deffn Procedure api-binding name value
-Return the API binding name-value as an stexi definition.
+
+@c %start of fragment
+
+@deffn Procedure api-binding name value module-name
+Return the API binding name-value as an stexi fragment.
 
 @strong{name} (symbol): The name of the binding.  For example, the name
 of a variable, the name of a procedure, etc.
@@ -259,10 +389,18 @@ of a variable, the name of a procedure, etc.
 @strong{value} (anything): Any kind of object.  For example, a string, a
 list, a procedure, a record, etc.
 
-@strong{Return value} (stexi): An stexi definition appropriate for the
-type of @var{value}.
+@strong{module-name} (list of symbols): The name of the module where the
+binding is defined.  For example: @code{'(mylib amodule)}.
+
+@strong{Return value} (stexi): An stexi fragment that documents the
+@var{value}.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure api-chapter sections
 Return a library API as an stexi chapter.
@@ -274,6 +412,11 @@ section.
 
 @end deffn
 
+
+@c %end of fragment
+
+@c %start of fragment
+
 @deffn Procedure module-description module-name
 Return the module's commentary or description as stexi.
 
@@ -284,6 +427,11 @@ amodule)}.
 
 @end deffn
 
+
+@c %end of fragment
+
+@c %start of fragment
+
 @deffn Procedure module-section module-name
 Return the module documentation as an stexi section.
 
@@ -293,6 +441,11 @@ amodule)}.
 @strong{Return value} (stexi): A section documenting a module's API.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure procedure-parameters proc
 Return the parameters of the given procedure as a string.
@@ -310,9 +463,11 @@ Default values for optional and keyword parameters are not included.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
-@node documenta-utils
+@node documenta_utils
 @section (documenta utils)
 
 @c %start of fragment
@@ -322,12 +477,13 @@ else.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
+
+@c %start of fragment
+
 @deffn Procedure min-indent string
 Return the shorter number of spaces used for indentation in the given
 string.
@@ -340,6 +496,11 @@ This procedure assumes indentation is space-based, not tab-based.
 shorter indentation.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure tabs->spaces string OPT: tabsize
 Convert tabs to spaces in the given string.
@@ -355,6 +516,11 @@ by spaces.
 
 @end deffn
 
+
+@c %end of fragment
+
+@c %start of fragment
+
 @deffn Procedure trim string spaces
 Trim off the given number of spaces at the beginning of the string.
 
@@ -367,6 +533,11 @@ spaces removed, if they exist.  Otherwise, the original string is
 returned.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
 
 @deffn Procedure unindent docstring
 Remove unwanted indentation from the given documentation string.
@@ -386,9 +557,14 @@ indentation removed.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
 @subsection Variables
+
+@c %start of fragment
+
 @defvr Variable DEFAULT_SPACE_INDENT_SIZE
 @verbatim 
 2
@@ -401,9 +577,11 @@ indentation removed.
 
 @c %end of fragment
 
+@c %end of fragment
+
 @c %start of fragment
 
-@node documenta-writer
+@node documenta_writer
 @section (documenta writer)
 
 @c %start of fragment
@@ -412,12 +590,13 @@ Procedures for writing data to disk.
 
 
 @c %end of fragment
-This module provides the following interface.
-
 
 @c %start of fragment
 
 @subsection Procedures
+
+@c %start of fragment
+
 @deffn Procedure save text path
 Write @var{text} to the file in @var{path}.
 
@@ -432,6 +611,8 @@ overwritten.
 
 @end deffn
 
+
+@c %end of fragment
 
 @c %end of fragment
 
