@@ -19,7 +19,7 @@ This software is a command-line program and accompanying library
 to generate API documentation for
 @url{https://www.gnu.org/software/guile/, GNU Guile} Scheme projects.
 You can find additional information in
-@url{https://codeberg.org/luis-felipe/guile-documenta, Guile Documentá's website}.
+@url{https://luis-felipe.gitlab.io/guile-documenta/, Guile Documentá's website}.
 
 Note that a copy of this documentation should also be available locally
 in your device, in @code{info} format, once you install the program. You
@@ -185,12 +185,16 @@ is used (see the module @ref{documenta_commands}).
 
 @table @dfn
 
-@item Version 0.Y.0, Month DD, 20YY
+@item Version 0.3.0, June 22, 2025
 @itemize
 @item
 Macros are now documented with name, arguments and documentation
 strings instead of simply copied verbatim to the exported
 documentation.
+@item
+Added support to document parameter objects. Module documentation
+sections now include a "Parameters" subsection if they export
+parameters. The parameters are also listed in the "Variable Index".
 @end itemize
 
 @item Version 0.2.1, Oct 16, 2023
