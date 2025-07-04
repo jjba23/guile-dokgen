@@ -26,10 +26,10 @@ information. |#
             (test file-exists?)))
 
 (define destination
-  (argument (name 'destination)
-            (synopsis "Absolute or relative path to a directory where the final documentation will be saved.")
-            (example "/home/user/project/doc/api")
-            (default DEFAULT_DOC_PATH)))
+  (switch (name 'destination)
+          (synopsis "Absolute or relative path to a directory where the final documentation will be saved.")
+          (example "/home/user/project/doc/api")
+          (default DEFAULT_DOC_PATH)))
 
 
 
@@ -50,7 +50,8 @@ information. |#
      (configuration
       (name 'api)
       (synopsis "Extract the API documentation of the given Guile Scheme package or module.")
-      (arguments (list source destination)))))))
+      (arguments (list source))
+      (keywords (list destination)))))))
 
 
 
@@ -72,7 +73,7 @@ information. |#
     display help information."
   (let* [(options (getopt-config-auto command spec))
          (source (option-ref options '(source)))
-         (destination (option-ref options '(destination)))]
+         (destination (option-ref options 'destination))]
 
     (catch 'match-error
       (lambda ()

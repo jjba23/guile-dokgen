@@ -152,23 +152,29 @@ hand (sadly).
 
 
 @anchor{cli-api}
-@deffn Command api source [destination]
-Extract the @abbr{API, Application Programming Interface}
-documentation of the Guile Scheme modules defined in the @var{source}
-path.
+@section @code{api} command
 
-@defvr Argument source
+The @code{api} command extracts the @abbr{API, Application Programming
+Interface} documentation of the Guile Scheme modules defined in a given
+@var{source} path.
+
+Interface:
+
+@verbatim
+documenta api source [--destination]
+@end verbatim
+
+@defblock
+@defline Argument source
 A path to a Guile Scheme module file or to a directory
 containing Guile Scheme modules. For example:
 @code{"project-x/libx.scm"}, @code{"project-z/libz"}.
-@end defvr
 
-@defvr Argument destination
+@defline {Keyword argument} --destination or -d
 Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
 is used (see the module @ref{documenta_commands}).
-@end defvr
-@end deffn
+@end defblock
 @c END CHAPTER: CLI
 
 
@@ -184,6 +190,14 @@ is used (see the module @ref{documenta_commands}).
 @appendix Version History
 
 @table @dfn
+
+@item Version 0.4.0, Month DD, 2025
+@itemize
+@item
+@code{api} command: The @code{destination} argument, which was a
+positional argument, became a keyword argument indicated by
+@code{--destination}, or its shorthand @code{-d}.
+@end itemize
 
 @item Version 0.3.0, June 22, 2025
 @itemize
