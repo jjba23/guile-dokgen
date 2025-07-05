@@ -13,17 +13,22 @@ information. |#
   #:use-module (documenta commands)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:export (call
             spec))
 
 
 ;;; ARGUMENTS AND FLAGS
 
-(define source
-  (argument (name 'source)
-            (synopsis "Absolute or relative path to a library (directory or file).")
-            (example "/home/user/project-z/libz")
-            (test file-exists?)))
+(define sources
+  (argument (name 'sources)
+            (synopsis "Absolute or relative paths to Guile Scheme modules that compose the code whose API documentation will be extracted.")
+            (example "libz or \"libz.scm libz\"")
+            (handler (lambda (sources)
+                       ;; Convert string of space-separated sources to
+                       ;; to list of sources.
+                       (string-split sources #\space)))
+            (test (lambda (sources) (every file-exists? sources)))))
 
 (define destination
   (switch (name 'destination)
@@ -50,7 +55,7 @@ information. |#
      (configuration
       (name 'api)
       (synopsis "Extract the API documentation of the given Guile Scheme package or module.")
-      (arguments (list source))
+      (arguments (list sources))
       (keywords (list destination)))))))
 
 
@@ -72,13 +77,13 @@ information. |#
     The @var{command} is followed. If the command is not recognized,
     display help information."
   (let* [(options (getopt-config-auto command spec))
-         (source (option-ref options '(source)))
+         (sources (option-ref options '(sources)))
          (destination (option-ref options 'destination))]
 
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "api") (api source destination))))
+          ((_ "api") (api sources destination))))
 
       (lambda (. args)
         (begin (format #true "ERROR: Command not found: ~a~%~%" command)

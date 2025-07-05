@@ -110,7 +110,7 @@ $ documenta api bogusx
 
 
 The @ref{cli-api, api} subcommand will inspect all the modules in the
-@file{bogusx} "package" and build API reference documentation that
+@file{bogusx} directory and build API reference documentation that
 will then be saved in Texinfo format to the @file{doc/api} folder:
 
 @example
@@ -122,6 +122,16 @@ bogus-x
 │   └── main.texi
 ├── tests
 └── README.org
+@end example
+
+
+For more complex projects, you can pass a quoted list of the module
+files and directories that compose the whole API of the project. For
+example:
+
+@example
+$ cd another-project
+$ documenta api "mylib.scm mylib"
 @end example
 
 
@@ -154,21 +164,47 @@ hand (sadly).
 @anchor{cli-api}
 @section @code{api} command
 
-The @code{api} command extracts the @abbr{API, Application Programming
-Interface} documentation of the Guile Scheme modules defined in a given
-@var{source} path.
+The @code{api} command extracts @abbr{API, Application Programming
+Interface} documentation from one or more Guile Scheme modules.
 
-Interface:
+@subsection Examples
+
+@example
+# Extract API documentation from one Scheme file:
+documenta api mylib.scm
+
+# Extract API documentation from one Scheme directory (recursively):
+documenta api mylib
+
+# Extract API documentation from both a Scheme file and directory:
+documenta api "mylib.scm mylib"
+@end example
+
+@quotation Note
+Having to quote the list of sources in the last example is a limitation
+that is expected to be removed in the future. So it could simply become:
+
+@example
+documenta api mylib.scm mylib etc
+@end example
+@end quotation
+
+@example
+# Save API documentation to a specific directory:
+documenta api mylib --destination mydoc/api
+@end example
+
+@subsection Interface specification
 
 @verbatim
-documenta api source [--destination]
+documenta api sources [--destination]
 @end verbatim
 
 @defblock
-@defline Argument source
-A path to a Guile Scheme module file or to a directory
-containing Guile Scheme modules. For example:
-@code{"project-x/libx.scm"}, @code{"project-z/libz"}.
+@defline Argument sources
+Absolute or relative paths to Guile Scheme modules that compose the
+code whose API documentation will be extracted. These paths can lead
+to both Scheme files or Scheme directories.
 
 @defline {Keyword argument} --destination or -d
 Optional path to a directory where the final
@@ -194,9 +230,20 @@ is used (see the module @ref{documenta_commands}).
 @item Version 0.4.0, Month DD, 2025
 @itemize
 @item
+@code{api} command: The @code{source} argument is now called
+@code{sources} and accepts one or more paths to Guile Scheme
+modules or Guile Scheme directories. For example:
+
+@example
+$ documenta api libx.scm
+$ documenta api liby
+$ documenta api "libz.scm libz"
+@end example
+
+@item
 @code{api} command: The @code{destination} argument, which was a
-positional argument, became a keyword argument indicated by
-@code{--destination}, or its shorthand @code{-d}.
+positional argument, became a keyword argument called
+@code{--destination}, and abbreviated as @code{-d}.
 @end itemize
 
 @item Version 0.3.0, June 22, 2025

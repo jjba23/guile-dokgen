@@ -108,13 +108,20 @@ sections for additional information.
 
 @c %start of fragment
 
-@deffn Procedure api source OPT: destination
-Extract the API documentation of the Guile Scheme source package or
-module.
+@deffn Procedure api sources OPT: destination
+Extract the API documentation of the given set of Guile Scheme modules.
 
-@strong{source} (string): An absolute or relative path to a single Guile
-Scheme module file or to a directory containing a collection of modules.
-For example: «projects/project-x/libx.scm», «projects/project-z/libz».
+@strong{sources} (list of strings): Absolute or relative paths to Guile
+Scheme modules that compose the code whose API documentation will be
+extracted.  These paths can lead to both Scheme files or Scheme
+directories.  For example:
+
+@example 
+(list «myproject/liby.scm»
+      «myproject/liby»
+      «myproject/libz.scm»
+      «myproject/libz»)
+@end example
 
 @strong{destination} (string): Optional path to a directory where the
 final Texinfo files will be saved.  If not provided,

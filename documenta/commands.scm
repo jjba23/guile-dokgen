@@ -14,6 +14,7 @@ sections for additional information. |#
   #:use-module (documenta writer)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
+  #:use-module (srfi srfi-1)
   #:use-module (texinfo serialize)
   #:export (DEFAULT_DOC_PATH
 
@@ -28,14 +29,21 @@ sections for additional information. |#
 
 ;;; COMMANDS
 
-(define* (api source #:optional (destination DEFAULT_DOC_PATH))
-  "Extract the API documentation of the Guile Scheme source package or
-   module.
+(define* (api sources #:optional (destination DEFAULT_DOC_PATH))
+  "Extract the API documentation of the given set of Guile Scheme
+   modules.
 
-  @strong{source} (string):
-    An absolute or relative path to a single Guile Scheme module file
-    or to a directory containing a collection of modules. For example:
-    «projects/project-x/libx.scm», «projects/project-z/libz».
+  @strong{sources} (list of strings):
+    Absolute or relative paths to Guile Scheme modules that compose
+    the code whose API documentation will be extracted. These paths
+    can lead to both Scheme files or Scheme directories. For example:
+
+  @example
+  (list «myproject/liby.scm»
+        «myproject/liby»
+        «myproject/libz.scm»
+        «myproject/libz»)
+  @end example
 
   @strong{destination} (string):
     Optional path to a directory where the final Texinfo files will be
@@ -44,31 +52,42 @@ sections for additional information. |#
 
   @strong{Result}:
     The API documentation is saved to the @var{destination} directory."
-  (let* [(canonical-lib-path
-          (if (absolute-file-name? source)
-              (canonicalize-path source)
-              (canonicalize-path
-               (string-append (getcwd)
-                              file-name-separator-string
-                              source))))
-         (lib-path-type (stat:type (stat canonical-lib-path)))  ; File, dir?
-         (lib-parent-path (dirname canonical-lib-path))
-         (file-paths            ; Files to extract documentation from.
-          (if (equal? lib-path-type 'directory)
-              (data:get-file-paths canonical-lib-path)
-              (list canonical-lib-path)))
-         (module-names (map
-                        (lambda (file-path)
-                          (data:file-path->module-name file-path
-                                                       lib-parent-path))
-                        (sort file-paths string<?)))
+  (let* [(canonical-source-paths
+          ;; Cleaned, absolute paths to the code sources.
+          (map
+           (lambda (source)
+             (if (absolute-file-name? source)
+                 (canonicalize-path source)
+                 (canonicalize-path
+                  (string-append (getcwd)
+                                 file-name-separator-string
+                                 source))))
+           sources))
+         (scheme-file-paths
+          (fold
+           (lambda (source-path result-so-far)
+             (let [(path-type           ; file, directory
+                    (stat:type (stat source-path)))]
+
+               (if (equal? path-type 'directory)
+                   (append result-so-far (data:get-file-paths source-path))
+                   (cons source-path result-so-far))))
+           '()
+           canonical-source-paths))
+         (sources-parent-path (dirname (first canonical-source-paths)))
+         (module-names
+          (map
+           (lambda (file-path)
+             (data:file-path->module-name file-path
+                                          sources-parent-path))
+           (sort scheme-file-paths string<?)))
          (api-file-path (string-append destination
                                        file-name-separator-string
                                        DEFAULT_API_FILE_INDEX))]
 
-    ;; Add the source module(s) to GUILE_LOAD_PATH so that it can be
-    ;; inspected.
-    (add-to-load-path lib-parent-path)
+    ;; Add the directory containing the source modules to
+    ;; GUILE_LOAD_PATH so that they can be inspected.
+    (add-to-load-path sources-parent-path)
 
     ;; Save API documentation to the destination directory.
     (save
@@ -77,8 +96,4 @@ sections for additional information. |#
        (map stexi:module-section module-names)))
      api-file-path)
 
-    (format
-     #true
-     "API documentation of ~a saved to ~a~%"
-     source
-     destination)))
+    (format #true "API documentation saved to ~a~%" destination)))
