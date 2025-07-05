@@ -46,7 +46,7 @@ information. |#
    (synopsis "Generate API documentation.")
    (description
     "This is the command-line interface of Guile Documentá, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.3.0")
+   (version "0.4.0")
    (license public-domain)
    (author "Luis Felipe López Acevedo")
 

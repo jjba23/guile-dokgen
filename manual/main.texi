@@ -226,8 +226,7 @@ is used (see the module @ref{documenta_commands}).
 @appendix Version History
 
 @table @dfn
-
-@item Version 0.4.0, Month DD, 2025
+@item Version 0.4.0, July 05, 2025
 @itemize
 @item
 @code{api} command: The @code{source} argument is now called
