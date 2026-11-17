@@ -8,6 +8,17 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+* 0.6.1 — 2026-11-17
+
+** Changed
+
+- Rebranded: a new icon, wordmark and project page replace the original
+  author's artwork, so the whole tree is MIT and nothing carries another
+  license.  ~designs/website.svg~ and the old images are gone.
+- The manifest names its packages instead of importing their modules, which
+  fixed the CI gates failing on an unbound ~guile-proba~, and ~maak check~ now
+  runs its whole script.
+
 * 0.6.0 — 2026-11-17
 
 ** Changed

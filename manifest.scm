@@ -15,13 +15,13 @@
 ;; from the checkout, because the checkout under test is the one being
 ;; developed.
 
-(use-modules (gnu packages guile)
-             (gnu packages guile-xyz)
-             (gnu packages texinfo))
+(use-modules (gnu packages))
 
-(packages->manifest
- (list guile-3.0
-       guile-config
-       guile-lib
-       guile-proba
-       texinfo))
+;; Named rather than imported: a name resolves in whichever module of the
+;; pinned Guix defines it, so the manifest does not have to know which one.
+(specifications->manifest
+ (list "guile"
+       "guile-config"
+       "guile-lib"
+       "guile-proba"
+       "texinfo"))

@@ -128,8 +128,10 @@ exit $status"))
 Each file is compiled on its own, which is what makes one broken file name
 itself rather than a pile of them."
   (run-script
-   (~ "set -eu\nexport GUILE_LOAD_PATH='./src:.:$GUILE_LOAD_PATH'\nfind src tests etc -name '*.scm' -print0 "
-      "| xargs -0 -n 1 sh -c 'guild compile -o \"$(mktemp)\" \"$1\"' sh")))
+   (string-append
+    "set -eu\n"
+    "find src tests etc -name '*.scm' -print0 "
+    "| xargs -0 -n 1 sh -c 'guild compile -L ./src -L . -o \"$(mktemp)\" \"$1\"' sh")))
 
 (define (docs)
   "Regenerate the API reference, manual/api/index.texi, from the sources.

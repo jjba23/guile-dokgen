@@ -51,7 +51,7 @@ information. |#
    (synopsis "Generate API documentation.")
    (description
     "This is the command-line interface of Guile Dokgen, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.6.0")
+   (version "0.6.1")
    (license expat)
    (author "Josep Bigorra")
 
