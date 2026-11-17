@@ -14,9 +14,8 @@ The following is the list of modules provided by this library.
 
 @c %start of fragment
 
-This module defines the command-line interface of the
-@command{dokgen} program.  See the @ref{CLI} section for additional
-information.
+This module defines the command-line interface of the @command{dokgen}
+program.  See the @ref{CLI} section for additional information.
 
 
 @c %end of fragment
@@ -95,9 +94,9 @@ following fields:
 @c %start of fragment
 
 This module defines procedures that are associated to every command
-provided by the command-line interface of the @command{dokgen}
-program.  See the @ref{CLI} and @xref{dokgen_cli,(dokgen cli)}
-sections for additional information.
+provided by the command-line interface of the @command{dokgen} program.
+See the @ref{CLI} and @xref{dokgen_cli,(dokgen cli)} sections for
+additional information.
 
 
 @c %end of fragment
@@ -125,8 +124,7 @@ directories.  For example:
 
 @strong{destination} (string): Optional path to a directory where the
 final Texinfo files will be saved.  If not provided,
-@var{DEFAULT_DOC_PATH} is used (see the module
-@ref{dokgen_commands}).
+@var{DEFAULT_DOC_PATH} is used (see the module @ref{dokgen_commands}).
 
 @strong{Result}: The API documentation is saved to the @var{destination}
 directory.
@@ -373,10 +371,10 @@ This record type has the following fields:
 
 @c %start of fragment
 
-This module defines procedures that structure @ref{dokgen_data,API
-data} as @emph{stexi} (symbolic texinfo), which can later be translated
-into Texinfo and integrated with the rest of the Texinfo documentation
-of a given software project.
+This module defines procedures that structure @ref{dokgen_data,API data}
+as @emph{stexi} (symbolic texinfo), which can later be translated into
+Texinfo and integrated with the rest of the Texinfo documentation of a
+given software project.
 
 
 @c %end of fragment
