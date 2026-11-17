@@ -1,14 +1,15 @@
 \input texinfo
-@setfilename guile-documenta
+@setfilename guile-dokgen
 
-@c guile-documenta --- the manual
+@c guile-dokgen --- the manual
 @c
 @c SPDX-License-Identifier: MIT
 @c Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
 
 @c HEADER
-@settitle Guile Documentá
+@set VERSION 0.6.0
+@settitle Guile Dokgen
 @documentlanguage en
 @documentencoding UTF-8
 @afourpaper
@@ -20,27 +21,25 @@
 @node Top
 @top Overview
 
+This is the manual of Guile Dokgen version @value{VERSION}.
+
 This software is a command-line program and accompanying library
 to generate API documentation for
 @url{https://www.gnu.org/software/guile/, GNU Guile} Scheme projects.
 You can find additional information in
-@url{https://github.com/jjba23/guile-documenta, Guile Documentá's repository}.
+@url{https://github.com/jjba23/guile-dokgen, Guile Dokgen's repository}.
 
 Note that a copy of this documentation should also be available locally
 in your device, in @code{info} format, once you install the program. You
 can browse it with any info reader. For example:
 
 @example
-$ info guile-documenta
+$ info guile-dokgen
 @end example
 
-Guile Documentá is free software under the MIT license
-(@pxref{Copying Information}). It is a hard fork of the original
-program by Luis Felipe López Acevedo.
-
-(The word @emph{documentá} is an imperative form of the Spanish verb
-@emph{documentar}, which means @emph{to document}.)
-
+Guile Dokgen is free software under the MIT license
+(@pxref{Copying Information}). It is a hard fork of Guile Documentá,
+the original program by Luis Felipe López Acevedo.
 
 @menu
 Chapters
@@ -84,7 +83,7 @@ Indices
 @node Usage
 @chapter Usage
 
-Guile Documentá comes with a program called @command{documenta}, which
+Guile Dokgen comes with a program called @command{dokgen}, which
 you can use to generate API documentation for your Guile Scheme project.
 The resulting documentation will be written in
 @url{https://www.gnu.org/software/texinfo/, Texinfo} format.
@@ -110,7 +109,7 @@ documentation. To do so, we generate it as follows:
 
 @example
 $ cd bogus-x
-$ documenta api bogusx
+$ dokgen api bogusx
 @end example
 
 
@@ -136,7 +135,7 @@ example:
 
 @example
 $ cd another-project
-$ documenta api "mylib.scm mylib"
+$ dokgen api "mylib.scm mylib"
 @end example
 
 
@@ -155,11 +154,11 @@ command. For example:
 @node CLI
 @chapter CLI
 
-Guile Documentá comes with the @command{documenta} program, which
+Guile Dokgen comes with the @command{dokgen} program, which
 recognizes the following subcommands:
 
 @quotation Note
-Guile Documentá does not currently extract @abbr{CLI, Command Line
+Guile Dokgen does not currently extract @abbr{CLI, Command Line
 Interface} documentation from the source code, but it is intended to
 do so in the future. The following documentation is (re)written by
 hand (sadly).
@@ -176,13 +175,13 @@ Interface} documentation from one or more Guile Scheme modules.
 
 @example
 # Extract API documentation from one Scheme file:
-documenta api mylib.scm
+dokgen api mylib.scm
 
 # Extract API documentation from one Scheme directory (recursively):
-documenta api mylib
+dokgen api mylib
 
 # Extract API documentation from both a Scheme file and directory:
-documenta api "mylib.scm mylib"
+dokgen api "mylib.scm mylib"
 @end example
 
 @quotation Note
@@ -190,19 +189,19 @@ Having to quote the list of sources in the last example is a limitation
 that is expected to be removed in the future. So it could simply become:
 
 @example
-documenta api mylib.scm mylib etc
+dokgen api mylib.scm mylib etc
 @end example
 @end quotation
 
 @example
 # Save API documentation to a specific directory:
-documenta api mylib --destination mydoc/api
+dokgen api mylib --destination mydoc/api
 @end example
 
 @subsection Interface specification
 
 @verbatim
-documenta api sources [--destination]
+dokgen api sources [--destination]
 @end verbatim
 
 @defblock
@@ -214,7 +213,7 @@ to both Scheme files or Scheme directories.
 @defline {Keyword argument} --destination or -d
 Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
-is used (see the module @ref{documenta_commands}).
+is used (see the module @ref{dokgen_commands}).
 @end defblock
 @c END CHAPTER: CLI
 
@@ -231,6 +230,13 @@ is used (see the module @ref{documenta_commands}).
 @appendix Version History
 
 @table @dfn
+@item Version 0.6.0, November 17, 2026
+@itemize
+@item
+The project was renamed from Guile Documentá to Guile Dokgen: the
+program is now @command{dokgen} and the modules are @code{(dokgen @dots{})}.
+@end itemize
+
 @item Version 0.5.0, November 17, 2026
 @itemize
 @item
@@ -242,7 +248,7 @@ The project layout, the build recipes (a Maak file and a pinned Guix
 channel set for @command{guix time-machine}) and the contribution
 practices follow those of @command{sift}.
 @item
-The sources moved to @file{src/}, and the launcher to @file{bin/documenta}.
+The sources moved to @file{src/}, and the launcher to @file{bin/dokgen}.
 @end itemize
 
 @item Version 0.4.0, July 05, 2025
@@ -253,9 +259,9 @@ The sources moved to @file{src/}, and the launcher to @file{bin/documenta}.
 modules or Guile Scheme directories. For example:
 
 @example
-$ documenta api libx.scm
-$ documenta api liby
-$ documenta api "libz.scm libz"
+$ dokgen api libx.scm
+$ dokgen api liby
+$ dokgen api "libz.scm libz"
 @end example
 
 @item
@@ -279,8 +285,8 @@ parameters. The parameters are also listed in the "Variable Index".
 @item Version 0.2.1, Oct 16, 2023
 @itemize
 @item
-Enable installing Guile Documentá from the package provided by my
-personal Guix Channel X. Two unit tests that pass in Guile Documentá's
+Enable installing Guile Dokgen from the package provided by my
+personal Guix Channel X. Two unit tests that pass in Guile Dokgen's
 development environment (which uses Guix shell) were failing when
 building the package with Guix. Both tests were marked as expected
 fails to make the test suite pass regardless of the issues and be able
@@ -322,7 +328,7 @@ the conditions in the @file{LICENSE} file distributed with the source,
 which must be included in all copies or substantial portions of the
 Software.
 
-Guile Documentá is a hard fork of the original program by
+Guile Dokgen is a hard fork of the original program by
 @url{https://luis-felipe.gitlab.io/, Luis Felipe López Acevedo}, which
 he released into the public domain in 2023. The fork is maintained
 independently; the original author is not responsible for it. The

@@ -1,4 +1,4 @@
-;; guile-documenta --- extracting API data from modules
+;; guile-dokgen --- extracting API data from modules
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -11,12 +11,12 @@ the objects these modules export). This data is then passed to
 template procedures to render API documentation in different
 formats. See, for example, the templates used to work with the
 @url{https://www.gnu.org/software/texinfo/, Texinfo format}:
-@ref{documenta_templates_stexi, (documenta templates stexi)}. |#
+@ref{dokgen_templates_stexi, (dokgen templates stexi)}. |#
 
 ;;; Code:
 
-(define-module (documenta data)
-  #:use-module (documenta exceptions)
+(define-module (dokgen data)
+  #:use-module (dokgen exceptions)
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)

@@ -1,11 +1,11 @@
-;; guile-documenta --- tests: test-templates-stexi
+;; guile-dokgen --- tests: test-templates-stexi
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-#| Test suite for the module (documenta templates stexi). |#
+#| Test suite for the module (dokgen templates stexi). |#
 
-(use-modules ((documenta templates stexi) #:prefix stexi:)
+(use-modules ((dokgen templates stexi) #:prefix stexi:)
              (ice-9 session)
              (proba utils)
              (srfi srfi-9)
@@ -14,7 +14,7 @@
 
 ;;; CONSTANTS
 
-(define SUITE_NAME "(documenta templates)")
+(define SUITE_NAME "(dokgen templates)")
 
 
 

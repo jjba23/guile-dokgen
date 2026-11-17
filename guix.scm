@@ -1,4 +1,4 @@
-;; guile-documenta --- API documentation for GNU Guile Scheme projects.
+;; guile-dokgen --- API documentation for GNU Guile Scheme projects.
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -7,9 +7,9 @@
 ;;
 ;; A package definition for the working tree.  Build or enter it with:
 ;;
-;;   guix shell -f guix.scm -- documenta --help
+;;   guix shell -f guix.scm -- dokgen --help
 ;;
-;; The version is stated once, in `src/documenta/cli.scm', and read from there:
+;; The version is stated once, in `src/dokgen/cli.scm', and read from there:
 ;; a package definition is code, so it reads the number rather than keep a
 ;; second copy that a release would have to remember to rewrite.
 
@@ -27,20 +27,20 @@
 (define %source-dir
   (dirname (current-filename)))
 
-(define %documenta-version
+(define %dokgen-version
   (let* ((text (call-with-input-file
-                   (string-append %source-dir "/src/documenta/cli.scm")
+                   (string-append %source-dir "/src/dokgen/cli.scm")
                  get-string-all))
          (found (string-match "\\(version \"([0-9]+\\.[0-9]+\\.[0-9]+)\"\\)"
                               text)))
     (unless found
-      (error "guix.scm: src/documenta/cli.scm does not state a version"))
+      (error "guix.scm: src/dokgen/cli.scm does not state a version"))
     (match:substring found 1)))
 
-(define-public guile-documenta
+(define-public guile-dokgen
   (package
-    (name "guile-documenta")
-    (version %documenta-version)
+    (name "guile-dokgen")
+    (version %dokgen-version)
     (source (local-file %source-dir
                         #:recursive? #t
                         #:select? (git-predicate %source-dir)))
@@ -54,19 +54,19 @@
                    (let* ((out (assoc-ref outputs "out"))
                           (bin (string-append out "/bin")))
                      (mkdir-p bin)
-                     (call-with-output-file (string-append bin "/documenta")
+                     (call-with-output-file (string-append bin "/dokgen")
                        (lambda (port)
-                         (format port "#!/bin/sh~%exec guile -c '(begin (use-modules (documenta cli)) (call (command-line) spec))' \"$@\"~%")))
-                     (chmod (string-append bin "/documenta") #o755))))))
+                         (format port "#!/bin/sh~%exec guile -c '(begin (use-modules (dokgen cli)) (call (command-line) spec))' \"$@\"~%")))
+                     (chmod (string-append bin "/dokgen") #o755))))))
     (inputs (list guile-3.0))
     (propagated-inputs (list guile-config guile-lib))
     (native-inputs (list guile-proba texinfo))
-    (home-page "https://github.com/jjba23/guile-documenta")
+    (home-page "https://github.com/jjba23/guile-dokgen")
     (synopsis "Generate API documentation for GNU Guile projects")
     (description
-     "Guile Documentá is a command-line program and library that extracts the
+     "Guile Dokgen is a command-line program and library that extracts the
 API documentation of GNU Guile Scheme modules and writes it in Texinfo
 format.")
     (license license:expat)))
 
-guile-documenta
+guile-dokgen

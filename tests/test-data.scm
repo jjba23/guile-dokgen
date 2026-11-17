@@ -1,12 +1,12 @@
-;; guile-documenta --- tests: test-data
+;; guile-dokgen --- tests: test-data
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-#| Test suite for the module (documenta data). |#
+#| Test suite for the module (dokgen data). |#
 
-(use-modules (documenta data)
-             (documenta exceptions)
+(use-modules (dokgen data)
+             (dokgen exceptions)
              (proba utils)
              (srfi srfi-1)
              (srfi srfi-64))
@@ -14,7 +14,7 @@
 
 ;;; CONSTANTS
 
-(define SUITE_NAME "(documenta data)")
+(define SUITE_NAME "(dokgen data)")
 
 
 

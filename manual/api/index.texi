@@ -9,13 +9,13 @@ The following is the list of modules provided by this library.
 
 @c %start of fragment
 
-@node documenta_cli
-@section (documenta cli)
+@node dokgen_cli
+@section (dokgen cli)
 
 @c %start of fragment
 
 This module defines the command-line interface of the
-@command{documenta} program.  See the @ref{CLI} section for additional
+@command{dokgen} program.  See the @ref{CLI} section for additional
 information.
 
 
@@ -89,14 +89,14 @@ following fields:
 
 @c %start of fragment
 
-@node documenta_commands
-@section (documenta commands)
+@node dokgen_commands
+@section (dokgen commands)
 
 @c %start of fragment
 
 This module defines procedures that are associated to every command
-provided by the command-line interface of the @command{documenta}
-program.  See the @ref{CLI} and @xref{documenta_cli,(documenta cli)}
+provided by the command-line interface of the @command{dokgen}
+program.  See the @ref{CLI} and @xref{dokgen_cli,(dokgen cli)}
 sections for additional information.
 
 
@@ -126,7 +126,7 @@ directories.  For example:
 @strong{destination} (string): Optional path to a directory where the
 final Texinfo files will be saved.  If not provided,
 @var{DEFAULT_DOC_PATH} is used (see the module
-@ref{documenta_commands}).
+@ref{dokgen_commands}).
 
 @strong{Result}: The API documentation is saved to the @var{destination}
 directory.
@@ -160,8 +160,8 @@ directory.
 
 @c %start of fragment
 
-@node documenta_data
-@section (documenta data)
+@node dokgen_data
+@section (dokgen data)
 
 @c %start of fragment
 
@@ -171,7 +171,7 @@ the objects these modules export).  This data is then passed to template
 procedures to render API documentation in different formats.  See, for
 example, the templates used to work with the
 @uref{https://www.gnu.org/software/texinfo/,Texinfo format}:
-@ref{documenta_templates_stexi,(documenta templates stexi)}.
+@ref{dokgen_templates_stexi,(dokgen templates stexi)}.
 
 
 @c %end of fragment
@@ -278,8 +278,8 @@ If the FIELD does not exist, a @var{no-such-field} exception is raised.
 
 @c %start of fragment
 
-@node documenta_exceptions
-@section (documenta exceptions)
+@node dokgen_exceptions
+@section (dokgen exceptions)
 
 @c %start of fragment
 
@@ -368,12 +368,12 @@ This record type has the following fields:
 
 @c %start of fragment
 
-@node documenta_templates_stexi
-@section (documenta templates stexi)
+@node dokgen_templates_stexi
+@section (dokgen templates stexi)
 
 @c %start of fragment
 
-This module defines procedures that structure @ref{documenta_data,API
+This module defines procedures that structure @ref{dokgen_data,API
 data} as @emph{stexi} (symbolic texinfo), which can later be translated
 into Texinfo and integrated with the rest of the Texinfo documentation
 of a given software project.
@@ -474,8 +474,8 @@ Default values for optional and keyword parameters are not included.
 
 @c %start of fragment
 
-@node documenta_utils
-@section (documenta utils)
+@node dokgen_utils
+@section (dokgen utils)
 
 @c %start of fragment
 
@@ -588,8 +588,8 @@ indentation removed.
 
 @c %start of fragment
 
-@node documenta_writer
-@section (documenta writer)
+@node dokgen_writer
+@section (dokgen writer)
 
 @c %start of fragment
 

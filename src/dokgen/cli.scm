@@ -1,4 +1,4 @@
-;; guile-documenta --- the command-line interface
+;; guile-dokgen --- the command-line interface
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -6,16 +6,16 @@
 ;;; Commentary:
 
 #| This module defines the command-line interface of the
-@command{documenta} program. See the @ref{CLI} section for additional
+@command{dokgen} program. See the @ref{CLI} section for additional
 information. |#
 
 ;;; Code:
 
-(define-module (documenta cli)
+(define-module (dokgen cli)
   #:use-module (config)
   #:use-module (config api)
   #:use-module (config licenses)
-  #:use-module (documenta commands)
+  #:use-module (dokgen commands)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -47,11 +47,11 @@ information. |#
 
 (define spec
   (configuration
-   (name 'documenta)
+   (name 'dokgen)
    (synopsis "Generate API documentation.")
    (description
-    "This is the command-line interface of Guile Documentá, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.5.0")
+    "This is the command-line interface of Guile Dokgen, a software to generate API documentation for GNU Guile Scheme projects.")
+   (version "0.6.0")
    (license expat)
    (author "Josep Bigorra")
 

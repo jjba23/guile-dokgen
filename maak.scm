@@ -1,11 +1,11 @@
-;; guile-documenta --- API documentation for GNU Guile Scheme projects.
+;; guile-dokgen --- API documentation for GNU Guile Scheme projects.
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
 ;;; Commentary:
 ;;
-;; This is guile-documenta's Maak file, and it follows the two rules the other
+;; This is guile-dokgen's Maak file, and it follows the two rules the other
 ;; Maak files in the collection follow.
 ;;
 ;; The *exports* are the task list.  Maak runs every procedure a file defines
@@ -37,8 +37,11 @@
             default
             test
             check
+            version-check
             docs
+            docs-check
             manual
+            deploy
             repl
             install
             uninstall
@@ -49,14 +52,21 @@
 ;; ====== Maak file constants ======
 
 (define version-file
-  "src/documenta/cli.scm")
+  "src/dokgen/cli.scm")
 
-;; The URL of the stylesheet the HTML manual is rendered with.
+;; The stylesheet the HTML manual is rendered with: the jointhefreeworld one,
+;; so the manual looks like the rest of the collection.
 (define manual-css-url
-  "https://luis-felipe.gitlab.io/texinfo-css/static/css/texinfo-7.css")
+  "https://jointhefreeworld.org/static/css/jointhefreeworld.css")
 
 (define manual-dist
   "reports/manual")
+
+;; Where the project page is published.  jointhefreeworld.org serves
+;; /srv/http/<name> as https://<name>/, and the collection's projects live in
+;; a directory each, so publishing the page is putting a directory there.
+(define deploy-directory
+  "/srv/http/jointhefreeworld.org/dokgen")
 
 ;; ====== Maak file helpers ======
 
@@ -69,7 +79,7 @@ The shell is handed the script as one word, so the script keeps its pipes, its
                                #:verbose? #t))
 
 (define (current-version)
-  "Return the version `src/documenta/cli.scm' states."
+  "Return the version `src/dokgen/cli.scm' states."
   (let* ((text (call-with-input-file version-file get-string-all))
          (found (string-match "\\(version \"([0-9]+\\.[0-9]+\\.[0-9]+)\"\\)" text)))
     (unless found
@@ -94,7 +104,7 @@ The shell is handed the script as one word, so the script keeps its pipes, its
 
 (define (version)
   "Print the version this checkout states."
-  (format #t "guile-documenta ~a~%" (current-version)))
+  (format #t "guile-dokgen ~a~%" (current-version)))
 
 (define (test)
   "Run every test file under tests/.
@@ -127,9 +137,17 @@ itself rather than a pile of them."
 The program documents itself: the reference is not written by hand, and a
 procedure that is exported is in it."
   (time-machine-manifest-shell
-   (list "guile" "-L" "./src" "bin/documenta" "api" "--destination" "manual/api"
-         "./src/documenta")
+   (list "guile" "-L" "./src" "bin/dokgen" "api" "--destination" "manual/api"
+         "./src/dokgen")
    #:verbose? #t))
+
+(define (docs-check)
+  "Fail when manual/api/index.texi is not what the sources generate.
+
+The reference is generated, so a committed copy that differs from a fresh one
+is a procedure that was changed without the documentation following."
+  (docs)
+  (git:git (list "diff" "--exit-code" "--" "manual/api")))
 
 (define (manual)
   "Build the HTML manual into reports/manual."
@@ -140,6 +158,20 @@ procedure that is exported is in it."
    #:verbose? #t)
   (log-info "open file://~a/~a/index.html" (getcwd) manual-dist))
 
+(define (deploy)
+  "Build the manual and publish it, with the project page, to the web directory.
+
+Deployment is a copy, the way the rest of jointhefreeworld.org is deployed: the
+directory is emptied and the fresh build is put in its place, so a file this
+build does not have does not linger beside the one that replaced it.  The build
+is removed afterwards; what the tree keeps is the source."
+  (manual)
+  (log-info "publishing the page and the manual to ~a" deploy-directory)
+  (delete-file-recursively deploy-directory)
+  (cp "website" deploy-directory)
+  (cp manual-dist (~ "~a/manual" deploy-directory))
+  (delete-file-recursively manual-dist))
+
 (define (repl)
   "A REPL with the library and the tests on the load path."
   (time-machine-manifest-shell (list "guile" "-L" "./src" "-L" ".")
@@ -148,7 +180,7 @@ procedure that is exported is in it."
 ;;; --- installing ---
 ;;;
 ;;; The launcher finds its modules relative to itself, so the tree is installed
-;;; rather than only copied: bin/documenta lands in $(prefix)/bin and the
+;;; rather than only copied: bin/dokgen lands in $(prefix)/bin and the
 ;;; library in $(prefix)/share/guile/site/3.0.  A prefix the user owns needs no
 ;;; escalation.
 
@@ -164,15 +196,15 @@ procedure that is exported is in it."
          (bin (~ "~a/bin" prefix))
          (sudo? (needs-sudo? prefix)))
     (run (list "install" "-d" site bin) #:sudo? sudo? #:verbose? #t)
-    (run (list "cp" "-r" "src/documenta" site) #:sudo? sudo? #:verbose? #t)
-    (run (list "install" "-m" "755" "bin/documenta" bin)
+    (run (list "cp" "-r" "src/dokgen" site) #:sudo? sudo? #:verbose? #t)
+    (run (list "install" "-m" "755" "bin/dokgen" bin)
          #:sudo? sudo? #:verbose? #t)))
 
 (define (uninstall)
   "Remove what `install' put under $(prefix)."
   (let* ((prefix (or (getenv "PREFIX") "/usr/local"))
-         (site (~ "~a/share/guile/site/3.0/documenta" prefix))
-         (bin (~ "~a/bin/documenta" prefix)))
+         (site (~ "~a/share/guile/site/3.0/dokgen" prefix))
+         (bin (~ "~a/bin/dokgen" prefix)))
     (run (list "rm" "-rf" site bin)
          #:sudo? (needs-sudo? prefix) #:verbose? #t)))
 
@@ -183,21 +215,62 @@ procedure that is exported is in it."
 ;;; --- releasing ---
 ;;;
 ;;; The version is stated once, in the command-line specification, and quoted
-;;; nowhere else that a release would have to rewrite: the package definition
-;;; reads it from there.
+;;; everywhere a reader meets it: the manual's `@set VERSION', the README badge
+;;; and the website.  A release rewrites the number inside a shape it knows and
+;;; touches nothing else -- prose that happens to contain a number is not a
+;;; version -- and `maak version-check' fails when a quotation has drifted, so
+;;; CI notices before a reader does.  The package definition reads the number
+;;; from the source and keeps no copy.
+
+;; Each entry is a file and the shape the number takes in it.
+(define version-quotations
+  '(("src/dokgen/cli.scm" . "(version \"~a\")")
+    ("manual/main.texi" . "@set VERSION ~a")
+    ("README.org" . "release-~a")
+    ("website/index.html" . "v~a")))
+
+(define (quotation-text file)
+  "Return the text of FILE, or fail closed when it cannot be read."
+  (unless (file-exists? file)
+    (task-error "~a quotes the version but does not exist" #:args (list file)))
+  (call-with-input-file file get-string-all))
 
 (define (write-version! old new)
-  "Write NEW over OLD in the file that states the version."
-  (let* ((text (call-with-input-file version-file get-string-all))
-         (from (format #f "(version \"~a\")" old))
-         (to (format #f "(version \"~a\")" new)))
-    (call-with-output-file version-file
-      (lambda (port) (display (string-replace-substring text from to) port)))))
+  "Write NEW over OLD in every file that quotes the version.
+
+A file that does not quote OLD in the shape listed is an error rather than a
+silent skip: a quotation that was not rewritten is the inconsistency this
+exists to prevent."
+  (for-each
+   (lambda (entry)
+     (let* ((file (car entry))
+            (text (quotation-text file))
+            (from (format #f (cdr entry) old))
+            (to (format #f (cdr entry) new)))
+       (unless (string-contains text from)
+         (task-error "~a does not quote ~s" #:args (list file from)))
+       (call-with-output-file file
+         (lambda (port) (display (string-replace-substring text from to) port)))))
+   version-quotations))
+
+(define (version-check)
+  "Fail when a file quotes a version other than the one the source states."
+  (let ((current (current-version)))
+    (for-each
+     (lambda (entry)
+       (let ((expected (format #f (cdr entry) current)))
+         (unless (string-contains (quotation-text (car entry)) expected)
+           (task-error "~a does not quote ~s; run `maak release VERSION'"
+                       #:args (list (car entry) expected)))))
+     version-quotations)
+    (log-info "version ~a is consistent in ~a files"
+              current (length version-quotations))))
 
 (define (release . args)
   "Cut a release: write the version, run the gates, commit and tag.
 
-With a version, write it into `src/documenta/cli.scm', run `check' and `test',
+With a version, write it into every file that quotes it, run `version-check',
+`check' and `test',
 commit everything tracked as `chore(release): vX.Y.Z' and tag that commit
 `vX.Y.Z'.  The gates run before the commit, so a release that would have been
 broken is never tagged.  A version that is already tagged is refused.
@@ -207,7 +280,7 @@ With no argument, say what the current version is and change nothing."
         (requested (and (pair? args) (car args))))
     (cond
      ((null? args)
-      (format #t "guile-documenta ~a~%~%To release: maak release VERSION~%"
+      (format #t "guile-dokgen ~a~%~%To release: maak release VERSION~%"
               current))
      ((not (valid-version? requested))
       (task-error "~s is not a version; a release is numbered like 0.5.0"
@@ -219,6 +292,7 @@ With no argument, say what the current version is and change nothing."
                       #:args (list tag)))
         (log-info "release: ~a -> ~a" current requested)
         (write-version! current requested)
+        (version-check)
         (check)
         (test)
         (git:git (list "add" "--all"))
@@ -229,7 +303,7 @@ With no argument, say what the current version is and change nothing."
               (git:git (list "commit" "--message"
                              (~ "chore(release): v~a" requested))))
           (git:git (list "tag" "--annotate" tag "--message"
-                         (~ "guile-documenta ~a" requested)))
+                         (~ "guile-dokgen ~a" requested)))
           (log-info "A tag nobody has fetched is not a release yet:~%  git push origin trunk --follow-tags")))))))
 
 ;; ====== Agent skills ======

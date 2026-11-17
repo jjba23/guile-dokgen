@@ -1,23 +1,23 @@
 # SPDX-License-Identifier: MIT
 # Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-#+title: Guile Documentá
+#+title: Guile Dokgen
 #+subtitle: API documentation for GNU Guile Scheme projects
 #+author: Josep Bigorra
 #+email: jjbigorra@gmail.com
 #+options: toc:2 num:nil
 #+language: en
 
-[[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-2f6f4f.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-1e5b3a.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
+[[https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml][https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml/badge.svg]] [[https://github.com/jjba23/guile-dokgen/releases][https://img.shields.io/badge/release-0.6.0-c96a44.svg]] [[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-c96a44.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-a8541f.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
 
-/Guile Documentá/ is a command-line program and accompanying library that
+/Guile Dokgen/ is a command-line program and accompanying library that
 extracts the API documentation of [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme modules and writes it
 as Texinfo.  Point it at a module or a directory of modules, and it renders
 every exported procedure, macro, variable and parameter object with its
 docstring.
 
 #+begin_src sh
-documenta api src/mylib
+dokgen api src/mylib
 #+end_src
 
 The result is ~doc/api/index.texi~ by default, ready for ~texi2any~.  The
@@ -28,10 +28,10 @@ manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds i
 With Guix, from the [[https://github.com/jjba23/guix-jointhefreeworld][jointhefreeworld channel]]:
 
 #+begin_src sh
-guix install guile-documenta
+guix install guile-dokgen
 #+end_src
 
-From a checkout, there is nothing to build: ~./bin/documenta --help~ runs the
+From a checkout, there is nothing to build: ~./bin/dokgen --help~ runs the
 sources in place.  The dependencies are Guile 3.0, ~guile-config~ and
 ~guile-lib~; ~maak install~ puts the launcher under ~$PREFIX/bin~.
 
@@ -47,6 +47,9 @@ maak            # list the tasks
 maak test       # run the test suites
 maak check      # compile every module
 maak docs       # regenerate manual/api/index.texi from the sources
+maak docs-check # fail when the committed reference is stale
+maak version-check # fail when a quotation of the version drifted
+maak deploy     # publish the page and the manual
 maak manual     # build the HTML manual into reports/manual
 maak repl       # a REPL with the library on the load path
 #+end_src
@@ -55,22 +58,23 @@ The layout:
 
 | Path           | What it holds                                         |
 |----------------+-------------------------------------------------------|
-| ~src/documenta/~ | the library: reader, templates, writer, CLI           |
-| ~bin/documenta~  | the launcher                                          |
+| ~src/dokgen/~ | the library: reader, templates, writer, CLI           |
+| ~bin/dokgen~  | the launcher                                          |
 | ~tests/~         | one SRFI-64 suite per module                          |
 | ~etc/~           | the test runner that turns failures into exit codes   |
 | ~manual/~        | the Texinfo manual; ~api/~ is generated               |
 | ~website/~       | the project page                                      |
 | ~maak.scm~       | the tasks, and the generator of [[file:AGENTS.md][AGENTS.md]]            |
 
-See [[file:CONTRIBUTING.md][CONTRIBUTING.md]] for how to send a change.
+See [[file:CONTRIBUTING.md][CONTRIBUTING.md]] for how to send a change, and
+[[file:VISION.md][VISION.md]] for where the project is going.
 
 * Copying
 
 MIT License, Copyright © Josep Bigorra.  See [[file:LICENSE][LICENSE]]; every source file carries
 an SPDX header.
 
-Guile Documentá is a *hard fork* of the original program by [[https://luis-felipe.gitlab.io/][Luis Felipe López
+Guile Dokgen is a *hard fork* of /Guile Documentá/, the original program by [[https://luis-felipe.gitlab.io/][Luis Felipe López
 Acevedo]], who released it into the public domain in 2023 and whose work this
 project builds on.  The fork is maintained independently and the original
 author is not responsible for it.  The logo and the website design remain

@@ -1,4 +1,4 @@
-;; guile-documenta --- tests: boguslibs/objects
+;; guile-dokgen --- tests: boguslibs/objects
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

@@ -1,4 +1,4 @@
-;; guile-documenta --- tests: test-module-commentary
+;; guile-dokgen --- tests: test-module-commentary
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

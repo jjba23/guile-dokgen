@@ -1,4 +1,4 @@
-;; guile-documenta --- API documentation for GNU Guile Scheme projects.
+;; guile-dokgen --- API documentation for GNU Guile Scheme projects.
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -11,7 +11,7 @@
 ;; through `guix time-machine -C channels.scm', so the Guix revision is the
 ;; one `channels.scm' pins.
 ;;
-;; The program itself is never installed here: the tasks run `bin/documenta'
+;; The program itself is never installed here: the tasks run `bin/dokgen'
 ;; from the checkout, because the checkout under test is the one being
 ;; developed.
 

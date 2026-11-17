@@ -1,4 +1,4 @@
-;; guile-documenta --- writing documentation to disk
+;; guile-dokgen --- writing documentation to disk
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -9,7 +9,7 @@
 
 ;;; Code:
 
-(define-module (documenta writer)
+(define-module (dokgen writer)
   #:export (save))
 
 

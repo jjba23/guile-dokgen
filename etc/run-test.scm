@@ -1,4 +1,4 @@
-;; guile-documenta --- run one SRFI-64 test file and exit with its verdict
+;; guile-dokgen --- run one SRFI-64 test file and exit with its verdict
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

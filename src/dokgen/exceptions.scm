@@ -1,9 +1,9 @@
-;; guile-documenta --- the exceptions the program raises
+;; guile-dokgen --- the exceptions the program raises
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-(define-module (documenta exceptions)
+(define-module (dokgen exceptions)
   #:use-module (ice-9 exceptions)
   #:export (&residual-export-exception
             make-residual-export-exception

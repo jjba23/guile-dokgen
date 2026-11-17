@@ -1,18 +1,18 @@
-;; guile-documenta --- tests: test-utils
+;; guile-dokgen --- tests: test-utils
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-#| Test suite for the module (documenta utils). |#
+#| Test suite for the module (dokgen utils). |#
 
-(use-modules (documenta utils)
+(use-modules (dokgen utils)
              (proba utils)
              (srfi srfi-64))
 
 
 ;;; CONSTANTS
 
-(define SUITE_NAME "(documenta utils)")
+(define SUITE_NAME "(dokgen utils)")
 (define SPACE_TAB (make-string DEFAULT_SPACE_INDENT_SIZE #\space))
 
 

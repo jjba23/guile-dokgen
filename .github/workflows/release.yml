@@ -1,0 +1,58 @@
+# guile-dokgen --- publish a release
+#
+# SPDX-License-Identifier: MIT
+# Copyright © Josep Bigorra <jjbigorra@gmail.com>
+#
+# `maak release VERSION' writes the version, commits and tags; this publishes
+# what the tag names.  It refuses a tag that disagrees with the version the
+# source states, and takes the release notes from the changelog section of that
+# version, so the notes are the ones that were reviewed and not ones written at
+# the last minute.  It uses no secret beyond the workflow's own token.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 📦 Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that the tag is the version
+        run: |
+          set -eu
+          tag="${GITHUB_REF_NAME#v}"
+          found=$(sed -n 's/.*(version "\([0-9]*\.[0-9]*\.[0-9]*\)").*/\1/p' src/dokgen/cli.scm | head -n 1)
+          if [ "$tag" != "$found" ]; then
+            echo "tag $GITHUB_REF_NAME does not match the version $found in src/dokgen/cli.scm" >&2
+            exit 1
+          fi
+
+      - name: Extract the release notes
+        run: |
+          set -eu
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            /^\* / { printing = (index($0, "* " v " ") == 1) ; next }
+            printing { print }
+          ' CHANGELOG.org > notes.md
+          if [ ! -s notes.md ]; then
+            echo "CHANGELOG.org has no section for $version" >&2
+            exit 1
+          fi
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "guile-dokgen ${GITHUB_REF_NAME#v}" \
+            --notes-file notes.md

@@ -1,5 +1,5 @@
 #!/bin/sh
-# guile-documenta --- API documentation for GNU Guile Scheme projects.
+# guile-dokgen --- API documentation for GNU Guile Scheme projects.
 #
 # SPDX-License-Identifier: MIT
 # Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -22,5 +22,5 @@ while [ -L "$self" ]; do
 done
 here=$(CDPATH= cd -- "$(dirname "$self")" && pwd)
 
-exec guile -L "${DOCUMENTA_LOAD_PATH:-$here/../src}" \
-     -c '(begin (use-modules (documenta cli)) (call (command-line) spec))' "$@"
+exec guile -L "${DOKGEN_LOAD_PATH:-$here/../src}" \
+     -c '(begin (use-modules (dokgen cli)) (call (command-line) spec))' "$@"

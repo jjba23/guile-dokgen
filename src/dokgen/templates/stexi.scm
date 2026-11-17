@@ -1,4 +1,4 @@
-;; guile-documenta --- the Texinfo (stexi) template
+;; guile-dokgen --- the Texinfo (stexi) template
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -6,15 +6,15 @@
 ;;; Commentary:
 
 #| This module defines procedures that structure
-@ref{documenta_data, API data} as @emph{stexi} (symbolic texinfo),
+@ref{dokgen_data, API data} as @emph{stexi} (symbolic texinfo),
 which can later be translated into Texinfo and integrated with the rest
 of the Texinfo documentation of a given software project. |#
 
 ;;; Code:
 
-(define-module (documenta templates stexi)
-  #:use-module (documenta data)
-  #:use-module (documenta utils)
+(define-module (dokgen templates stexi)
+  #:use-module (dokgen data)
+  #:use-module (dokgen utils)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
@@ -145,7 +145,7 @@ of the Texinfo documentation of a given software project. |#
 
   @strong{kind} (string):
     Any of the kinds defined by the procedure @code{group-api-objects}
-    from the module @code{(documenta data)}.
+    from the module @code{(dokgen data)}.
 
   @strong{objects} (alist):
     Association list of API objects of the given @var{kind}. Every key

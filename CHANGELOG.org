@@ -1,4 +1,4 @@
-#+title: guile-documenta changelog
+#+title: guile-dokgen changelog
 #+author: Josep Bigorra
 #+email: jjbigorra@gmail.com
 #+options: toc:nil
@@ -8,6 +8,22 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+* 0.6.0 — 2026-11-17
+
+** Changed
+
+- One version, quoted everywhere: ~src/dokgen/cli.scm~ states it and ~maak
+  release~ rewrites the manual's ~@set VERSION~, the README badge and the
+  website; ~maak version-check~ fails when one drifted.
+- The project page and the HTML manual use the jointhefreeworld look.
+- CI gates the version, compilation, tests, the generated API reference and the
+  manual, and deploys the page; a new release workflow publishes a tag's GitHub
+  release from its changelog section.
+- Renamed from guile-documenta to guile-dokgen.  The program is now ~dokgen~
+  (launcher ~bin/dokgen~), the modules are ~(dokgen ...)~ under ~src/dokgen/~,
+  the load-path variable is ~DOKGEN_LOAD_PATH~ and the Guix package is
+  ~guile-dokgen~.  This breaks every caller of ~documenta~ and ~(documenta ...)~.
+
 * 0.5.0 — 2026-11-17, hard fork
 
 ** Changed
@@ -16,8 +32,8 @@ original author; their record is the version history in the manual.
   from the public domain to the MIT License; every source file carries an SPDX
   header and ~LICENSE~ holds the text.  The original author is credited in the
   README and the manual.
-- The layout follows [[https://github.com/jjba23/sift][sift]]: sources in ~src/~, the launcher at ~bin/documenta~
-  (replacing ~documenta.scm~), helpers in ~etc/~.
+- The layout follows [[https://github.com/jjba23/sift][sift]]: sources in ~src/~, the launcher at ~bin/dokgen~
+  (replacing ~dokgen.scm~), helpers in ~etc/~.
 - Development moved to Maak (~maak.scm~) running in a pinned Guix
   (~channels.scm~ for ~guix time-machine~, ~manifest.scm~, ~guix.scm~), replacing
   ~build-manual.sh~.

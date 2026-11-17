@@ -1,10 +1,23 @@
-# guile-documenta
+# guile-dokgen
 #
 # SPDX-License-Identifier: MIT
 # Copyright © Josep Bigorra <jjbigorra@gmail.com>
 #
-# The gates are the Maak tasks a release runs, so a release cannot be the first
-# thing to notice that a module does not compile or that a suite is red.
+# A gate and a deployment are two different questions, so they are two jobs.
+# `gates' asks whether the tree is worth merging, and answers for a pull
+# request as well as for a push, so a branch is judged before it lands.  The
+# tasks are the ones `maak release' runs, so a release cannot be the first
+# thing to notice a module that does not compile, a quotation of the version
+# that drifted, or an API reference that no longer matches the sources.
+#
+# `deploy' publishes the project page and the manual: a copy into the directory
+# the server reads, run where the tree has landed -- a push to trunk or a
+# dispatch -- and only after the gates, because a page published from a tree
+# that failed its own checks is a page the site has to take back.
+#
+# A pull request from a fork is skipped: the daemon clones the repository the
+# run belongs to, and a branch that exists only in the fork is not there.  The
+# push to trunk that follows the merge judges that tree.
 
 name: CI
 
@@ -28,6 +41,16 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: jjba23/byggsteg-github/.github/workflows/byggsteg.yml@trunk
     with:
-      tasks: maak-check maak-test
+      tasks: maak-version-check maak-check maak-test maak-docs-check maak-manual
+      poll-limit: "1024"
+    secrets: inherit
+
+  deploy:
+    name: 🚀 Deploy
+    needs: gates
+    if: github.event_name != 'pull_request'
+    uses: jjba23/byggsteg-github/.github/workflows/byggsteg.yml@trunk
+    with:
+      tasks: maak-deploy
       poll-limit: "1024"
     secrets: inherit

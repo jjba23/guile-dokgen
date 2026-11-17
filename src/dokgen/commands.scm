@@ -1,4 +1,4 @@
-;; guile-documenta --- the commands the program runs
+;; guile-dokgen --- the commands the program runs
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -6,17 +6,17 @@
 ;;; Commentary:
 
 #| This module defines procedures that are associated to every command
-provided by the command-line interface of the @command{documenta}
-program. See the @ref{CLI} and @xref{documenta_cli, (documenta cli)}
+provided by the command-line interface of the @command{dokgen}
+program. See the @ref{CLI} and @xref{dokgen_cli, (dokgen cli)}
 sections for additional information. |#
 
 ;;; Code:
 
-(define-module (documenta commands)
+(define-module (dokgen commands)
   #:declarative? #false                 ; Because it loads modules.
-  #:use-module ((documenta data) #:prefix data:)
-  #:use-module ((documenta templates stexi) #:prefix stexi:)
-  #:use-module (documenta writer)
+  #:use-module ((dokgen data) #:prefix data:)
+  #:use-module ((dokgen templates stexi) #:prefix stexi:)
+  #:use-module (dokgen writer)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
@@ -53,7 +53,7 @@ sections for additional information. |#
   @strong{destination} (string):
     Optional path to a directory where the final Texinfo files will be
     saved. If not provided, @var{DEFAULT_DOC_PATH} is used (see the
-    module @ref{documenta_commands}).
+    module @ref{dokgen_commands}).
 
   @strong{Result}:
     The API documentation is saved to the @var{destination} directory."

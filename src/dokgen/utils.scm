@@ -1,4 +1,4 @@
-;; guile-documenta --- helper procedures
+;; guile-dokgen --- helper procedures
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
@@ -10,7 +10,7 @@ else. |#
 
 ;;; Code:
 
-(define-module (documenta utils)
+(define-module (dokgen utils)
   #:use-module (srfi srfi-1)
   #:export (DEFAULT_SPACE_INDENT_SIZE
 
