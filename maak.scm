@@ -139,8 +139,7 @@ itself rather than a pile of them."
 The program documents itself: the reference is not written by hand, and a
 procedure that is exported is in it."
   (time-machine-manifest-shell
-   (list "guile" "-L" "./src" "bin/dokgen" "api" "--destination" "manual/api"
-         "./src/dokgen")
+   (list "sh" "bin/dokgen" "api" "--destination" "manual/api" "./src/dokgen")
    #:verbose? #t))
 
 (define (docs-check)
