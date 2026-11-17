@@ -6,7 +6,10 @@
 ;;; Commentary:
 
 #| This module defines helper procedures that didn't quite fit anywhere
-else. |#
+else. They normalize the indentation of documentation strings before
+they are rendered. The constant @code{DEFAULT_SPACE_INDENT_SIZE} is
+the number of spaces that replace a tab when no other size is given;
+its value is 2. |#
 
 ;;; Code:
 
@@ -22,6 +25,7 @@ else. |#
 
 ;;; CONSTANTS
 
+;; The number of spaces that replace a tab by default (see tabs->spaces).
 (define DEFAULT_SPACE_INDENT_SIZE 2)
 
 

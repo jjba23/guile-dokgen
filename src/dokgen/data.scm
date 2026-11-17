@@ -55,24 +55,29 @@ formats. See, for example, the templates used to work with the
 
   @strong{Return value} (list of strings):
     A list where every element represents a path to a Scheme file."
-  ;; Enter to any directory.
-  (define (enter? name stat result) #true)
+  (define (enter? name stat result)
+    "Return true to enter any directory."
+    #true)
 
-  ;; Only include files whose NAME has a ".scm" extension.
   (define (leaf name stat result)
+    "Add NAME to RESULT when it has a \".scm\" extension."
     (if (string-suffix? ".scm" name)
 	(cons name result)
 	result))
 
-  ;; Don't append directories to the resulting list.
-  (define (down name stat result) result)
-  (define (up name stat result) result)
+  (define (down name stat result)
+    "Leave RESULT as it is: directories are not listed."
+    result)
+  (define (up name stat result)
+    "Leave RESULT as it is when leaving a directory."
+    result)
 
-  ;; Likewise for skipped directories.
-  (define (skip name stat result) result)
+  (define (skip name stat result)
+    "Leave RESULT as it is for skipped directories."
+    result)
 
-  ;; Ignore unreadable files/directories but warn the user.
   (define (error name stat errno result)
+    "Warn about the unreadable NAME and leave RESULT as it is."
     (format (current-error-port) "warning: ~a: ~a~%"
             name (strerror errno))
     result)
@@ -95,7 +100,7 @@ formats. See, for example, the templates used to work with the
     and a list of its members. Only groups with members are returned."
   ;; Helpers.
   (define (add object group catalog)
-    #| Add object to the group in catalog |#
+    "Return a new CATALOG with OBJECT added to the GROUP."
     (list (cons "macros"
                 (if (string=? group "macros")
                     (append (assq-ref catalog group) (list object))
@@ -117,10 +122,10 @@ formats. See, for example, the templates used to work with the
                     (append (assq-ref catalog group) (list object))
                     (assq-ref catalog "variables")))))
   (define (non-empty-group? group)
-    #| Return true if the group has members. |#
+    "Return true if the GROUP has members."
     (not (null? (cdr group))))
   (define (symbol-precedes? a b)
-    #| Return #true if symbol A goes before B alphabetically. |#
+    "Return true if symbol A goes before B alphabetically."
     (string<? (symbol->string a) (symbol->string b)))
   ;; Main body.
   (let* [(api-table (record-field interface 'obarray))

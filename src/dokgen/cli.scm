@@ -7,7 +7,14 @@
 
 #| This module defines the command-line interface of the
 @command{dokgen} program. See the @ref{CLI} section for additional
-information. |#
+information.
+
+The variable @code{spec} is the specification of the interface, a
+@code{<configuration>} record as defined by the guile-config library.
+It names the program, states its version, license and author, and
+declares the @code{api} subcommand with its @code{sources} argument and
+its @code{destination} keyword. The procedure @code{call} dispatches a
+command line to the procedure that carries it out. |#
 
 ;;; Code:
 

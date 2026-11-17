@@ -259,8 +259,10 @@ of the Texinfo documentation of a given software project. |#
     and keyword parameters are not included."
   ;; Helper.
   (define (symbol-or-pair->string obj)
+    "Return OBJ, a symbol or a pair, as it is written in source code."
     (format #f "~s" obj))
   (define (keyword->string keyword)
+    "Return the name of the KEYWORD parameter, ignoring its default."
     (format #f "~a" (car keyword)))
   ;; Main body.
   (let* [(parameters (procedure-arguments proc))

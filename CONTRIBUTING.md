@@ -42,6 +42,12 @@ and nothing else.
 4. Run `maak version-check check test docs-check`.
 5. Commit as `type(scope): summary`, lower case, imperative.
 
+Docstrings are Texinfo, because the tool renders them as such.  The first line
+is a summary that stands alone; each argument follows as
+`@strong{name} (type):` and the result as `@strong{Return value} (type):`.  A
+module's description is its `;;; Commentary:` or a `#| ... |#` block, and every
+exported name has one.  Run `maak docs` to see how they render.
+
 Every source file starts with the header:
 
 ```scheme

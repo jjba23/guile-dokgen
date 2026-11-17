@@ -8,7 +8,12 @@
 #| This module defines procedures that are associated to every command
 provided by the command-line interface of the @command{dokgen}
 program. See the @ref{CLI} and @xref{dokgen_cli, (dokgen cli)}
-sections for additional information. |#
+sections for additional information.
+
+The variable @code{DEFAULT_DOC_PATH} is the directory where the API
+documentation is saved when the user does not choose one; its value is
+@samp{doc/api}. The documentation is written to a file named
+@file{index.texi} inside that directory. |#
 
 ;;; Code:
 
@@ -28,7 +33,9 @@ sections for additional information. |#
 
 ;;; CONSTANTS
 
+;; Directory where the API documentation is saved by default.
 (define DEFAULT_DOC_PATH "doc/api")
+;; Name of the file, inside the destination, that holds the API chapter.
 (define DEFAULT_API_FILE_INDEX "index.texi")
 
 
