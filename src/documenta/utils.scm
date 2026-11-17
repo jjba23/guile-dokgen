@@ -1,3 +1,8 @@
+;; guile-documenta --- helper procedures
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| This module defines helper procedures that didn't quite fit anywhere

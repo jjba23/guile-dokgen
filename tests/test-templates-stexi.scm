@@ -1,3 +1,8 @@
+;; guile-documenta --- tests: test-templates-stexi
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 #| Test suite for the module (documenta templates stexi). |#
 
 (use-modules ((documenta templates stexi) #:prefix stexi:)

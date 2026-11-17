@@ -1,3 +1,8 @@
+;; guile-documenta --- the Texinfo (stexi) template
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| This module defines procedures that structure

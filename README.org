@@ -1,18 +1,78 @@
-#+TITLE: Guile Documentá
+# SPDX-License-Identifier: MIT
+# Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
+#+title: Guile Documentá
+#+subtitle: API documentation for GNU Guile Scheme projects
+#+author: Josep Bigorra
+#+email: jjbigorra@gmail.com
+#+options: toc:2 num:nil
+#+language: en
 
-* Summary
+[[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-2f6f4f.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-1e5b3a.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
 
-/Guile Documentá/ is a command-line program and accompanying library
-to generate API documentation for [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme projects.
+/Guile Documentá/ is a command-line program and accompanying library that
+extracts the API documentation of [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme modules and writes it
+as Texinfo.  Point it at a module or a directory of modules, and it renders
+every exported procedure, macro, variable and parameter object with its
+docstring.
 
-+ [[https://luis-felipe.gitlab.io/guile-documenta/][Website]]
-+ [[https://luis-felipe.gitlab.io/guile-documenta/manual/][User manual]]
+#+begin_src sh
+documenta api src/mylib
+#+end_src
 
+The result is ~doc/api/index.texi~ by default, ready for ~texi2any~.  The
+manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds it as HTML.
+
+* Install
+
+With Guix, from the [[https://github.com/jjba23/guix-jointhefreeworld][jointhefreeworld channel]]:
+
+#+begin_src sh
+guix install guile-documenta
+#+end_src
+
+From a checkout, there is nothing to build: ~./bin/documenta --help~ runs the
+sources in place.  The dependencies are Guile 3.0, ~guile-config~ and
+~guile-lib~; ~maak install~ puts the launcher under ~$PREFIX/bin~.
+
+* Development
+
+The development environment is pinned.  [[file:channels.scm][channels.scm]] fixes the Guix revision
+and [[file:manifest.scm][manifest.scm]] lists the tools, and every [[https://codeberg.org/jjba23/maak][Maak]] task runs inside
+~guix time-machine -C channels.scm -- shell -m manifest.scm~, so a task means
+the same thing on every machine.
+
+#+begin_src sh
+maak            # list the tasks
+maak test       # run the test suites
+maak check      # compile every module
+maak docs       # regenerate manual/api/index.texi from the sources
+maak manual     # build the HTML manual into reports/manual
+maak repl       # a REPL with the library on the load path
+#+end_src
+
+The layout:
+
+| Path           | What it holds                                         |
+|----------------+-------------------------------------------------------|
+| ~src/documenta/~ | the library: reader, templates, writer, CLI           |
+| ~bin/documenta~  | the launcher                                          |
+| ~tests/~         | one SRFI-64 suite per module                          |
+| ~etc/~           | the test runner that turns failures into exit codes   |
+| ~manual/~        | the Texinfo manual; ~api/~ is generated               |
+| ~website/~       | the project page                                      |
+| ~maak.scm~       | the tasks, and the generator of [[file:AGENTS.md][AGENTS.md]]            |
+
+See [[file:CONTRIBUTING.md][CONTRIBUTING.md]] for how to send a change.
 
 * Copying
 
-Public domain 2023 [[https://luis-felipe.gitlab.io/][Luis Felipe López Acevedo]]. All rights waived.
+MIT License, Copyright © Josep Bigorra.  See [[file:LICENSE][LICENSE]]; every source file carries
+an SPDX header.
 
-This work has been released into the public domain by its author. This
-applies universewide.
+Guile Documentá is a *hard fork* of the original program by [[https://luis-felipe.gitlab.io/][Luis Felipe López
+Acevedo]], who released it into the public domain in 2023 and whose work this
+project builds on.  The fork is maintained independently and the original
+author is not responsible for it.  The logo and the website design remain
+credited to him under their own licenses, in the metadata of ~icon.svg~ and
+~designs/website.svg~.

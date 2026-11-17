@@ -1,3 +1,8 @@
+;; guile-documenta --- tests: boguslibs/objects
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 #| Dummy objects used for testing. |#
 
 (define-module (tests boguslibs objects)

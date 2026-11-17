@@ -1,0 +1,26 @@
+#!/bin/sh
+# guile-documenta --- API documentation for GNU Guile Scheme projects.
+#
+# SPDX-License-Identifier: MIT
+# Copyright © Josep Bigorra <jjbigorra@gmail.com>
+#
+# The launcher is a shell script rather than a `#!guile' script because a
+# shebang cannot portably add a load path, and the sources live in src/ next
+# to this file.  An installed copy replaces the relative path with the
+# directory its modules were installed into (see `maak install').
+
+set -eu
+
+self=$0
+# resolve a symlink chain without readlink -f, which is not portable
+while [ -L "$self" ]; do
+    link=$(readlink "$self")
+    case $link in
+        /*) self=$link ;;
+        *) self=$(dirname "$self")/$link ;;
+    esac
+done
+here=$(CDPATH= cd -- "$(dirname "$self")" && pwd)
+
+exec guile -L "${DOCUMENTA_LOAD_PATH:-$here/../src}" \
+     -c '(begin (use-modules (documenta cli)) (call (command-line) spec))' "$@"

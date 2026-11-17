@@ -1,3 +1,8 @@
+;; guile-documenta --- tests: test-utils
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 #| Test suite for the module (documenta utils). |#
 
 (use-modules (documenta utils)

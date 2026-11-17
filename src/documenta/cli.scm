@@ -1,3 +1,8 @@
+;; guile-documenta --- the command-line interface
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| This module defines the command-line interface of the
@@ -46,9 +51,9 @@ information. |#
    (synopsis "Generate API documentation.")
    (description
     "This is the command-line interface of Guile Documentá, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.4.0")
-   (license public-domain)
-   (author "Luis Felipe López Acevedo")
+   (version "0.5.0")
+   (license expat)
+   (author "Josep Bigorra")
 
    (subcommands
     (list

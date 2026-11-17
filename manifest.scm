@@ -1,20 +1,27 @@
-#| GNU Guix manifest
+;; guile-documenta --- API documentation for GNU Guile Scheme projects.
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
-This file is a GNU Guix manifest file. It can be used with GNU Guix to
-create a profile or an environment to work on the project. |#
+;;; Commentary:
+;;
+;; The development environment: Guile, the libraries the program needs
+;; (guile-config for the command line, guile-lib for stexi), Texinfo to build
+;; the manual, and guile-proba for the tests.  Every `maak' task enters it
+;; through `guix time-machine -C channels.scm', so the Guix revision is the
+;; one `channels.scm' pins.
+;;
+;; The program itself is never installed here: the tasks run `bin/documenta'
+;; from the checkout, because the checkout under test is the one being
+;; developed.
 
-(use-modules (gnu packages))
+(use-modules (gnu packages guile)
+             (gnu packages guile-xyz)
+             (gnu packages texinfo))
 
-
-(define DEV_PACKAGES
-  (list "guile-proba"))
-
-(define PRODUCTION_PACKAGES
-  (list "guile"
-        "guile-config"
-        "guile-lib"
-        "texinfo"))
-
-(specifications->manifest
- (append DEV_PACKAGES
-         PRODUCTION_PACKAGES))
+(packages->manifest
+ (list guile-3.0
+       guile-config
+       guile-lib
+       guile-proba
+       texinfo))

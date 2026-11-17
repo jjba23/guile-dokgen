@@ -1,6 +1,11 @@
 \input texinfo
 @setfilename guile-documenta
 
+@c guile-documenta --- the manual
+@c
+@c SPDX-License-Identifier: MIT
+@c Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 
 @c HEADER
 @settitle Guile Documentá
@@ -19,7 +24,7 @@ This software is a command-line program and accompanying library
 to generate API documentation for
 @url{https://www.gnu.org/software/guile/, GNU Guile} Scheme projects.
 You can find additional information in
-@url{https://luis-felipe.gitlab.io/guile-documenta/, Guile Documentá's website}.
+@url{https://github.com/jjba23/guile-documenta, Guile Documentá's repository}.
 
 Note that a copy of this documentation should also be available locally
 in your device, in @code{info} format, once you install the program. You
@@ -29,9 +34,9 @@ can browse it with any info reader. For example:
 $ info guile-documenta
 @end example
 
-Guile Documentá is a
-@url{https://freedomdefined.org/Definition, Free Cultural Work}
-(@pxref{Copying Information}).
+Guile Documentá is free software under the MIT license
+(@pxref{Copying Information}). It is a hard fork of the original
+program by Luis Felipe López Acevedo.
 
 (The word @emph{documentá} is an imperative form of the Spanish verb
 @emph{documentar}, which means @emph{to document}.)
@@ -53,7 +58,7 @@ Appendices
   Versions released so far and summary of the changes introduced in each
   of them.
 * Copying Information::
-  About the dedication of Guile Documentá to the public domain.
+  The MIT license, and the origin of this fork.
 
 Indices
 
@@ -226,6 +231,20 @@ is used (see the module @ref{documenta_commands}).
 @appendix Version History
 
 @table @dfn
+@item Version 0.5.0, November 17, 2026
+@itemize
+@item
+Hard fork under new maintainership. The license changed from the
+public domain to the MIT license, and every source file now carries an
+SPDX license header.
+@item
+The project layout, the build recipes (a Maak file and a pinned Guix
+channel set for @command{guix time-machine}) and the contribution
+practices follow those of @command{sift}.
+@item
+The sources moved to @file{src/}, and the launcher to @file{bin/documenta}.
+@end itemize
+
 @item Version 0.4.0, July 05, 2025
 @itemize
 @item
@@ -291,11 +310,25 @@ documentation of Guile Scheme libraries in Texinfo format.
 @node Copying Information
 @appendix Copying Information
 
-Public domain 2023 @url{https://luis-felipe.gitlab.io/, Luis Felipe
-López Acevedo}. All rights waived.
+MIT License. Copyright © Josep Bigorra
+@email{jjbigorra@@gmail.com}.
 
-Guile Documentá has been released into the public domain by its
-author. This applies universewide.
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+``Software''), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, subject to
+the conditions in the @file{LICENSE} file distributed with the source,
+which must be included in all copies or substantial portions of the
+Software.
+
+Guile Documentá is a hard fork of the original program by
+@url{https://luis-felipe.gitlab.io/, Luis Felipe López Acevedo}, which
+he released into the public domain in 2023. The fork is maintained
+independently; the original author is not responsible for it. The
+logo and the website design remain credited to him under their own
+licenses (see the metadata of @file{icon.svg} and
+@file{designs/website.svg}).
 @c END APPENDICES
 
 

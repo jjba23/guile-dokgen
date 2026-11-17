@@ -1,7 +1,16 @@
+# build artefacts
+reports/
+*.go
+*.log
+
+# generated HTML
+*.html
+!website/index.html
+
 # Emacs
 *~
 [#]*[#]
 .\#*
 
-# Scheme SRFI-64
-*.log
+# REPL leftovers
+.nrepl-port

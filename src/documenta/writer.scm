@@ -1,3 +1,8 @@
+;; guile-documenta --- writing documentation to disk
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| Procedures for writing data to disk. |#

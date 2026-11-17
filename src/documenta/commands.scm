@@ -1,3 +1,8 @@
+;; guile-documenta --- the commands the program runs
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| This module defines procedures that are associated to every command

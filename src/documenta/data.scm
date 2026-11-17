@@ -1,3 +1,8 @@
+;; guile-documenta --- extracting API data from modules
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 ;;; Commentary:
 
 #| This module defines procedures to retrieve data from Guile Scheme

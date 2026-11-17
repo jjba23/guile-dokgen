@@ -1,3 +1,8 @@
+;; guile-documenta --- tests: test-data
+;;
+;; SPDX-License-Identifier: MIT
+;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
+
 #| Test suite for the module (documenta data). |#
 
 (use-modules (documenta data)
