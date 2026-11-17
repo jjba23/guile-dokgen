@@ -8,6 +8,16 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+* 0.6.2 — 2026-11-17
+
+** Changed
+
+- Every definition is documented in Texinfo: the exceptions, commands, cli and
+  utils modules have a commentary describing their exported names, internal
+  helpers have docstrings instead of comments, and the generated API reference
+  includes them.
+- CONTRIBUTING states the docstring format.
+
 * 0.6.1 — 2026-11-17
 
 ** Changed

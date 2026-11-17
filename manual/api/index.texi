@@ -17,6 +17,13 @@ The following is the list of modules provided by this library.
 This module defines the command-line interface of the @command{dokgen}
 program.  See the @ref{CLI} section for additional information.
 
+The variable @code{spec} is the specification of the interface, a
+@code{<configuration>} record as defined by the guile-config library.  It
+names the program, states its version, license and author, and declares
+the @code{api} subcommand with its @code{sources} argument and its
+@code{destination} keyword.  The procedure @code{call} dispatches a
+command line to the procedure that carries it out.
+
 
 @c %end of fragment
 
@@ -97,6 +104,11 @@ This module defines procedures that are associated to every command
 provided by the command-line interface of the @command{dokgen} program.
 See the @ref{CLI} and @xref{dokgen_cli,(dokgen cli)} sections for
 additional information.
+
+The variable @code{DEFAULT_DOC_PATH} is the directory where the API
+documentation is saved when the user does not choose one; its value is
+@samp{doc/api}.  The documentation is written to a file named
+@file{index.texi} inside that directory.
 
 
 @c %end of fragment
@@ -280,6 +292,37 @@ If the FIELD does not exist, a @var{no-such-field} exception is raised.
 @section (dokgen exceptions)
 
 @c %start of fragment
+
+This module defines the exceptions raised by the @command{dokgen}
+program.
+
+The exception type @code{&residual-export-exception} is raised when a
+module exports a name that is not bound to any object.  This can occur,
+for example, when a developer removes a procedure, variable, etc., from
+a module but forgets to remove its name from the export list.  It
+provides the following procedures:
+
+@itemize @bullet
+@item
+@code{make-residual-export-exception}: the constructor.  It takes the
+reason, the exported residue and the exporter module, in that order.
+
+@item
+@code{residual-export-exception?}: the predicate.
+
+@item
+@code{residual-export-exception-reason}: a string that explains the
+problem.
+
+@item
+@code{residual-export-exception-exported-residue}: the symbol that was
+exported but is unbound.
+
+@item
+@code{residual-export-exception-exporter-module}: the name of the module
+that exports the residue, as a list of symbols.
+
+@end itemize
 
 
 @c %end of fragment
@@ -478,7 +521,10 @@ Default values for optional and keyword parameters are not included.
 @c %start of fragment
 
 This module defines helper procedures that didn't quite fit anywhere
-else.
+else.  They normalize the indentation of documentation strings before
+they are rendered.  The constant @code{DEFAULT_SPACE_INDENT_SIZE} is the
+number of spaces that replace a tab when no other size is given; its
+value is 2.
 
 
 @c %end of fragment
