@@ -7,18 +7,18 @@
 This chapter is written by @command{dokgen stats} from the tree itself,
 so it says what the code is rather than what someone remembers it to be.
 
-It describes the tree at commit @code{9a90896}, on 2026-11-21.
+It describes the tree at commit @code{f20a977}, on 2026-11-21.
 
 @section Size
 @example 
 size
 files             9
 modules           9
-lines of code     935
-lines of comment  232
-blank lines       409
-bytes             79994
-decision points   60
+lines of code     950
+lines of comment  234
+blank lines       410
+bytes             80867
+decision points   59
 @end example
 
 @section The largest files
@@ -27,8 +27,8 @@ decision points that sit beside it.
 
 @example 
 file                            code  comment  decisions
-src/dokgen/templates/stexi.scm  261   28       15
-src/dokgen/stats.scm            152   32       15
+src/dokgen/templates/stexi.scm  266   28       15
+src/dokgen/stats.scm            162   34       14
 src/dokgen/commands.scm         137   36       9
 src/dokgen/diagrams.scm         122   52       12
 src/dokgen/data.scm             116   15       4
@@ -48,7 +48,7 @@ removed.
 
 @example 
 name                added  removed  changed
-Josep Bigorra       5834   3645     9479
+Josep Bigorra       5845   3655     9500
 Luis Felipe         7038   1266     8304
 Christopher Baines  3      19       22
 @end example
@@ -65,11 +65,11 @@ src/dokgen/diagrams.scm         305    0        305
 src/dokgen/templates/stexi.scm  249    44       293
 src/dokgen/data.scm             97     40       137
 src/dokgen/exceptions.scm       76     26       102
-src/dokgen/cli.scm              40     9        49
+src/dokgen/cli.scm              41     10       51
 src/dokgen/utils.scm            5      1        6
 @end example
 
-The repository holds 101 commits, the first on 2023-02-16.
+The repository holds 102 commits, the first on 2023-02-16.
 
 A decision point is an @code{if}, @code{cond}, @code{case}, @code{when},
 @code{unless} or @code{do} in the code.  It counts shapes and not paths,

@@ -91,6 +91,16 @@
     (stats:analyze-source "(display x)"))
 
   (test-equal
+      "Count every line of a string that spans several of them."
+    '((blank . 0) (comment . 0) (code . 3) (decisions . 0))
+    (stats:analyze-source "(display \"one\ntwo\")\n(display x)\n"))
+
+  (test-equal
+      "Count every line of a block comment that spans several of them."
+    '((blank . 0) (comment . 2) (code . 1) (decisions . 0))
+    (stats:analyze-source "#| one\ntwo |#\n(display x)\n"))
+
+  (test-equal
       "Read a string that holds an escaped quote as one string."
     '((blank . 0) (comment . 0) (code . 1) (decisions . 0))
     (stats:analyze-source "(display \"a \\\" b ; still the string\")\n")))

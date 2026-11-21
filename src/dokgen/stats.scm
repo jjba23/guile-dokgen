@@ -72,8 +72,9 @@ repository. |#
   "Return @var{text} with the characters of its comments turned into spaces.
 
   Newlines are kept, so a line of the result is the line with the same
-  number in @var{text}.  Block comments nest, as they do in Scheme, and a
-  semicolon inside a string is part of the string.
+  number in @var{text}, even inside a string that spans several lines.  Block
+  comments nest, as they do in Scheme, and a semicolon inside a string is
+  part of the string.
 
   @strong{text} (string):
     Scheme source.
@@ -82,39 +83,48 @@ repository. |#
     The code of @var{text}, with everything a reader would call a comment
     replaced by whitespace."
   (let [(length (string-length text))]
-    (let loop [(index 0) (in-string? #false) (depth 0) (characters '())]
+    (let loop [(index 0) (in-string? #false) (escaped? #false) (depth 0)
+               (characters '())]
       (if (>= index length)
           (list->string (reverse characters))
           (let* [(character (string-ref text index))
-                 (next (and (< (+ index 1) length) (string-ref text (+ index 1))))
-                 (escaped? (and in-string? (char=? character #\\)))]
+                 (next (and (< (+ index 1) length) (string-ref text (+ index 1))))]
             (cond
-             [escaped?
-              (loop (+ index 2) in-string? depth
-                    (cons (if (char=? character #\newline) #\newline #\space)
-                          (cons #\space characters)))]
+             ;; A backslash makes the character after it part of the string,
+             ;; wherever it stands, so both are kept as they are.
+             [escaped? (loop (+ index 1) #true #false depth
+                             (cons character characters))]
+             [(and in-string? (char=? character #\\))
+              (loop (+ index 1) #true #true depth (cons character characters))]
              [in-string?
-              (loop (+ index 1) (not (char=? character #\")) depth
+              (loop (+ index 1) (not (char=? character #\")) #false depth
                     (cons character characters))]
              [(and (char=? character #\#) next (char=? next #\|))
-              (loop (+ index 2) #false (+ depth 1) (cons* #\space #\space characters))]
+              (loop (+ index 2) #false #false (+ depth 1)
+                    (cons* #\space #\space characters))]
              [(and (> depth 0) (char=? character #\|) next (char=? next #\#))
-              (loop (+ index 2) #false (- depth 1) (cons* #\space #\space characters))]
+              (loop (+ index 2) #false #false (- depth 1)
+                    (cons* #\space #\space characters))]
+             ;; Inside a block comment the character goes, but a newline
+             ;; stays, so the lines of the result are the lines of the source.
              [(> depth 0)
-              (loop (+ index 1) #false depth
+              (loop (+ index 1) #false #false depth
                     (cons (if (char=? character #\newline) #\newline #\space)
                           characters))]
              [(char=? character #\")
-              (loop (+ index 1) #true depth (cons character characters))]
+              (loop (+ index 1) #true #false depth (cons character characters))]
              [(char=? character #\;)
               (let skip [(index index)]
                 (if (or (>= index length) (char=? (string-ref text index) #\newline))
-                    (loop index #false depth characters)
+                    (loop index #false #false depth characters)
                     (skip (+ index 1))))]
-             [else (loop (+ index 1) #false depth (cons character characters))]))))))
+             [else (loop (+ index 1) #false #false depth (cons character characters))]))))))
 
 (define (strip-strings text)
   "Return @var{text} with the characters of its strings turned into spaces.
+
+  Newlines are kept, as in @code{strip-comments}, so that a string which
+  spans several lines does not take the lines with it.
 
   @strong{text} (string):
     Scheme source, with its comments already stripped.
@@ -123,17 +133,22 @@ repository. |#
     The structure of @var{text} without the words a reader would call
     data: a branch form written inside a string is not a branch."
   (let [(length (string-length text))]
-    (let loop [(index 0) (in-string? #false) (characters '())]
+    (let loop [(index 0) (in-string? #false) (escaped? #false) (characters '())]
       (if (>= index length)
           (list->string (reverse characters))
           (let [(character (string-ref text index))]
             (cond
+             [(and in-string? (char=? character #\newline))
+              (loop (+ index 1) #true #false (cons character characters))]
+             [(and in-string? escaped?)
+              (loop (+ index 1) #true #false (cons #\space characters))]
              [(and in-string? (char=? character #\\))
-              (loop (+ index 2) #true (cons* #\space #\space characters))]
+              (loop (+ index 1) #true #true (cons #\space characters))]
              [in-string? (loop (+ index 1) (not (char=? character #\"))
-                               (cons #\space characters))]
-             [(char=? character #\") (loop (+ index 1) #true (cons #\space characters))]
-             [else (loop (+ index 1) #false (cons character characters))]))))))
+                               #false (cons #\space characters))]
+             [(char=? character #\")
+              (loop (+ index 1) #true #false (cons #\space characters))]
+             [else (loop (+ index 1) #false #false (cons character characters))]))))))
 
 (define (code-of text)
   "Return the code of @var{text}, without comments and without strings."

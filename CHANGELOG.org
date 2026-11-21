@@ -8,6 +8,14 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+** Fixed
+
+- The scanners behind ~dokgen stats~ keep the lines of a string or a block
+  comment that spans several of them, instead of taking the newline with the
+  escape.  A file with one such line was counted with fewer lines of code than
+  it has; the suites now hold a case for each.
+
+
 * 0.8.0 — 2026-11-21
 
 ** Added
