@@ -32,6 +32,7 @@ graph LR
 
 (define-module (dokgen commands)
   #:declarative? #false                 ; Because it loads modules.
+  #:use-module ((dokgen assets) #:prefix assets:)
   #:use-module ((dokgen data) #:prefix data:)
   #:use-module ((dokgen diagrams) #:prefix diagrams:)
   #:use-module ((dokgen stats) #:prefix stats:)
@@ -151,7 +152,10 @@ graph LR
              (stexi:api-chapter
               module-names
               (map stexi:module-section module-names)))
-            api-file-path))
+            api-file-path)
+      ;; The chapter is readable as it is; these two make it pleasant to
+      ;; read in a browser, beside the Texinfo a manual can copy.
+      (assets:write-assets! destination))
 
     (format #true "API documentation saved to ~a~%" destination)))
 
@@ -295,6 +299,7 @@ graph LR
                               DEFAULT_STATS_FILE_INDEX))]
 
     (save (stexi->texi (stexi:stats-chapter statistics)) path)
+    (assets:write-assets! destination)
 
     (format #true "~a files, ~a modules, ~a lines of code, ~a decision points~%"
             (length files) (length module-names)

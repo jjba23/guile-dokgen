@@ -90,6 +90,11 @@
     (string-contains (index-of TEST_DIR) "@image{diagrams/examplelib_diagrammed-"))
 
   (test-assert
+      "Write the stylesheet and the script the chapter is read with."
+    (and (file-exists? (format #f "~a/dokgen.css" TEST_DIR))
+         (file-exists? (format #f "~a/dokgen.js" TEST_DIR))))
+
+  (test-assert
       "Write the diagram's image beside the chapter."
     (pair? (scandir (format #f "~a/diagrams" TEST_DIR)
                     (lambda (name) (string-suffix? ".png" name)))))
@@ -121,6 +126,11 @@
   (test-assert
       "Title the chapter a manual can include by name."
     (string-contains (stats-of TEST_DIR) "@chapter Statistics"))
+
+  (test-assert
+      "Write the stylesheet and the script beside the statistics too."
+    (and (file-exists? (format #f "~a/dokgen.css" TEST_DIR))
+         (file-exists? (format #f "~a/dokgen.js" TEST_DIR))))
 
   (test-assert
       "Report the size of what it measured."

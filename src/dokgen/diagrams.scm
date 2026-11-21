@@ -69,8 +69,10 @@ reader has to copy. |#
 ;; The command that renders a diagram when the caller names no other.  The
 ;; renderer gets the diagram's source as %i and the path to write as %o,
 ;; without an extension, so that a renderer writing PNG and one writing SVG
-;; are configured by the same option.
-(define DEFAULT_MERMAID_COMMAND "mmdc --input %i --output %o.png")
+;; are configured by the same option.  Twice the size and no background,
+;; because the image is read on a page of any width and on a page that may
+;; be dark.
+(define DEFAULT_MERMAID_COMMAND "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent")
 
 ;; The extensions an image may have, most portable first: texi2any looks
 ;; for the first four on its own, and an SVG has to be named in the

@@ -52,7 +52,7 @@ command line to the procedure that carries it out. |#
 (define mermaid-command
   (switch (name 'mermaid-command)
           (synopsis "Command that draws a mermaid diagram, with %i standing for the diagram's source and %o for the path its image is written to. An empty command draws nothing.")
-          (example "mmdc --input %i --output %o.png")
+          (example "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent")
           (default DEFAULT_MERMAID_COMMAND)))
 
 
