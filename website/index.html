@@ -116,7 +116,10 @@ dokgen api mylib --destination mydocs/api</pre>
 dokgen api somelibx --mermaid-command "mmdc --input %i --output %o.png"
 
 <span class="comment"># Fail the build when an exported procedure has no docstring</span>
-dokgen check somelibx</pre>
+dokgen check somelibx
+
+<span class="comment"># Measure the tree and write a chapter of numbers about it</span>
+dokgen stats somelibx --destination doc/api</pre>
 
         <p>
           Every definition also carries an anchor built from its module and its

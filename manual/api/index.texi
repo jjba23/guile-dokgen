@@ -18,6 +18,8 @@ The following is the list of modules provided by this library.
 @item
 @ref{dokgen_exceptions,(dokgen exceptions)}
 @item
+@ref{dokgen_stats,(dokgen stats)}
+@item
 @ref{dokgen_templates_stexi,(dokgen templates stexi)}
 @item
 @ref{dokgen_utils,(dokgen utils)}
@@ -210,6 +212,28 @@ files and directories, as for @code{api}.
 
 @strong{Return value} (integer): The number of names reported, so that
 the caller decides what an undocumented name means for the exit status.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_commands_stats}
+@deffn Procedure stats sources OPT: destination
+Measure the tree SOURCES hold and write its statistics chapter.
+
+@strong{sources} (list of strings): Absolute or relative paths to Scheme
+files and directories, as for @code{api}.
+
+@strong{destination} (string): Optional path to a directory where the
+Texinfo chapter will be saved.  If not provided, @var{DEFAULT_DOC_PATH}
+is used.  The chapter is named @file{stats.texi}, so that a manual can
+include it beside the API chapter @code{api} writes.
+
+@strong{Result}: The statistics are saved to the @var{destination}
+directory, and the numbers a reader of a terminal wants are printed.
 
 @end deffn
 
@@ -670,6 +694,150 @@ This record type has the following fields:
 
 @c %start of fragment
 
+@node dokgen_stats
+@section (dokgen stats)
+
+@c %start of fragment
+
+This module measures a tree: how much of it is code, how much of that
+code branches, who wrote it, and which files cost the most to keep.
+
+What it reports is a small set of numbers a reader can reproduce.  The
+lines of code, of comment and the bytes come from the files themselves;
+the decision points are the branching forms a reader can find with a
+search; the authors and the churn come from the repository's own
+history.  Nothing here guesses, and nothing here grades: a file with
+many decision points is a file that branches often, not a file that is
+badly written.
+
+@example 
+(analyze-source "(display x)\n")
+ => ((blank . 0) (comment . 0) (code . 1) (decisions . 0))
+@end example
+
+The parsers are separate from the calls that feed them, so the suite
+that checks a log can hand over a log written by hand instead of
+building a repository.
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Procedures
+
+@c %start of fragment
+
+@anchor{dokgen_stats_analyze-file}
+@deffn Procedure analyze-file path
+Return what the file at @var{path} is made of.
+
+@strong{path} (string): A path to a file of Scheme source.
+
+@strong{Return value} (alist): Its name, the counts of
+@code{analyze-source} and its size in bytes.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_stats_analyze-source}
+@deffn Procedure analyze-source text
+Return what @var{text} is made of.
+
+@strong{text} (string): Scheme source.
+
+@strong{Return value} (alist): Lines of code, of comment and of nothing,
+and the decision points the code holds; see @code{count-lines}.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_stats_git-log}
+@deffn Procedure git-log directory
+Return the history of @var{directory} as git prints it, or
+@code{#false}.
+
+@strong{directory} (string): A path inside a repository; git finds the
+repository above it.
+
+@strong{Return value} (string or @code{#false}): What @command{git log}
+prints for the commits that touch the tree, one line per commit and one
+per file it touched, or @code{#false} when git could not read one.  It
+is run without a shell, so a directory is a path and not something a
+shell could read.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_stats_git-stats}
+@deffn Procedure git-stats directory
+Return the numbers of the history of @var{directory}, or @code{#false}.
+
+@strong{directory} (string): A path inside a repository.
+
+@strong{Return value} (alist or @code{#false}): What
+@code{parse-git-log} returns, or @code{#false} when the tree has no
+history git can read.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_stats_parse-git-log}
+@deffn Procedure parse-git-log text
+Return the history in @var{text} as the numbers a report needs.
+
+@strong{text} (string): The output @code{git-log} returns.
+
+@strong{Return value} (alist or @code{#false}): The commits, the newest
+of them, the oldest and the newest dates, and what each author and each
+file cost, largest first.  @code{#false} when there is no history in
+@var{text}.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_stats_project-stats}
+@deffn Procedure project-stats files
+Return the totals of @var{files} and the files in the order to show
+them.
+
+@strong{files} (list of alists): What @code{analyze-file} returns for
+each file of the project.
+
+@strong{Return value} (alist): @code{files}, largest first and then by
+name, and the totals of the lines, the decision points and the bytes.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
 @node dokgen_templates_stexi
 @section (dokgen templates stexi)
 
@@ -774,6 +942,27 @@ Return the parameters of the given procedure as a string.
 @strong{Return value} (string): A string listing the names of all the
 required, optional, keyword, and rest of parameters of the procedure.
 Default values for optional and keyword parameters are not included.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_templates_stexi_stats-chapter}
+@deffn Procedure stats-chapter statistics
+Return the statistics of a project as an stexi chapter.
+
+@strong{statistics} (alist): What @code{(dokgen commands) stats}
+measured and counted: @code{totals} from @code{(dokgen stats)
+project-stats}, the @code{coverage} of the exported names, the number of
+@code{modules}, and @code{git}, the history or @code{#false} when the
+tree has none.
+
+@strong{Return value} (stexi): A chapter describing the tree: its size,
+where its code sits, how much of its API is documented, who wrote it and
+what churns.
 
 @end deffn
 

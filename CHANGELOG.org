@@ -8,6 +8,33 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+* 0.8.0 — 2026-11-21
+
+** Added
+
+- ~dokgen stats~, which measures a tree and writes the result as a Texinfo
+  chapter: the lines of code, of comment and of nothing, the bytes, the
+  modules the files make, how much of the exported API carries a
+  documentation string, what each author added and removed, and which of the
+  measured files churn the most.  The chapter is a snapshot that names the
+  commit it describes, so a manual can include it and a reader can tell how
+  old the numbers are.
+- The tree that dokgen documents is measured the same way: ~maak docs~ now
+  regenerates ~manual/api/stats.texi~ beside the API reference, the manual's
+  new *Statistics* chapter includes it, and ~maak release~ takes both again
+  after it writes the version.
+- Decision points: how often a form that branches or loops is opened in the
+  code, counted after comments and strings are stripped, so a branch written
+  inside a string is not a branch.  It counts shapes and not paths, and it
+  grades nothing.
+
+** Changed
+
+- Source scanning is one place: the list of files a command works on, and
+  the directory the modules are named from, come from one helper instead of
+  being computed twice.
+
+
 ** Fixed
 
 - ~guix.scm~, the package definition of the working tree, evaluates again: it

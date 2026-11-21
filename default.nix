@@ -62,6 +62,11 @@ stdenv.mkDerivation {
     ./bin/dokgen api --destination check-api ./src/dokgen
     test -s check-api/index.texi
     ./bin/dokgen check ./src/dokgen
+    # The build tree carries no history, which is the fallback the
+    # statistics chapter is written for: it runs, and says so.
+    ./bin/dokgen stats --destination check-api ./src/dokgen
+    test -s check-api/stats.texi
+    grep -q 'no git history' check-api/stats.texi
     runHook postCheck
   '';
 

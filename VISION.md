@@ -40,6 +40,12 @@ What exists and is tested:
 - **Definitions that can be pointed at.** Every definition carries an anchor
   built from its module and its name, so a hand-written chapter can reference
   one procedure rather than a whole section.
+- **Numbers about the tree.** `dokgen stats` measures the sources and the
+  history and writes them as a chapter: lines of code and comment, the
+  decision points the code branches through, how much of the exported API is
+  documented, and the authors and churn git reports. It is a snapshot that
+  names the commit it describes, which is what lets a manual include it
+  without the numbers pretending to be live.
 - **A manual that is generated and a manual that is written.** The API chapter
   is `manual/api/index.texi`, produced by `maak docs` from the project's own
   sources and included by `manual/main.texi`, which is written by hand. The
@@ -90,6 +96,7 @@ the output.
   changes one file in a diff and the reviewer reads that file.
 - **A listing of what was skipped and why**, on standard output, so a name that
   is missing from the manual is a line in a report and not a puzzle.
+  *(The undocumented half of this is `dokgen check`, built in 0.7.0.)*
 
 ## Contributions that would move the needle
 

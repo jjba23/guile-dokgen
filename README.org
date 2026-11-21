@@ -37,6 +37,11 @@ manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds i
 - *A check.*  ~dokgen check src/mylib~ exits non-zero when an exported
   procedure or macro has no docstring, so a build can hold a library to a
   documented API.
+- *A measurement.*  ~dokgen stats src/mylib~ writes a chapter of numbers about
+  the tree: lines of code and of comment, the decision points it branches
+  through, how much of its API is documented, and the authors and churn
+  @command{git log} reports.  The chapter this project's manual shows is that
+  command's own output.
 
 * Install
 

@@ -40,6 +40,7 @@
             version-check
             docs
             docs-check
+            stats
             manual
             deploy
             repl
@@ -134,10 +135,11 @@ itself rather than a pile of them."
     "| xargs -0 -n 1 sh -c 'guild compile -L ./src -L . -o \"$(mktemp)\" \"$1\"' sh")))
 
 (define (docs)
-  "Regenerate the API reference, manual/api/index.texi, from the sources.
+  "Regenerate the API reference and the statistics, from the sources.
 
 The program documents itself: the reference is not written by hand, and a
-procedure that is exported is in it.
+procedure that is exported is in it, and the numbers this chapter reports
+are the ones its own tree holds.
 
 The diagrams the sources carry are not drawn here.  The renderer is a
 JavaScript tool the pinned environment does not have, so the images under
@@ -151,15 +153,32 @@ that changed without its image following."
          ;; Quoted, so the empty value survives the shell the task runs in.
          "--mermaid-command" (shell-quote "")
          "./src/dokgen")
+   #:verbose? #t)
+  (stats))
+
+(define (stats)
+  "Regenerate manual/api/stats.texi, the measured statistics of this tree.
+
+It is generated apart from `maak docs', and checked apart too: the chapter
+names the commit it describes, so it is stale by one commit whenever
+anything is committed after it, and a check that failed for that would
+teach a reader to ignore the check.  `maak release' regenerates it, so the
+tree a tag names carries numbers taken from that tree."
+  (time-machine-manifest-shell
+   (list "sh" "bin/dokgen" "stats"
+         "--destination" "manual/api"
+         "./src/dokgen")
    #:verbose? #t))
 
 (define (docs-check)
   "Fail when manual/api/index.texi is not what the sources generate.
 
 The reference is generated, so a committed copy that differs from a fresh one
-is a procedure that was changed without the documentation following."
+is a procedure that was changed without the documentation following.  The
+statistics chapter is regenerated but not compared: it describes a commit,
+and any commit after it makes it different by design."
   (docs)
-  (git:git (list "diff" "--exit-code" "--" "manual/api")))
+  (git:git (list "diff" "--exit-code" "--" "manual/api/index.texi")))
 
 (define (manual)
   "Build the HTML manual into reports/manual.
@@ -312,6 +331,10 @@ With no argument, say what the current version is and change nothing."
                       #:args (list tag)))
         (log-info "release: ~a -> ~a" current requested)
         (write-version! current requested)
+        ;; The reference quotes the version, and the statistics name the
+        ;; commit they were measured at: both are taken again after the
+        ;; version is written and before the tree is tagged.
+        (docs)
         (version-check)
         (check)
         (test)
