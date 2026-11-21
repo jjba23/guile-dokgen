@@ -20,8 +20,12 @@ docstring.
 dokgen api src/mylib
 #+end_src
 
+See more at https://jointhefreeworld.org/dokgen
+
 The result is ~doc/api/index.texi~ by default, ready for ~texi2any~.  The
 manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds it as HTML.
+
+[[file:website/img/icon.svg]]
 
 * What it does
 
