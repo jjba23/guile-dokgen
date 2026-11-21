@@ -113,7 +113,7 @@ dokgen api mylib --destination mydocs/api</pre>
 
         <pre>
 <span class="comment"># Draw the diagrams your docstrings hold (the default renderer is mmdc)</span>
-dokgen api somelibx --mermaid-command "mmdc --input %i --output %o.png"
+dokgen api somelibx --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
 
 <span class="comment"># Fail the build when an exported procedure has no docstring</span>
 dokgen check somelibx
@@ -124,7 +124,11 @@ dokgen stats somelibx --destination doc/api</pre>
         <p>
           Every definition also carries an anchor built from its module and its
           name, so a chapter written by hand can point at one procedure with
-          <code>@ref{dokgen_cli_call}</code>.
+          <code>@ref{dokgen_cli_call}</code> <span class="comment">&mdash; and the
+          stylesheet and script written beside the chapter turn those definitions
+          into cards with an index you can filter, signatures you can copy, details
+          you can fold and diagrams you can zoom. This manual is an example: its
+          API chapter is that output.</span>
         </p>
 
         <p>

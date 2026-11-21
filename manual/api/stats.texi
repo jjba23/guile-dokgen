@@ -7,18 +7,18 @@
 This chapter is written by @command{dokgen stats} from the tree itself,
 so it says what the code is rather than what someone remembers it to be.
 
-It describes the tree at commit @code{f20a977}, on 2026-11-21.
+It describes the tree at commit @code{99c02cd}, on 2026-11-21.
 
 @section Size
 @example 
 size
-files             9
-modules           9
-lines of code     950
-lines of comment  234
-blank lines       410
-bytes             80867
-decision points   59
+files             10
+modules           10
+lines of code     1006
+lines of comment  262
+blank lines       539
+bytes             108939
+decision points   62
 @end example
 
 @section The largest files
@@ -27,19 +27,20 @@ decision points that sit beside it.
 
 @example 
 file                            code  comment  decisions
-src/dokgen/templates/stexi.scm  266   28       15
+src/dokgen/templates/stexi.scm  307   28       18
 src/dokgen/stats.scm            162   34       14
-src/dokgen/commands.scm         137   36       9
-src/dokgen/diagrams.scm         122   52       12
+src/dokgen/commands.scm         140   38       9
+src/dokgen/diagrams.scm         122   54       12
 src/dokgen/data.scm             116   15       4
 src/dokgen/cli.scm              68    22       1
 src/dokgen/utils.scm            42    17       4
 src/dokgen/exceptions.scm       30    23       0
+src/dokgen/assets.scm           12    24       0
 src/dokgen/writer.scm           7     7        0
 @end example
 
 @section Documentation
-35 of the 35 exported procedures and macros have a documentation string
+37 of the 37 exported procedures and macros have a documentation string
 (100%).
 
 @section Authors
@@ -48,7 +49,7 @@ removed.
 
 @example 
 name                added  removed  changed
-Josep Bigorra       5845   3655     9500
+Josep Bigorra       5910   3687     9597
 Luis Felipe         7038   1266     8304
 Christopher Baines  3      19       22
 @end example
@@ -59,7 +60,7 @@ where a change costs the most to review.
 
 @example 
 name                            added  removed  changed
-src/dokgen/stats.scm            359    0        359
+src/dokgen/stats.scm            395    21       416
 src/dokgen/commands.scm         266    60       326
 src/dokgen/diagrams.scm         305    0        305
 src/dokgen/templates/stexi.scm  249    44       293
@@ -69,7 +70,7 @@ src/dokgen/cli.scm              41     10       51
 src/dokgen/utils.scm            5      1        6
 @end example
 
-The repository holds 102 commits, the first on 2023-02-16.
+The repository holds 103 commits, the first on 2023-02-16.
 
 A decision point is an @code{if}, @code{cond}, @code{case}, @code{when},
 @code{unless} or @code{do} in the code.  It counts shapes and not paths,

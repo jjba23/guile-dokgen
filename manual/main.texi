@@ -154,6 +154,48 @@ command. For example:
 @include api/index.texi
 @end verbatim
 
+@section In a browser
+
+The chapter is complete Texinfo, and Info and print readers need nothing
+else.  For the HTML a reader arrives at, @command{dokgen} also writes two
+files beside it:
+
+@table @file
+@item dokgen.css
+The stylesheet: a card for each definition with its signature at the top,
+an index of them down the side, a light and a dark page, and diagrams that
+fit the column they sit in.
+@item dokgen.js
+The behaviour: a filter over that index, a button that copies a signature,
+a folded tail on the long definitions, and a diagram that opens into
+something a reader can zoom into and drag.
+@end table
+
+Neither is required, and nothing in the chapter depends on them: a manual
+that ignores both still reads.  A build that uses them copies both beside
+the pages, because Texinfo copies neither, and points at them from the
+page head:
+
+@example
+$ makeinfo --html -I doc/api \
+    --css-ref=dokgen.css \
+    -c 'EXTRA_HEAD=<script src="dokgen.js" defer></script>' \
+    -o html doc/main.texi
+$ cp doc/api/dokgen.css doc/api/dokgen.js html/
+@end example
+
+@code{EXTRA_HEAD} is what reaches every page of a manual split into one
+page per node; a single-page build carries the stylesheet in the head as
+well.  The @samp{dokgen.css} next to @code{--css-ref} is the file's name
+in the output directory, which is where the copy above puts it.
+
+@quotation Note
+The reader's own preference decides the theme, and the light or dark
+choice they make on a page is remembered in the browser.  Nothing is sent
+anywhere: the script has no dependency, no network call and no global
+name beyond its own closure.
+@end quotation
+
 The chapter opens with the list of modules it documents, each one a link,
 and every definition carries an anchor built from the module's name and
 the name of the object: the procedure @code{call} of the module
@@ -200,7 +242,7 @@ uses. @code{mmdc}, from @url{https://github.com/mermaid-js/mermaid-cli,
 mermaid-cli}, is the default:
 
 @example
-$ dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png"
+$ dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
 @end example
 
 @code{%i} is the file @command{dokgen} wrote for the diagram and @code{%o}
@@ -216,6 +258,13 @@ images builds its manual without a renderer. It is also why
 @command{dokgen} writes the @file{.mmd} whatever happens: a diagram whose
 image is missing is still a diagram a reader can draw later.
 @end quotation
+
+A diagram is drawn at twice the size it is shown at and with no
+background, so that it stays sharp on a page of any width and on a page
+that is dark.  With the stylesheet and the script beside it
+(see @ref{Usage}) the image is the thing a reader clicks: it opens
+over the page, where the wheel zooms, a drag moves it, and @kbd{Escape}
+closes it.
 
 When a diagram has no image --- because no renderer is installed, or
 because the one that ran failed --- the source is written into the manual
@@ -328,7 +377,7 @@ dokgen api mylib.scm mylib etc
 dokgen api mylib --destination mydoc/api
 
 # Draw the diagrams the docstrings hold:
-dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png"
+dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
 @end example
 
 @subsection Interface specification
@@ -353,7 +402,7 @@ documentation holds are saved to a @file{diagrams} directory inside it.
 Optional command that draws a mermaid diagram, with @code{%i} standing
 for the diagram's source and @code{%o} for the path its image is
 written to, without an extension. It defaults to
-@code{mmdc --input %i --output %o.png}; an empty value draws nothing
+@code{mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent}; an empty value draws nothing
 and uses the diagrams already in the destination
 (@pxref{Diagrams}).
 @end defblock
@@ -478,6 +527,20 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.9.0, November 21, 2026
+@itemize
+@item
+The HTML a reader arrives at is built to be read: a stylesheet and a script
+are written beside the chapter, with a card and a signature for every
+definition, an index of them with a filter, copyable signatures, foldable
+details, a theme that follows the reader, and diagrams that zoom.
+@item
+Every module section opens with an overview of the names it exports, each
+linked to its own definition.
+@item
+Diagrams are drawn at twice the size they are shown at, with no background.
+@end itemize
+
 @item Version 0.8.0, November 21, 2026
 @itemize
 @item

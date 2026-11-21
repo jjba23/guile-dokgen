@@ -174,25 +174,45 @@ tree a tag names carries numbers taken from that tree."
   "Fail when manual/api/index.texi is not what the sources generate.
 
 The reference is generated, so a committed copy that differs from a fresh one
-is a procedure that was changed without the documentation following.  The
-statistics chapter is regenerated but not compared: it describes a commit,
-and any commit after it makes it different by design."
+is a procedure that was changed without the documentation following.  So is
+the stylesheet and the script the chapter is read with.  The statistics
+chapter is regenerated but not compared: it describes a commit, and any
+commit after it makes it different by design."
   (docs)
-  (git:git (list "diff" "--exit-code" "--" "manual/api/index.texi")))
+  ;; The stylesheet and the script are constants of the program, so a copy
+  ;; that differs from them is a file that was edited by hand.
+  (git:git (list "diff" "--exit-code" "--"
+                 "manual/api/index.texi"
+                 "manual/api/dokgen.css"
+                 "manual/api/dokgen.js")))
 
 (define (manual)
   "Build the HTML manual into reports/manual.
 
 Texinfo looks for an image where it is told to, not where the text that
 names it lives, so the directory the generated chapter sits in goes on the
-include path.  Nothing copies an image into the output either, so the
-diagrams are put beside the pages that point at them."
+include path.  Nothing copies an image or a stylesheet into the output
+either, so the diagrams, the stylesheet and the script are put beside the
+pages that point at them."
   (run (list "mkdir" "-p" manual-dist))
   (time-machine-manifest-shell
    (list "makeinfo" "--html" (~ "--css-ref=~a" manual-css-url)
          "-c" "SHOW_TITLE=true" "-I" "manual/api"
+         ;; The stylesheet and the script dokgen writes beside the chapter
+         ;; are what make the pages read the way the manual shows; the site
+         ;; stylesheet is already in the head, so these come after it.
+         "-c" (shell-quote
+               (string-append
+                "EXTRA_HEAD="
+                "<link rel=\"stylesheet\" href=\"dokgen.css\">"
+                "<script src=\"dokgen.js\" defer></script>"))
          "-o" manual-dist "manual/main.texi")
    #:verbose? #t)
+  (for-each (lambda (asset)
+              (when (file-exists? (in-vicinity "manual/api" asset))
+                (run (list "cp" (in-vicinity "manual/api" asset) manual-dist)
+                     #:verbose? #t)))
+            '("dokgen.css" "dokgen.js"))
   (when (file-exists? (in-vicinity "manual/api" "diagrams"))
     (run (list "cp" "-r" "manual/api/diagrams" manual-dist) #:verbose? #t))
   (log-info "open file://~a/~a/index.html" (getcwd) manual-dist))

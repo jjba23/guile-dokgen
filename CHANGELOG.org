@@ -16,6 +16,33 @@ original author; their record is the version history in the manual.
   it has; the suites now hold a case for each.
 
 
+* 0.9.0 — 2026-11-21
+
+** Added
+
+- The HTML a reader arrives at is built to be read.  ~dokgen api~ and
+  ~dokgen stats~ now write ~dokgen.css~ and ~dokgen.js~ beside the chapter they
+  generate: a card for each definition with its signature at the top, an index
+  of those definitions down the side with a filter, a button that copies a
+  signature, a folded tail on the long definitions, a light and a dark page
+  that follow the reader's own preference, and diagrams that open into a
+  viewer with zoom and drag.  Both files are progressive and hold no
+  dependency: a manual that ignores them gets the same chapter it would have
+  had, and Info and print never see them.
+- Every module section opens with an *Overview*: the names the module exports,
+  each linked to its own definition and followed by the sentence that
+  documents it, so a reader looking for one of them scans a list and not a
+  chapter.
+- ~maak manual~ points this project's HTML at both files, so the published
+  manual is the example the manual talks about.
+
+** Changed
+
+- Diagrams are drawn at twice the size they are shown at and with no
+  background (~--scale 2 --backgroundColor transparent~ is the new default
+  renderer command), so that they stay sharp on a page of any width and on a
+  page that is dark.
+
 * 0.8.0 — 2026-11-21
 
 ** Added

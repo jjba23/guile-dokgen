@@ -40,6 +40,12 @@ What exists and is tested:
 - **Definitions that can be pointed at.** Every definition carries an anchor
   built from its module and its name, so a hand-written chapter can reference
   one procedure rather than a whole section.
+- **A page built to be read.** Beside the Texinfo, dokgen writes a stylesheet
+  and a script: one card per definition with its signature at the top, an
+  index of them down the side with a filter, a button that copies a signature,
+  a folded tail on the long ones, a light and a dark page, and diagrams that
+  open into something a reader can zoom into. They are progressive: a manual
+  that ignores them gets the same chapter it would have had.
 - **Numbers about the tree.** `dokgen stats` measures the sources and the
   history and writes them as a chapter: lines of code and comment, the
   decision points the code branches through, how much of the exported API is
