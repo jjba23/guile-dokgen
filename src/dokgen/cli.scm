@@ -80,7 +80,13 @@ command line to the procedure that carries it out. |#
      (configuration
       (name 'check)
       (synopsis "Report the exported procedures and macros that have no documentation string.")
-      (arguments (list sources)))))))
+      (arguments (list sources)))
+
+     (configuration
+      (name 'stats)
+      (synopsis "Measure the sources: lines, decision points, authors and churn.")
+      (arguments (list sources))
+      (keywords (list destination)))))))
 
 
 
@@ -102,7 +108,7 @@ command line to the procedure that carries it out. |#
     display help information."
   (let* [(options (getopt-config-auto command spec))
          (sources (option-ref options '(sources)))
-         (destination (option-ref options 'destination))
+         (destination (or (option-ref options 'destination) DEFAULT_DOC_PATH))
          (mermaid-command (or (option-ref options 'mermaid-command)
                               DEFAULT_MERMAID_COMMAND))]
 
@@ -110,6 +116,7 @@ command line to the procedure that carries it out. |#
       (lambda ()
         (match (full-command options)
           ((_ "api") (api sources destination mermaid-command))
+          ((_ "stats") (stats sources destination))
           ;; A name with no documentation is what `check' exists to find,
           ;; so it is what its exit status has to say.
           ((_ "check") (unless (zero? (check sources)) (exit 1)))))

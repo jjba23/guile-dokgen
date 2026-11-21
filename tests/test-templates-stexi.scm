@@ -8,6 +8,7 @@
 (use-modules ((dokgen templates stexi) #:prefix stexi:)
              (ice-9 session)
              (proba utils)
+             (srfi srfi-1)
              (srfi srfi-9)
              (srfi srfi-64))
 
@@ -76,6 +77,33 @@
   (name being-name)
   (binomial being-binomial))
 
+
+;;; STATISTICS TEST DATA
+
+;; What (dokgen commands) stats measures and counts, cut down to two files
+;; so that every section of the chapter has something to say.
+(define (example-statistics history)
+  `((totals . ((files . (((name . "b.scm") (blank . 0) (comment . 0) (code . 1)
+                          (decisions . 0) (bytes . 10))
+                         ((name . "a.scm") (blank . 1) (comment . 2) (code . 3)
+                          (decisions . 1) (bytes . 40))))
+               (blank . 1) (comment . 2) (code . 4) (decisions . 1) (bytes . 50)))
+    (coverage . (3 . 4))
+    (modules . 2)
+    (git . ,history)))
+
+(define (example-history)
+  '((commits . 7) (commit . "abc1234") (last . "2026-11-21") (first . "2026-11-01")
+    (authors . (("A Writer" 10 2)))
+    (files . (("a.scm" 5 1)))))
+
+(define (chapter-sections nodes)
+  "Return the titles of the sections the chapter NODES holds."
+  (append-map (lambda (node)
+                (if (and (pair? node) (eq? (car node) 'section))
+                    (list (second node))
+                    '()))
+              nodes))
 
 
 ;;; TEST SUITE
@@ -369,5 +397,48 @@
         test-name
       (string-append "." " " (symbol->string rest-name))
       (stexi:procedure-parameters arbitrary-arguments))))
+
+
+(test-group
+    (unit-name stexi:stats-chapter)
+
+  (let [(nodes (stexi:stats-chapter (example-statistics #false)))]
+
+    (test-equal
+        "Title the chapter a manual can include beside its API chapter."
+      '(node (% (name "Statistics")))
+      (second (cdr nodes)))
+
+    (test-equal
+        "Report the size, the largest files and how much is documented."
+      '("Size" "The largest files" "Documentation")
+      (chapter-sections nodes))
+
+    (test-assert
+        "Say that the history is missing rather than inventing one."
+      (any (lambda (node)
+             (and (pair? node)
+                  (eq? (car node) 'para)
+                  (string? (second node))
+                  (string-contains (second node) "no git history")))
+           nodes)))
+
+
+  (let [(nodes (stexi:stats-chapter (example-statistics (example-history))))]
+
+    (test-equal
+        "Report the authors and the churn when there is a history."
+      '("Size" "The largest files" "Documentation" "Authors"
+        "The files that change most")
+      (chapter-sections nodes))
+
+    (test-assert
+        "Count the documented names of the exported ones."
+      (any (lambda (node)
+             (and (pair? node)
+                  (eq? (car node) 'para)
+                  (string? (second node))
+                  (string-contains (second node) "3 of the 4 exported")))
+           nodes))))
 
 (test-end SUITE_NAME)

@@ -20,13 +20,15 @@ of the Texinfo documentation of a given software project. |#
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-13)
   #:use-module (texinfo)
   #:use-module (texinfo reflection)
   #:export (api-binding
             api-chapter
             module-description
             module-section
-            procedure-parameters))
+            procedure-parameters
+            stats-chapter))
 
 
 ;;; HELPERS
@@ -393,3 +395,172 @@ of the Texinfo documentation of a given software project. |#
     `(defvr
        (% (category "Variable") (name ,name-string))
        (verbatim ,(format #f "~s" value)))))
+
+
+;;; STATISTICS
+
+(define (at-most count items)
+  "Return the first COUNT of ITEMS, or all of them when there are fewer."
+  (if (or (<= count 0) (null? items))
+      '()
+      (cons (first items) (at-most (- count 1) (cdr items)))))
+
+(define (padded-rows rows)
+  "Return ROWS as text whose columns line up.
+
+  @strong{rows} (list of lists of strings):
+    A table, without a header: the first row names the columns and the
+    rest are its lines.
+
+  @strong{Return value} (string):
+    The rows, one per line, with every column as wide as its widest cell
+    and two spaces between columns.  A monospaced block is what Texinfo
+    renders the same way in a browser, in Info and in print, which is what
+    a table of numbers needs."
+  (let* [(widths (fold (lambda (row widths)
+                         (map (lambda (cell width) (max (string-length cell) width))
+                              row widths))
+                       (map string-length (first rows))
+                       (cdr rows)))
+         (line (lambda (row)
+                 (string-trim-right
+                  (string-join (map (lambda (cell width)
+                                      (string-pad-right cell (+ width 2)))
+                                    row widths)
+                               ""))))]
+    (string-join (map line rows) "\n")))
+
+(define (file-table files)
+  "Return the FILES as lines of a table, largest first.
+
+  @strong{files} (list of alists):
+    What @code{(dokgen stats) analyze-file} returns for each file.
+
+  @strong{Return value} (string):
+    The name, the lines of code, the lines of comment and the decision
+    points of each file."
+  (padded-rows
+   (cons '("file" "code" "comment" "decisions")
+         (map (lambda (file)
+                (list (assoc-ref file 'name)
+                      (number->string (assoc-ref file 'code))
+                      (number->string (assoc-ref file 'comment))
+                      (number->string (assoc-ref file 'decisions))))
+              files))))
+
+(define (cost-table entries)
+  "Return ENTRIES as lines of a table of who or what cost how much.
+
+  @strong{entries} (list of triples):
+    A name and the lines added and removed under it.
+
+  @strong{Return value} (string):
+    The name, what it added, what it removed and the two added up."
+  (padded-rows
+   (cons '("name" "added" "removed" "changed")
+         (map (lambda (entry)
+                (list (first entry)
+                      (number->string (second entry))
+                      (number->string (third entry))
+                      (number->string (+ (second entry) (third entry)))))
+              entries))))
+
+(define (size-table totals files modules)
+  "Return the size of the tree as lines of a table.
+
+  @strong{totals} (alist):
+    What @code{(dokgen stats) project-stats} returned.
+
+  @strong{files} (list of alists):
+    The measured files, one per row of the table that counts them.
+
+  @strong{modules} (integer):
+    How many modules the files make.
+
+  @strong{Return value} (string):
+    The rows a reader scans first: how much there is of everything.  It is
+    a monospaced block and not a @code{@@table} because Texinfo wants a
+    heading on every item of one, and because every other table in the
+    chapter is monospaced already."
+  (padded-rows
+   `(("size" "")
+     ("files" ,(number->string (length files)))
+     ("modules" ,(number->string (or modules 0)))
+     ("lines of code" ,(number->string (assoc-ref totals 'code)))
+     ("lines of comment" ,(number->string (assoc-ref totals 'comment)))
+     ("blank lines" ,(number->string (assoc-ref totals 'blank)))
+     ("bytes" ,(number->string (assoc-ref totals 'bytes)))
+     ("decision points" ,(number->string (assoc-ref totals 'decisions))))))
+
+(define (stats-chapter statistics)
+  "Return the statistics of a project as an stexi chapter.
+
+  @strong{statistics} (alist):
+    What @code{(dokgen commands) stats} measured and counted:
+    @code{totals} from @code{(dokgen stats) project-stats}, the
+    @code{coverage} of the exported names, the number of @code{modules},
+    and @code{git}, the history or @code{#false} when the tree has none.
+
+  @strong{Return value} (stexi):
+    A chapter describing the tree: its size, where its code sits, how much
+    of its API is documented, who wrote it and what churns."
+  (let* [(totals (assoc-ref statistics 'totals))
+         (files (assoc-ref totals 'files))
+         (coverage (assoc-ref statistics 'coverage))
+         (documented (car coverage))
+         (exported (cdr coverage))
+         (modules (assoc-ref statistics 'modules))
+         (git (assoc-ref statistics 'git))
+         (churn (and git (assoc-ref git 'files)))
+         (percentage
+          (and (> exported 0) (* 100 (exact->inexact (/ documented exported)))))]
+    `(*fragment*
+      (c (% (all "NOTE: Autogenerated documentation. Do not edit manually.")))
+      (node (% (name "Statistics")))
+      (chapter "Statistics")
+      (para "This chapter is written by " (command "dokgen stats")
+            " from the tree itself, so it says what the code is rather than
+what someone remembers it to be.")
+      ,@(if git
+            `((para "It describes the tree at commit "
+                    (code ,(assoc-ref git 'commit)) ", on "
+                    ,(assoc-ref git 'last) "."))
+            '((para "The tree carries no git history this run could read, so
+the chapter reports no authors and no churn.")))
+
+      (section "Size")
+      (example ,(size-table totals files modules))
+
+      (section "The largest files")
+      (para "The files with the most code in them, with the lines of comment
+and the decision points that sit beside it.")
+      (example ,(file-table files))
+
+      (section "Documentation")
+      (para ,(if percentage
+                 (format #f "~a of the ~a exported procedures and macros have a documentation string (~a%)."
+                         documented exported (inexact->exact (round percentage)))
+                 "The tree exports no procedure or macro, so there is nothing to document."))
+
+      ,@(if (and git (pair? churn))
+            `((section "Authors")
+              (para "The people the repository's history names, with the
+lines they added and removed.")
+              (example ,(cost-table (assoc-ref git 'authors)))
+
+              (section "The files that change most")
+              (para "The files among those measured that the history touched
+most: the ones where a change costs the most to review.")
+              (example ,(cost-table (at-most 10 churn)))
+
+              (para "The repository holds "
+                    ,(number->string (assoc-ref git 'commits))
+                    " commits, the first on "
+                    ,(assoc-ref git 'first) "."))
+            '())
+
+      (para "A decision point is an " (code "if") ", " (code "cond") ", "
+            (code "case") ", " (code "when") ", " (code "unless") " or "
+            (code "do") " in the code.  It counts shapes and not paths, and
+it grades nothing: a file with many of them is a file that branches
+often."))))

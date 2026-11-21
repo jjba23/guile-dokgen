@@ -42,6 +42,12 @@
     get-string-all))
 
 
+
+(define (stats-of destination)
+  "Return the text of the statistics chapter written to DESTINATION."
+  (call-with-input-file (format #f "~a/stats.texi" destination)
+    get-string-all))
+
 ;;; TEST SUITE
 
 (test-begin SUITE_NAME)
@@ -101,6 +107,28 @@
   (test-assert
       "Write a diagram's source when it has no image and no renderer."
     (string-contains (index-of BARE_DIR) "@example")))
+
+
+(test-group
+    (unit-name commands:stats)
+
+  (commands:stats (list LIBRARY) TEST_DIR)
+
+  (test-assert
+      "Write the statistics chapter beside the API chapter."
+    (file-exists? (format #f "~a/stats.texi" TEST_DIR)))
+
+  (test-assert
+      "Title the chapter a manual can include by name."
+    (string-contains (stats-of TEST_DIR) "@chapter Statistics"))
+
+  (test-assert
+      "Report the size of what it measured."
+    (string-contains (stats-of TEST_DIR) "lines of code"))
+
+  (test-assert
+      "Report how much of the exported API is documented."
+    (string-contains (stats-of TEST_DIR) "2 of the 4 exported")))
 
 (test-end SUITE_NAME)
 
