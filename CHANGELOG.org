@@ -8,6 +8,15 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+** Fixed
+
+- ~guix.scm~, the package definition of the working tree, evaluates again: it
+  named ~git-predicate~ and ~guile-proba~ without importing their modules, was
+  missing a closing parenthesis, added its launcher to a phase
+  ~guile-build-system~ does not have, and wrote a launcher that could not find
+  the modules it had just installed.  ~guix shell -f guix.scm -- dokgen --help~
+  works as the file says it does.
+
 * 0.7.0 — 2026-11-21
 
 ** Added

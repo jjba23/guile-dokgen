@@ -16,8 +16,10 @@
 (use-modules (ice-9 regex)
              (ice-9 textual-ports)
              (guix gexp)
+             (guix git-download)
              (guix packages)
              (guix utils)
+             (gnu packages check)
              (gnu packages guile)
              (gnu packages guile-xyz)
              (gnu packages texinfo)
@@ -49,15 +51,31 @@
      (list #:source-directory "src"
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'install 'install-launcher
+               ;; guile-build-system has no `install' phase to add to: its
+               ;; `build' phase is the one that puts the modules in the store.
+               (add-after 'install-documentation 'install-launcher
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
+                          (site (string-append out "/share/guile/site/3.0"))
                           (bin (string-append out "/bin")))
                      (mkdir-p bin)
                      (call-with-output-file (string-append bin "/dokgen")
                        (lambda (port)
-                         (format port "#!/bin/sh~%exec guile -c '(begin (use-modules (dokgen cli)) (call (command-line) spec))' \"$@\"~%")))
-                     (chmod (string-append bin "/dokgen") #o755))))))
+                         ;; The launcher names the modules it was installed
+                         ;; with and the two libraries it needs, so it
+                         ;; answers outside a profile as well as inside one.
+                         (format port
+                                 "#!/bin/sh~%exec guile ~a -c '(begin (use-modules (dokgen cli)) (call (command-line) spec))' \"$@\"~%"
+                                 (string-join
+                                  (map (lambda (directory)
+                                         (format #f "-L ~a/share/guile/site/3.0"
+                                                 directory))
+                                       (list out
+                                             (assoc-ref inputs "guile-config")
+                                             (assoc-ref inputs "guile-lib")))
+                                  " ")))
+                       #:encoding "UTF-8")
+                     (chmod (string-append bin "/dokgen") #o755)))))))
     (inputs (list guile-3.0))
     (propagated-inputs (list guile-config guile-lib))
     (native-inputs (list guile-proba texinfo))
