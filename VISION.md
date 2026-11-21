@@ -18,9 +18,12 @@ Maak file, SPDX headers, and tests that fail the build when they fail.
 
 What exists and is tested:
 
-- **One command, `dokgen api`.** It takes one or more Scheme files or
-  directories, resolves each to a module name, loads it, and writes
-  `index.texi`. A directory is read recursively.
+- **Two commands, `dokgen api` and `dokgen check`.** The first takes one or
+  more Scheme files or directories, resolves each to a module name, loads it,
+  and writes `index.texi`; a directory is read recursively. The second reports
+  the exported procedures and macros that have no documentation string and
+  exits non-zero when it found one, which is what lets a build hold a library
+  to a documented API.
 - **Extraction from the live module.** Exports are found through the module's
   public interface, so a name that is re-exported or a residual export with no
   binding is something the program sees, and reports, rather than something a
@@ -29,6 +32,14 @@ What exists and is tested:
   renderer passes it through stexi, so `@var`, `@code` and `@example` in a
   docstring become the same markup in the manual. A module's commentary is
   its description, either as `;;; Commentary:` lines or as a `#| … |#` block.
+- **Diagrams in the documentation.** A fenced mermaid block in a docstring is
+  drawn through a renderer command and shown as an image; with no renderer it
+  is written as source, so nothing silently disappears. Each diagram is named
+  after a digest of its own text, which is what keeps a stale drawing from
+  being shown as the current one.
+- **Definitions that can be pointed at.** Every definition carries an anchor
+  built from its module and its name, so a hand-written chapter can reference
+  one procedure rather than a whole section.
 - **A manual that is generated and a manual that is written.** The API chapter
   is `manual/api/index.texi`, produced by `maak docs` from the project's own
   sources and included by `manual/main.texi`, which is written by hand. The
@@ -62,9 +73,10 @@ the output.
 - **CLI documentation from the specification.** Rendering the `api` chapter's
   sibling from the guile-config record. The hard part is keeping the narrative
   a hand-written chapter carries, which a generated one does not.
-- **Checks that run in `maak docs`.** A missing docstring, a dangling `@ref`
-  and a malformed stexi fragment are all knowable at extraction time. The hard
-  part is the policy: which of them stop the build and which are reported.
+- **Checks that run in `maak docs`.** A dangling `@ref` and a malformed stexi
+  fragment are both knowable at extraction time. The hard part is the policy:
+  which of them stop the build and which are reported.  A missing docstring is
+  the one of them that `dokgen check` now answers.
 - **Documenting more than procedures.** Record types and class definitions each
   need a decision about what counts as their documentation and where it is
   read from.
@@ -73,7 +85,7 @@ the output.
 
 - **A `dokgen check` command** that exits non-zero when an exported name has no
   documentation, so a pipeline can hold a library to a documented API without
-  writing the manual.
+  writing the manual.  *(Built in 0.7.0.)*
 - **Incremental output**, one file per module, so a change to one module
   changes one file in a diff and the reviewer reads that file.
 - **A listing of what was skipped and why**, on standard output, so a name that
@@ -101,8 +113,9 @@ the output.
 
 The others do two things guile-dokgen should reach for: a documentation check
 that fails the build (rustdoc, godoc) and output people actually read in a
-browser without a toolchain of their own. None of them reads a running Guile
-module.
+browser without a toolchain of their own.  The first of those is now
+`dokgen check`; the second is still `texi2any`'s job.  None of them reads a
+running Guile module.
 
 Where guile-dokgen is ahead, and should stay ahead: the documentation is the
 docstring, in the markup the manual already speaks, with no second syntax to

@@ -24,7 +24,7 @@
              src="img/logo.svg"
              alt="Guile Dokgen" />
       </h1>
-      <p class="version">v0.6.2</p>
+      <p class="version">v0.7.0</p>
 
       <p>
         Generate <abbr title="Application Programming
@@ -103,6 +103,26 @@ dokgen api mylib --destination mydocs/api</pre>
 
           <div>❹ Build your project documentation (using <a target="_blank"href="https://www.gnu.org/software/texinfo/manual/texinfo/html_node/Generic-Translator-texi2any.html"><code>texi2any</code></a>, for example).</div>
         </div>
+
+        <p>
+          Docstrings are Texinfo, so they can carry a diagram as a fenced
+          <a href="https://mermaid.js.org/" target="_blank">mermaid</a> block: it
+          is drawn through a renderer of your choice and shown as an image, or
+          written as its source when no renderer is installed.
+        </p>
+
+        <pre>
+<span class="comment"># Draw the diagrams your docstrings hold (the default renderer is mmdc)</span>
+dokgen api somelibx --mermaid-command "mmdc --input %i --output %o.png"
+
+<span class="comment"># Fail the build when an exported procedure has no docstring</span>
+dokgen check somelibx</pre>
+
+        <p>
+          Every definition also carries an anchor built from its module and its
+          name, so a chapter written by hand can point at one procedure with
+          <code>@ref{dokgen_cli_call}</code>.
+        </p>
 
         <p>
           Check out <a href="manual/">Guile Dokgen Manual</a> for

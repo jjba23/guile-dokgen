@@ -8,6 +8,31 @@ original author; their record is the version history in the manual.
 
 * Unreleased
 
+* 0.7.0 — 2026-11-21
+
+** Added
+
+- Mermaid diagrams in the documentation: a fenced block in a docstring or a
+  module's commentary is drawn and shown in the manual, or written as its
+  source when no renderer is at hand.  The new ~--mermaid-command~ option says
+  what draws them (default ~mmdc --input %i --output %o.png~), and an empty one
+  means "use the images already there".  Each diagram is written as
+  ~diagrams/NAME-HASH.mmd~ with its image beside it, the hash being a digest of
+  the diagram's own text, so a stale drawing is never shown as the current one.
+- ~dokgen check~, which reports every exported procedure and macro that has no
+  documentation string and exits non-zero when it found one, so a build can
+  hold a library to a documented API.
+- Every definition carries an ~@@anchor~ built from its module and its name, so
+  a hand-written chapter can ~@@ref~ a single procedure.  The Texinfo bug this
+  used to wait on, 72209, is fixed in the version the project builds with.
+- The API chapter opens with the list of modules it documents, each one a link.
+
+** Fixed
+
+- An ~@@image~ or an ~@@itemize~ no longer runs into the text that follows it,
+  and an anchor no longer shares a line with the definition it names;
+  ~texi2any~ warned about both.
+
 * 0.6.2 — 2026-11-17
 
 ** Changed

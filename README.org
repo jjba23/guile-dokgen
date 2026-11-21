@@ -8,7 +8,7 @@
 #+options: toc:2 num:nil
 #+language: en
 
-[[https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml][https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml/badge.svg]] [[https://github.com/jjba23/guile-dokgen/releases][https://img.shields.io/badge/release-0.6.2-c96a44.svg]] [[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-c96a44.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-a8541f.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
+[[https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml][https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml/badge.svg]] [[https://github.com/jjba23/guile-dokgen/releases][https://img.shields.io/badge/release-0.7.0-c96a44.svg]] [[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-c96a44.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-a8541f.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
 
 /Guile Dokgen/ is a command-line program and accompanying library that
 extracts the API documentation of [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme modules and writes it
@@ -22,6 +22,21 @@ dokgen api src/mylib
 
 The result is ~doc/api/index.texi~ by default, ready for ~texi2any~.  The
 manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds it as HTML.
+
+* What it does
+
+- *Every definition, with its docstring.*  The documentation is read from the
+  running module, not parsed from its text, so a name that is exported is a
+  name in the manual.
+- *Diagrams.*  A docstring may carry a [[https://mermaid.js.org/][mermaid]] diagram as a fenced block.
+  It is drawn through a renderer of your choice, by default
+  [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]], and shown as an image --- or written as its source when no
+  renderer is installed.
+- *Anchors.*  Every definition gets one, built from its module and its name, so
+  a chapter written by hand can ~@ref{dokgen_cli_call}~ a single procedure.
+- *A check.*  ~dokgen check src/mylib~ exits non-zero when an exported
+  procedure or macro has no docstring, so a build can hold a library to a
+  documented API.
 
 * Install
 
@@ -58,7 +73,7 @@ The layout:
 
 | Path           | What it holds                                         |
 |----------------+-------------------------------------------------------|
-| ~src/dokgen/~ | the library: reader, templates, writer, CLI           |
+| ~src/dokgen/~ | the library: data, diagrams, templates, writer, CLI   |
 | ~bin/dokgen~  | the launcher                                          |
 | ~tests/~         | one SRFI-64 suite per module                          |
 | ~etc/~           | the test runner that turns failures into exit codes   |

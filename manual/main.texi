@@ -8,7 +8,7 @@
 
 
 @c HEADER
-@set VERSION 0.6.2
+@set VERSION 0.7.0
 @settitle Guile Dokgen
 @documentlanguage en
 @documentencoding UTF-8
@@ -46,6 +46,10 @@ Chapters
 
 * Usage::
   Generating documentation from source code.
+* Diagrams::
+  Mermaid diagrams in the documentation.
+* Checking::
+  Holding a library to a documented API.
 * CLI::
   Command-line interface reference.
 * API::
@@ -146,7 +150,124 @@ command. For example:
 @verbatim
 @include api/index.texi
 @end verbatim
+
+The chapter opens with the list of modules it documents, each one a link,
+and every definition carries an anchor built from the module's name and
+the name of the object: the procedure @code{call} of the module
+@code{(dokgen cli)} is @code{dokgen_cli_call}. A chapter written by hand
+can therefore point at a definition with @code{@@ref@{dokgen_cli_call@}},
+and a name that is renamed breaks the reference rather than the prose.
 @c END CHAPTER: Usage
+
+
+
+@c CHAPTER: Diagrams
+@node Diagrams
+@chapter Diagrams
+
+A documentation string can carry a @url{https://mermaid.js.org/, mermaid}
+diagram. It is written as a fenced block, the way a markdown reader
+already knows, and it may sit anywhere in a commentary or a docstring:
+
+@verbatim
+;;; Commentary:
+;;
+;; A request takes two hops.
+;;
+;; ```mermaid
+;; graph LR
+;;   client --> balancer
+;;   balancer --> server
+;; ```
+;;; Code:
+@end verbatim
+
+@command{dokgen} takes the block out of the documentation, writes the
+diagram beside the generated Texinfo as
+@file{diagrams/@var{name}-@var{hash}.mmd}, and asks a renderer to draw it
+as @file{diagrams/@var{name}-@var{hash}.png}, which the API chapter then
+shows with @code{@@image}. The @var{hash} is a digest of the diagram's own
+text, so a diagram that changed gets a file of its own: a manual can never
+show last week's drawing of this week's text.
+
+The renderer is a command, not a library, because mermaid is JavaScript
+and a documentation generator that carried a browser to draw an arrow
+would be a worse trade than one that calls the tool a project already
+uses. @code{mmdc}, from @url{https://github.com/mermaid-js/mermaid-cli,
+mermaid-cli}, is the default:
+
+@example
+$ dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png"
+@end example
+
+@code{%i} is the file @command{dokgen} wrote for the diagram and @code{%o}
+is the path to write the image to, without an extension, so a renderer
+that writes PNG and one that writes SVG are configured by the same
+option. With no @code{--mermaid-command}, the default is that exact
+command; with an empty one, nothing is drawn at all, and the diagrams
+already in the destination are used.
+
+@quotation Note
+An empty @code{--mermaid-command} is how a project that commits its
+images builds its manual without a renderer. It is also why
+@command{dokgen} writes the @file{.mmd} whatever happens: a diagram whose
+image is missing is still a diagram a reader can draw later.
+@end quotation
+
+When a diagram has no image --- because no renderer is installed, or
+because the one that ran failed --- the source is written into the manual
+instead, in an @code{@@example} block under the line ``Mermaid diagram, as
+source:''. A diagram that silently disappeared from a manual would be
+worse than one a reader has to copy.
+
+Two things are left to the manual that includes the chapter, because
+Texinfo keeps them out of it. @command{texi2any} looks for an image where
+its include path says, not where the text that names it lives, so the
+generated directory goes on the path; and it copies no image into its
+output, so the diagrams go beside the pages. With the default
+@file{doc/api} destination, that is:
+
+@example
+$ makeinfo --html -I doc/api -o html main.texi
+$ cp -r doc/api/diagrams html/
+@end example
+
+The diagram syntax is mermaid's own; @command{dokgen} only reads the
+fence. A fence written inside an @code{@@example} block is a sample of the
+syntax and is left as written, which is how a manual shows a reader how to
+write one.
+@c END CHAPTER: Diagrams
+
+
+
+@c CHAPTER: Checking
+@node Checking
+@chapter Checking
+
+A manual is only as good as the docstrings it is built from, and a
+procedure that has none is a hole a reader finds before the maintainer
+does. The @code{check} command is the answer to that, and it is meant for
+a build:
+
+@example
+$ dokgen check mylib
+undocumented: (mylib client) connect
+undocumented: (mylib client) disconnect
+dokgen: 2 undocumented names
+$ echo $?
+1
+@end example
+
+It exits with a zero status when every exported name is documented, and
+with a non-zero one otherwise, so a pipeline can hold a library to a
+documented API without building the manual at all.
+
+What it reports is a procedure or a macro whose documentation string is
+missing or holds nothing but whitespace. A variable, a parameter object
+and a record type carry no documentation string in Guile, so they are
+never reported: a list of names that cannot be fixed is a list a reader
+learns to ignore.
+@c END CHAPTER: Checking
 
 
 
@@ -196,12 +317,15 @@ dokgen api mylib.scm mylib etc
 @example
 # Save API documentation to a specific directory:
 dokgen api mylib --destination mydoc/api
+
+# Draw the diagrams the docstrings hold:
+dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png"
 @end example
 
 @subsection Interface specification
 
 @verbatim
-dokgen api sources [--destination]
+dokgen api sources [--destination] [--mermaid-command]
 @end verbatim
 
 @defblock
@@ -213,7 +337,45 @@ to both Scheme files or Scheme directories.
 @defline {Keyword argument} --destination or -d
 Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
-is used (see the module @ref{dokgen_commands}).
+is used (see the module @ref{dokgen_commands}). The diagrams the
+documentation holds are saved to a @file{diagrams} directory inside it.
+
+@defline {Keyword argument} --mermaid-command or -m
+Optional command that draws a mermaid diagram, with @code{%i} standing
+for the diagram's source and @code{%o} for the path its image is
+written to, without an extension. It defaults to
+@code{mmdc --input %i --output %o.png}; an empty value draws nothing
+and uses the diagrams already in the destination
+(@pxref{Diagrams}).
+@end defblock
+
+
+@section @code{check} command
+
+The @code{check} command reports the exported procedures and macros that
+have no documentation string, and exits with a non-zero status when it
+found one.
+
+@subsection Examples
+
+@example
+# Report the undocumented names of a library:
+dokgen check mylib
+
+# Hold a build to a documented API:
+dokgen check mylib || exit 1
+@end example
+
+@subsection Interface specification
+
+@verbatim
+dokgen check sources
+@end verbatim
+
+@defblock
+@defline Argument sources
+Absolute or relative paths to Guile Scheme modules, as for the
+@code{api} command.
 @end defblock
 @c END CHAPTER: CLI
 
@@ -230,6 +392,26 @@ is used (see the module @ref{dokgen_commands}).
 @appendix Version History
 
 @table @dfn
+@item Version 0.7.0, November 21, 2026
+@itemize
+@item
+Mermaid diagrams: a fenced block in a docstring or a commentary is drawn
+and shown in the manual, or written as source when no renderer is at
+hand. New @code{--mermaid-command} option.
+@item
+New @code{check} command, which reports the exported names that have no
+documentation string and exits non-zero when it found one.
+@item
+Every definition carries an anchor, so a chapter written by hand can
+@code{@@ref} a single procedure.
+@item
+The API chapter opens with the list of modules it documents, each one a
+link to its section.
+@item
+An @code{@@image} or an @code{@@itemize} no longer runs into the text
+that follows it.
+@end itemize
+
 @item Version 0.6.2, November 17, 2026
 @itemize
 @item

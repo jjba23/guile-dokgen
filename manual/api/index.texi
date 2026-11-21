@@ -6,6 +6,25 @@
 @chapter API
 The following is the list of modules provided by this library.
 
+@itemize 
+@item
+@ref{dokgen_cli,(dokgen cli)}
+@item
+@ref{dokgen_commands,(dokgen commands)}
+@item
+@ref{dokgen_data,(dokgen data)}
+@item
+@ref{dokgen_diagrams,(dokgen diagrams)}
+@item
+@ref{dokgen_exceptions,(dokgen exceptions)}
+@item
+@ref{dokgen_templates_stexi,(dokgen templates stexi)}
+@item
+@ref{dokgen_utils,(dokgen utils)}
+@item
+@ref{dokgen_writer,(dokgen writer)}
+@end itemize
+
 
 @c %start of fragment
 
@@ -33,6 +52,7 @@ command line to the procedure that carries it out.
 
 @c %start of fragment
 
+@anchor{dokgen_cli_call}
 @deffn Procedure call command spec
 Call an appropriate procedure for the given command.
 
@@ -59,30 +79,49 @@ recognized, display help information.
 
 @c %start of fragment
 
+@anchor{dokgen_cli_spec}
 @defvar spec
 This is a record of the type @code{<configuration>}, which has the
 following fields:
 
 @itemize 
 @item
-@code{name}@item
-@code{synopsis}@item
-@code{description}@item
-@code{wanted}@item
-@code{keywords}@item
-@code{arguments}@item
-@code{subcommands}@item
-@code{directory}@item
-@code{version}@item
-@code{license}@item
-@code{copyright}@item
-@code{author}@item
-@code{parser}@item
-@code{alias}@item
-@code{generate-help?}@item
-@code{generate-usage?}@item
-@code{generate-version?}@item
-@code{generate-cmdtree?}@end itemize
+@code{name}
+@item
+@code{synopsis}
+@item
+@code{description}
+@item
+@code{wanted}
+@item
+@code{keywords}
+@item
+@code{arguments}
+@item
+@code{subcommands}
+@item
+@code{directory}
+@item
+@code{version}
+@item
+@code{license}
+@item
+@code{copyright}
+@item
+@code{author}
+@item
+@code{parser}
+@item
+@code{alias}
+@item
+@code{generate-help?}
+@item
+@code{generate-usage?}
+@item
+@code{generate-version?}
+@item
+@code{generate-cmdtree?}
+@end itemize
 
 @end defvar
 
@@ -108,7 +147,13 @@ additional information.
 The variable @code{DEFAULT_DOC_PATH} is the directory where the API
 documentation is saved when the user does not choose one; its value is
 @samp{doc/api}.  The documentation is written to a file named
-@file{index.texi} inside that directory.
+@file{index.texi} inside that directory, and the images of the mermaid
+diagrams it holds go in a @file{diagrams} directory beside it.
+
+The procedure @code{api} writes that documentation; @code{check} only
+reads, and says which of the exported names are documented nowhere.
+
+@image{diagrams/dokgen_commands-cec3eac2,,,Mermaid diagram}
 
 
 @c %end of fragment
@@ -119,7 +164,8 @@ documentation is saved when the user does not choose one; its value is
 
 @c %start of fragment
 
-@deffn Procedure api sources OPT: destination
+@anchor{dokgen_commands_api}
+@deffn Procedure api sources OPT: destination mermaid-command
 Extract the API documentation of the given set of Guile Scheme modules.
 
 @strong{sources} (list of strings): Absolute or relative paths to Guile
@@ -137,9 +183,33 @@ directories.  For example:
 @strong{destination} (string): Optional path to a directory where the
 final Texinfo files will be saved.  If not provided,
 @var{DEFAULT_DOC_PATH} is used (see the module @ref{dokgen_commands}).
+The diagrams the documentation holds are saved to a @file{diagrams}
+directory inside it.
+
+@strong{mermaid-command} (string): Optional command that draws a mermaid
+diagram, with @code{%i} standing for the diagram's source and @code{%o}
+for the path to write its image to.  An empty command draws nothing and
+uses the diagrams already in the destination.
 
 @strong{Result}: The API documentation is saved to the @var{destination}
 directory.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_commands_check}
+@deffn Procedure check sources
+Report the exported names the modules in SOURCES leave undocumented.
+
+@strong{sources} (list of strings): Absolute or relative paths to Scheme
+files and directories, as for @code{api}.
+
+@strong{Return value} (integer): The number of names reported, so that
+the caller decides what an undocumented name means for the exit status.
 
 @end deffn
 
@@ -154,6 +224,7 @@ directory.
 
 @c %start of fragment
 
+@anchor{dokgen_commands_DEFAULT_DOC_PATH}
 @defvr Variable DEFAULT_DOC_PATH
 @verbatim 
 "doc/api"
@@ -192,6 +263,7 @@ example, the templates used to work with the
 
 @c %start of fragment
 
+@anchor{dokgen_data_api-symbols}
 @deffn Procedure api-symbols interface
 Return the symbols provided by the interface.
 
@@ -208,6 +280,7 @@ public object exported by the @var{interface}.
 
 @c %start of fragment
 
+@anchor{dokgen_data_file-path->module-name}
 @deffn Procedure file-path->module-name file-path lib-parent-path
 Convert the given Scheme file path into a module name.
 
@@ -228,6 +301,7 @@ containing the library @var{file-path} belongs to.  For example:
 
 @c %start of fragment
 
+@anchor{dokgen_data_get-file-paths}
 @deffn Procedure get-file-paths directory
 Return a list of paths to Scheme files stored in the directory.
 
@@ -246,6 +320,7 @@ represents a path to a Scheme file.
 
 @c %start of fragment
 
+@anchor{dokgen_data_group-api-objects}
 @deffn Procedure group-api-objects interface
 Return the API objects grouped by kind.
 
@@ -266,6 +341,7 @@ with members are returned.
 
 @c %start of fragment
 
+@anchor{dokgen_data_record-field}
 @deffn Procedure record-field record field
 Get the value of @var{field} from @var{record}.
 
@@ -278,6 +354,190 @@ Get the value of @var{field} from @var{record}.
 If the FIELD does not exist, a @var{no-such-field} exception is raised.
 
 @end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_data_undocumented-symbols}
+@deffn Procedure undocumented-symbols interface
+Return the names @var{interface} exports without documenting them.
+
+@strong{interface} (interface): A module's @code{<interface>} record, as
+returned by Guile's procedure @code{resolve-interface}.
+
+@strong{Return value} (list of symbols): The documented gaps of the
+module's API, in the order a reader meets them in the manual, so that a
+build can fail on them.  An export that is bound to nothing is left out:
+that name is a bug in the module and not a gap in its documentation, and
+the @code{api} command is where it is reported.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
+@node dokgen_diagrams
+@section (dokgen diagrams)
+
+@c %start of fragment
+
+This module turns the mermaid diagrams a documentation string carries
+into images the manual can show.
+
+A diagram is written in a docstring as a fenced block, the way a
+markdown reader already knows.  What follows is one, and it is drawn
+where the manual shows this module:
+
+@image{diagrams/dokgen_diagrams-bc388dc4,,,Mermaid diagram}
+
+The fence is consumed, the diagram is written next to the generated
+Texinfo as @file{diagrams/NAME-HASH.mmd}, and a renderer turns it into
+@file{diagrams/NAME-HASH.png}, which the API chapter references with
+@code{@@image}.  The name carries a digest of the diagram's own text, so
+a diagram that changed gets a file of its own and an old rendering can
+never be shown as the current one.
+
+The renderer is a command, not a library: mermaid is JavaScript, and a
+documentation generator that embedded a browser to draw an arrow would
+be a worse trade than one that calls the tool a project already uses.
+The command @code{mmdc} (from @code{mermaid-cli}) is the default; the
+parameters @code{*mermaid-command*} and @code{*diagram-destination*} say
+what to run and where to write, so a caller sets them once around a
+whole run.  A command left empty renders nothing, which is how a tree
+that commits its images builds its manual without a renderer.
+
+When there is no image, the diagram's source is written into the manual
+instead, in an @code{@@example} block with a line saying what it is.  A
+diagram that silently disappeared from a manual would be worse than one
+a reader has to copy.
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Parameters
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_*diagram-destination*}
+@defvr Parameter *diagram-destination*
+Default value:
+
+@verbatim 
+"manual/api"
+@end verbatim
+
+@end defvr
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_*mermaid-command*}
+@defvr Parameter *mermaid-command*
+Default value:
+
+@verbatim 
+""
+@end verbatim
+
+@end defvr
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Procedures
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_diagram-blocks}
+@deffn Procedure diagram-blocks docstring
+Return the documentation string split into prose and diagrams.
+
+@strong{docstring} (string): The documentation of a module or of one of
+its objects.
+
+@strong{Return value} (list of pairs): Every pair is either @code{(text
+. STRING)} or @code{(diagram .  STRING)}, in the order they are written.
+A fence that is never closed stays prose, because a docstring with a
+typo in it should still reach the reader, and so does one written inside
+a Texinfo block that quotes it.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_diagram-stem}
+@deffn Procedure diagram-stem owner source
+Return the name a diagram is written under, without an extension.
+
+@strong{owner} (string): What holds the diagram: a procedure's name, or
+a module's name.
+
+@strong{source} (string): The diagram, as mermaid.
+
+@strong{Return value} (string): The owner, with every character a shell
+or a URL would have to escape replaced by a dash, and a digest of the
+diagram.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_diagram-stexi}
+@deffn Procedure diagram-stexi source owner
+Return the stexi nodes that show the diagram @var{source}.
+
+@strong{source} (string): The diagram, as mermaid.
+
+@strong{owner} (string): What holds the diagram; see
+@code{diagram-stem}.
+
+@strong{Return value} (list of stexi): One node holding the image, in a
+paragraph of its own because Texinfo writes an image inline where it
+stands, or two nodes holding the diagram's source and a line that says
+what it is when no image could be made.
+
+@end deffn
+
+
+@c %end of fragment
+
+@c %end of fragment
+
+@c %start of fragment
+
+@subsection Variables
+
+@c %start of fragment
+
+@anchor{dokgen_diagrams_DEFAULT_MERMAID_COMMAND}
+@defvr Variable DEFAULT_MERMAID_COMMAND
+@verbatim 
+"mmdc --input %i --output %o.png"
+@end verbatim
+
+@end defvr
 
 
 @c %end of fragment
@@ -299,30 +559,12 @@ program.
 The exception type @code{&residual-export-exception} is raised when a
 module exports a name that is not bound to any object.  This can occur,
 for example, when a developer removes a procedure, variable, etc., from
-a module but forgets to remove its name from the export list.  It
-provides the following procedures:
+a module but forgets to remove its name from the export list.
 
-@itemize @bullet
-@item
-@code{make-residual-export-exception}: the constructor.  It takes the
-reason, the exported residue and the exporter module, in that order.
-
-@item
-@code{residual-export-exception?}: the predicate.
-
-@item
-@code{residual-export-exception-reason}: a string that explains the
-problem.
-
-@item
-@code{residual-export-exception-exported-residue}: the symbol that was
-exported but is unbound.
-
-@item
-@code{residual-export-exception-exporter-module}: the name of the module
-that exports the residue, as a list of symbols.
-
-@end itemize
+Its constructor, its predicate and its three field readers are defined
+by @code{define-exception-type}, which gives them no documentation
+strings; each one is given its own below, so that a name this module
+exports is a name the manual can document.
 
 
 @c %end of fragment
@@ -333,8 +575,18 @@ that exports the residue, as a list of symbols.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_make-residual-export-exception}
 @deffn Procedure make-residual-export-exception a b c
-Undocumented procedure.
+Return a new @code{&residual-export-exception}.
+
+@strong{reason} (string): What went wrong, in a sentence a reader can
+act on.
+
+@strong{exported-residue} (symbol): The name that was exported but never
+bound.
+
+@strong{exporter-module} (list of symbols): The module that exports it,
+for example: @code{'(mylib amodule)}.
 
 @end deffn
 
@@ -343,8 +595,9 @@ Undocumented procedure.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_residual-export-exception-exported-residue}
 @deffn Procedure residual-export-exception-exported-residue obj
-Undocumented procedure.
+Return the name that was exported but never bound.
 
 @end deffn
 
@@ -353,8 +606,9 @@ Undocumented procedure.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_residual-export-exception-exporter-module}
 @deffn Procedure residual-export-exception-exporter-module obj
-Undocumented procedure.
+Return the module that exports the residue, as a list of symbols.
 
 @end deffn
 
@@ -363,8 +617,9 @@ Undocumented procedure.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_residual-export-exception-reason}
 @deffn Procedure residual-export-exception-reason obj
-Undocumented procedure.
+Return the sentence that explains what went wrong.
 
 @end deffn
 
@@ -373,8 +628,10 @@ Undocumented procedure.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_residual-export-exception?}
 @deffn Procedure residual-export-exception? obj
-Undocumented procedure.
+Return @code{#true} when the given object is a residual export
+exception.
 
 @end deffn
 
@@ -389,14 +646,18 @@ Undocumented procedure.
 
 @c %start of fragment
 
+@anchor{dokgen_exceptions_&residual-export-exception}
 @deftp {Record type} &residual-export-exception 
 This record type has the following fields:
 
 @itemize 
 @item
-@code{reason}@item
-@code{exported-residue}@item
-@code{exporter-module}@end itemize
+@code{reason}
+@item
+@code{exported-residue}
+@item
+@code{exporter-module}
+@end itemize
 
 @end deftp
 
@@ -428,6 +689,7 @@ given software project.
 
 @c %start of fragment
 
+@anchor{dokgen_templates_stexi_api-binding}
 @deffn Procedure api-binding name value module-name
 Return the API binding name-value as an stexi fragment.
 
@@ -450,13 +712,19 @@ binding is defined.  For example: @code{'(mylib amodule)}.
 
 @c %start of fragment
 
-@deffn Procedure api-chapter sections
+@anchor{dokgen_templates_stexi_api-chapter}
+@deffn Procedure api-chapter module-names sections
 Return a library API as an stexi chapter.
+
+@strong{module-names} (list of lists of symbols): The modules the
+chapter documents, in the order they are documented.
 
 @strong{sections} (list of stexi): A list where every item is an stexi
 section.
 
-@strong{Return value} (stexi): A chapter documenting a library's API.
+@strong{Return value} (stexi): A chapter documenting a library's API,
+opening with the list of its modules so that a reader who opened the
+chapter to find one of them does not have to scroll for it.
 
 @end deffn
 
@@ -465,6 +733,7 @@ section.
 
 @c %start of fragment
 
+@anchor{dokgen_templates_stexi_module-description}
 @deffn Procedure module-description module-name
 Return the module's commentary or description as stexi.
 
@@ -480,6 +749,7 @@ amodule)}.
 
 @c %start of fragment
 
+@anchor{dokgen_templates_stexi_module-section}
 @deffn Procedure module-section module-name
 Return the module documentation as an stexi section.
 
@@ -495,6 +765,7 @@ amodule)}.
 
 @c %start of fragment
 
+@anchor{dokgen_templates_stexi_procedure-parameters}
 @deffn Procedure procedure-parameters proc
 Return the parameters of the given procedure as a string.
 
@@ -535,6 +806,7 @@ value is 2.
 
 @c %start of fragment
 
+@anchor{dokgen_utils_min-indent}
 @deffn Procedure min-indent string
 Return the shorter number of spaces used for indentation in the given
 string.
@@ -553,6 +825,7 @@ shorter indentation.
 
 @c %start of fragment
 
+@anchor{dokgen_utils_tabs->spaces}
 @deffn Procedure tabs->spaces string OPT: tabsize
 Convert tabs to spaces in the given string.
 
@@ -572,6 +845,7 @@ by spaces.
 
 @c %start of fragment
 
+@anchor{dokgen_utils_trim}
 @deffn Procedure trim string spaces
 Trim off the given number of spaces at the beginning of the string.
 
@@ -590,6 +864,7 @@ returned.
 
 @c %start of fragment
 
+@anchor{dokgen_utils_unindent}
 @deffn Procedure unindent docstring
 Remove unwanted indentation from the given documentation string.
 
@@ -616,6 +891,7 @@ indentation removed.
 
 @c %start of fragment
 
+@anchor{dokgen_utils_DEFAULT_SPACE_INDENT_SIZE}
 @defvr Variable DEFAULT_SPACE_INDENT_SIZE
 @verbatim 
 2
@@ -648,6 +924,7 @@ Procedures for writing data to disk.
 
 @c %start of fragment
 
+@anchor{dokgen_writer_save}
 @deffn Procedure save text path
 Write @var{text} to the file in @var{path}.
 

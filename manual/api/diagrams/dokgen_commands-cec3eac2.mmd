@@ -1,0 +1,5 @@
+graph LR
+  sources["Scheme files and directories"] --> modules["module names"]
+  modules --> exports["exported objects"]
+  exports --> stexi["stexi"]
+  stexi --> chapter["index.texi"]
