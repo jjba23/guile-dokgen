@@ -23,6 +23,7 @@ command line to the procedure that carries it out. |#
   #:use-module (config api)
   #:use-module (config licenses)
   #:use-module (dokgen commands)
+  #:use-module (dokgen diagrams)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -48,6 +49,12 @@ command line to the procedure that carries it out. |#
           (example "/home/user/project/doc/api")
           (default DEFAULT_DOC_PATH)))
 
+(define mermaid-command
+  (switch (name 'mermaid-command)
+          (synopsis "Command that draws a mermaid diagram, with %i standing for the diagram's source and %o for the path its image is written to. An empty command draws nothing.")
+          (example "mmdc --input %i --output %o.png")
+          (default DEFAULT_MERMAID_COMMAND)))
+
 
 
 ;;; CLI SPECIFICATION
@@ -58,7 +65,7 @@ command line to the procedure that carries it out. |#
    (synopsis "Generate API documentation.")
    (description
     "This is the command-line interface of Guile Dokgen, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.6.2")
+   (version "0.7.0")
    (license expat)
    (author "Josep Bigorra")
 
@@ -68,7 +75,12 @@ command line to the procedure that carries it out. |#
       (name 'api)
       (synopsis "Extract the API documentation of the given Guile Scheme package or module.")
       (arguments (list sources))
-      (keywords (list destination)))))))
+      (keywords (list destination mermaid-command)))
+
+     (configuration
+      (name 'check)
+      (synopsis "Report the exported procedures and macros that have no documentation string.")
+      (arguments (list sources)))))))
 
 
 
@@ -90,12 +102,17 @@ command line to the procedure that carries it out. |#
     display help information."
   (let* [(options (getopt-config-auto command spec))
          (sources (option-ref options '(sources)))
-         (destination (option-ref options 'destination))]
+         (destination (option-ref options 'destination))
+         (mermaid-command (or (option-ref options 'mermaid-command)
+                              DEFAULT_MERMAID_COMMAND))]
 
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "api") (api sources destination))))
+          ((_ "api") (api sources destination mermaid-command))
+          ;; A name with no documentation is what `check' exists to find,
+          ;; so it is what its exit status has to say.
+          ((_ "check") (unless (zero? (check sources)) (exit 1)))))
 
       (lambda (. args)
         (begin (format #true "ERROR: Command not found: ~a~%~%" command)

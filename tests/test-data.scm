@@ -11,6 +11,10 @@
              (srfi srfi-1)
              (srfi srfi-64))
 
+;; The fixture library a command is pointed at lives in its own directory,
+;; named the way a project names its modules.
+(add-to-load-path (dirname (current-filename)))
+
 
 ;;; CONSTANTS
 
@@ -73,5 +77,19 @@
               &residual-export-exception
               (group-api-objects
                (resolve-interface '(tests boguslibs unbound)))))
+
+
+(test-group
+    (unit-name undocumented-symbols)
+
+  (test-equal
+      "Report the exported names that are documented nowhere."
+    '(blank-docstring undocumented)
+    (undocumented-symbols (resolve-interface '(examplelib mixed))))
+
+  (test-equal
+      "Report nothing when every export is documented."
+    '()
+    (undocumented-symbols (resolve-interface '(tests boguslibs objects)))))
 
 (test-end SUITE_NAME)

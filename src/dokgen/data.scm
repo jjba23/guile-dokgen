@@ -20,14 +20,17 @@ formats. See, for example, the templates used to work with the
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 session)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-13)
   #:use-module (srfi srfi-34)
   #:export (api-symbols
             file-path->module-name
             get-file-paths
             group-api-objects
-            record-field))
+            record-field
+            undocumented-symbols))
 
 
 (define (api-symbols interface)
@@ -100,27 +103,25 @@ formats. See, for example, the templates used to work with the
     and a list of its members. Only groups with members are returned."
   ;; Helpers.
   (define (add object group catalog)
-    "Return a new CATALOG with OBJECT added to the GROUP."
-    (list (cons "macros"
-                (if (string=? group "macros")
-                    (append (assq-ref catalog group) (list object))
-                    (assq-ref catalog "macros")))
-          (cons "parameters"
-                (if (string=? group "parameters")
-                    (append (assq-ref catalog group) (list object))
-                    (assq-ref catalog "parameters")))
-          (cons "procedures"
-                (if (string=? group "procedures")
-                    (append (assq-ref catalog group) (list object))
-                    (assq-ref catalog "procedures")))
-          (cons "record types"
-                (if (string=? group "record types")
-                    (append (assq-ref catalog group) (list object))
-                    (assq-ref catalog "record types")))
-          (cons "variables"
-                (if (string=? group "variables")
-                    (append (assq-ref catalog group) (list object))
-                    (assq-ref catalog "variables")))))
+    "Return a new CATALOG with OBJECT added to the GROUP.
+
+    The groups are compared with @code{string=?} and not with the
+    @code{eq?} that @code{assq-ref} would use: two occurrences of the same
+    group name need not be the same string once a module is compiled, and a
+    catalog that loses its own key is an @code{append} of @code{#f}."
+    (map (lambda (entry)
+           (if (string=? (car entry) group)
+               (cons (car entry) (append (cdr entry) (list object)))
+               entry))
+         catalog))
+  (define (kind-of value)
+    "Return the name of the group the API object VALUE belongs to."
+    (cond
+     [(macro? value) "macros"]
+     [(parameter? value) "parameters"]
+     [(procedure? value) "procedures"]
+     [(record-type? value) "record types"]
+     [else "variables"]))
   (define (non-empty-group? group)
     "Return true if the GROUP has members."
     (not (null? (cdr group))))
@@ -152,12 +153,7 @@ formats. See, for example, the templates used to work with the
                     (variable-ref variable)))
                (object (cons key value))]
 
-          (cond
-           [(macro? value) (add object "macros" result-so-far)]
-           [(parameter? value) (add object "parameters" result-so-far)]
-           [(procedure? value) (add object "procedures" result-so-far)]
-           [(record-type? value) (add object "record types" result-so-far)]
-           [else (add object "variables" result-so-far)])))
+          (add object (kind-of value) result-so-far)))
       api-catalog
       api-symbols-sorted))))
 
@@ -208,3 +204,59 @@ formats. See, for example, the templates used to work with the
          (access-field (record-accessor descriptor field))]
 
     (access-field record)))
+
+
+(define (documented-string? documentation)
+  "Return @code{#t} when @var{documentation} is text a reader can use.
+
+  @strong{documentation} (string or @code{#f}):
+    A documentation string, as the reflection procedures return it.
+
+  @strong{Return value} (boolean):
+    @code{#t} for a string that holds something besides whitespace: a
+    docstring of indentation alone documents nothing."
+  (and (string? documentation)
+       (not (string-null? (string-trim documentation)))))
+
+
+(define (undocumented? value)
+  "Return @code{#t} when the API object @var{value} has no documentation.
+
+  @strong{value} (anything):
+    An object exported by a module.
+
+  @strong{Return value} (boolean):
+    @code{#t} when a procedure or a macro is exported without a docstring.
+    A variable, a parameter and a record type carry no docstring at all,
+    so they are never reported: a list of names that cannot be fixed
+    teaches a reader to ignore the list."
+  (cond
+   [(parameter? value) #false]
+   [(macro? value) (not (documented-string?
+                         (procedure-documentation (macro-transformer value))))]
+   [(procedure? value) (not (documented-string?
+                             (procedure-documentation value)))]
+   [else #false]))
+
+
+(define (undocumented-symbols interface)
+  "Return the names @var{interface} exports without documenting them.
+
+  @strong{interface} (interface):
+    A module's @code{<interface>} record, as returned by Guile's
+    procedure @code{resolve-interface}.
+
+  @strong{Return value} (list of symbols):
+    The documented gaps of the module's API, in the order a reader meets
+    them in the manual, so that a build can fail on them.  An export that
+    is bound to nothing is left out: that name is a bug in the module and
+    not a gap in its documentation, and the @code{api} command is where it
+    is reported."
+  (let [(api-table (record-field interface 'obarray))]
+    (sort (filter
+           (lambda (symbol)
+             (let [(variable (hashq-ref api-table symbol))]
+               (and (variable-bound? variable)
+                    (undocumented? (variable-ref variable)))))
+           (api-symbols interface))
+          (lambda (a b) (string<? (symbol->string a) (symbol->string b))))))

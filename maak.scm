@@ -137,9 +137,20 @@ itself rather than a pile of them."
   "Regenerate the API reference, manual/api/index.texi, from the sources.
 
 The program documents itself: the reference is not written by hand, and a
-procedure that is exported is in it."
+procedure that is exported is in it.
+
+The diagrams the sources carry are not drawn here.  The renderer is a
+JavaScript tool the pinned environment does not have, so the images under
+manual/api/diagrams are committed, and this task only points the reference
+at the ones that are there -- which is what keeps the reference the same
+wherever it is generated, and `maak docs-check' able to notice a diagram
+that changed without its image following."
   (time-machine-manifest-shell
-   (list "sh" "bin/dokgen" "api" "--destination" "manual/api" "./src/dokgen")
+   (list "sh" "bin/dokgen" "api"
+         "--destination" "manual/api"
+         ;; Quoted, so the empty value survives the shell the task runs in.
+         "--mermaid-command" (shell-quote "")
+         "./src/dokgen")
    #:verbose? #t))
 
 (define (docs-check)
@@ -151,12 +162,20 @@ is a procedure that was changed without the documentation following."
   (git:git (list "diff" "--exit-code" "--" "manual/api")))
 
 (define (manual)
-  "Build the HTML manual into reports/manual."
+  "Build the HTML manual into reports/manual.
+
+Texinfo looks for an image where it is told to, not where the text that
+names it lives, so the directory the generated chapter sits in goes on the
+include path.  Nothing copies an image into the output either, so the
+diagrams are put beside the pages that point at them."
   (run (list "mkdir" "-p" manual-dist))
   (time-machine-manifest-shell
    (list "makeinfo" "--html" (~ "--css-ref=~a" manual-css-url)
-         "-c" "SHOW_TITLE=true" "-o" manual-dist "manual/main.texi")
+         "-c" "SHOW_TITLE=true" "-I" "manual/api"
+         "-o" manual-dist "manual/main.texi")
    #:verbose? #t)
+  (when (file-exists? (in-vicinity "manual/api" "diagrams"))
+    (run (list "cp" "-r" "manual/api/diagrams" manual-dist) #:verbose? #t))
   (log-info "open file://~a/~a/index.html" (getcwd) manual-dist))
 
 (define (deploy)

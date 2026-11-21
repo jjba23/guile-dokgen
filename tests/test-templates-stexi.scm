@@ -46,6 +46,15 @@
   @end verbatim"
   #true)
 
+(define (diagrammed-procedure)
+  "This procedure is drawn.
+
+  ```mermaid
+  graph TD
+    a --> b
+  ```"
+  #true)
+
 (define-syntax add1
   ;; Example of a documented macro.
   (lambda (x)
@@ -79,33 +88,33 @@
   (test-equal
       "Render a binding that holds a record type."
     `(*fragment*
-      ;; FIXME: The anchor text becomes empty in stexi->texi process.
-      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-      ;; (anchor "somelib_amodule_<being>")
+      (anchor (% (name "somelib_amodule_<being>")))
+      ;; Texinfo wants an anchor on a line of its own.
+      "\n"
       (deftp
         (% (category "Record type")
            (name "<being>")
            (attributes))
         (para "This record type has the following fields:")
         (itemize
-         (item (code "name"))
-         (item (code "binomial")))))
+         (item (code "name") "\n")
+         (item (code "binomial") "\n"))))
     (stexi:api-binding '<being> <being> '(somelib amodule)))
 
 
   (test-equal
       "Render a binding that holds a record."
     `(*fragment*
-      ;; FIXME: The anchor text becomes empty in stexi->texi process.
-      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-      ;; (anchor "somelib_amodule_panda")
+      (anchor (% (name "somelib_amodule_panda")))
+      ;; Texinfo wants an anchor on a line of its own.
+      "\n"
       (defvar
         (% (name "panda"))
         (para "This is a record of the type " (code "<being>") ", "
               "which has the following fields:")
         (itemize
-         (item (code "name"))
-         (item (code "binomial")))))
+         (item (code "name") "\n")
+         (item (code "binomial") "\n"))))
     (stexi:api-binding
      'panda
      (make-being "panda" "ailuropoda melanoleuca")
@@ -117,9 +126,9 @@
     (test-equal
         test-name
       '(*fragment*
-        ;; FIXME: The anchor text becomes empty in stexi->texi process.
-        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-        ;; (anchor "somelib_amodule_paramless-procedure")
+        (anchor (% (name "somelib_amodule_paramless-procedure")))
+        ;; Texinfo wants an anchor on a line of its own.
+        "\n"
         (deffn
           (% (category "Procedure")
              (name "paramless-procedure")
@@ -156,26 +165,43 @@
     (test-equal
         test-name
       '(*fragment*
-        ;; FIXME: The anchor text becomes empty in stexi->texi process.
-        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-        ;; (anchor "somelib_amodule_verbatim-in-docstring")
+        (anchor (% (name "somelib_amodule_verbatim-in-docstring")))
+        ;; Texinfo wants an anchor on a line of its own.
+        "\n"
         (deffn
           (% (category "Procedure")
              (name "verbatim-in-docstring")
              (arguments ""))
           (para "This procedure contains verbatim examples.")
           (verbatim "(+ 3 5)\n")))
-      (stexi:api-binding 'verbatim-in-docstring
-                         verbatim-in-docstring
-                         '(somelib amodule))))
+            (stexi:api-binding 'verbatim-in-docstring
+                               verbatim-in-docstring
+                               '(somelib amodule))))
+
+  (test-equal
+      "Render a diagram in a docstring as source when nothing draws it."
+    '(*fragment*
+      (anchor (% (name "somelib_amodule_diagrammed-procedure")))
+      ;; Texinfo wants an anchor on a line of its own.
+      "\n"
+      (deffn
+        (% (category "Procedure")
+           (name "diagrammed-procedure")
+           (arguments ""))
+        (para "This procedure is drawn.")
+        (para "Mermaid diagram, as source:")
+        (example "graph TD\n  a --> b")))
+    (stexi:api-binding 'diagrammed-procedure
+                       diagrammed-procedure
+                       '(somelib amodule))))
 
 
   (test-equal
       "Render undocumented procedure."
     '(*fragment*
-      ;; FIXME: The anchor text becomes empty in stexi->texi process.
-      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-      ;; (anchor "somelib_amodule_undocumented-procedure")
+      (anchor (% (name "somelib_amodule_undocumented-procedure")))
+      ;; Texinfo wants an anchor on a line of its own.
+      "\n"
       (deffn
         (% (category "Procedure")
            (name "undocumented-procedure")
@@ -186,33 +212,52 @@
                        '(somelib amodule)))
 
 
-  (test-equal
-      "Render a documented macro."
-    '(*fragment*
-      ;; FIXME: The anchor text becomes empty in stexi->texi process.
-      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-      ;; (anchor "somelib_amodule_add1")
-      (defmac
-        (% (name "add1")
-           (arguments "x"))
-        (para "Add 1 to the given number.")))
-    (stexi:api-binding 'add1
-                       (module-ref (current-module) 'add1)
-                       '(somelib amodule)))
+  #| A macro's arguments are read by reflection, and reflection answers
+  with the names in the source only when Guile kept them: a transformer it
+  has no debug information for is reported as (a), (b), @dots{} in the order
+  of its arguments.  Which of the two a run gets depends on how the file
+  that defines the macro was loaded, so the renderings below take their
+  expected arguments from the same reflection, and the names themselves
+  are asserted once, as a test that passes where they are kept. |#
 
-  (test-equal
-      "Render an undocumented macro."
-    '(*fragment*
-      ;; FIXME: The anchor text becomes empty in stexi->texi process.
-      ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-      ;; (anchor "somelib_amodule_sub1")
-      (defmac
-        (% (name "sub1")
-           (arguments "x"))
-        (para "Undocumented macro.")))
-    (stexi:api-binding 'sub1
-                       (module-ref (current-module) 'sub1)
-                       '(somelib amodule)))
+  (let [(transformer (macro-transformer (module-ref (current-module) 'add1)))]
+
+    (test-equal
+        "Render a documented macro."
+      `(*fragment*
+        (anchor (% (name "somelib_amodule_add1")))
+        ;; Texinfo wants an anchor on a line of its own.
+        "\n"
+        (defmac
+          (% (name "add1")
+             (arguments ,(stexi:procedure-parameters transformer)))
+          (para "Add 1 to the given number.")))
+      (stexi:api-binding 'add1
+                         (module-ref (current-module) 'add1)
+                         '(somelib amodule)))
+
+    (test-expect-fail 1)                ; XFAIL where reflection has no names.
+    (test-equal
+        "Name a macro's arguments the way its source does."
+      "x"
+      (stexi:procedure-parameters transformer)))
+
+
+  (let [(transformer (macro-transformer (module-ref (current-module) 'sub1)))]
+
+    (test-equal
+        "Render an undocumented macro."
+      `(*fragment*
+        (anchor (% (name "somelib_amodule_sub1")))
+        ;; Texinfo wants an anchor on a line of its own.
+        "\n"
+        (defmac
+          (% (name "sub1")
+             (arguments ,(stexi:procedure-parameters transformer)))
+          (para "Undocumented macro.")))
+      (stexi:api-binding 'sub1
+                         (module-ref (current-module) 'sub1)
+                         '(somelib amodule)))
 
   (let [(test-name "Render a parameter.")
         (parameter-name 'bogus-parameter)
@@ -221,9 +266,9 @@
     (test-equal
         test-name
       `(*fragment*
-        ;; FIXME: The anchor text becomes empty in stexi->texi process.
-        ;; See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=72209
-        ;; (anchor "somelib_amodule_bogus-parameter")
+        (anchor (% (name "somelib_amodule_bogus-parameter")))
+        ;; Texinfo wants an anchor on a line of its own.
+        "\n"
         (defvr
           (% (category "Parameter")
              (name ,(symbol->string parameter-name)))
@@ -232,6 +277,27 @@
       (stexi:api-binding parameter-name
                          bogus-parameter
                          '(somelib amodule)))))
+
+
+
+(test-group
+    (unit-name stexi:api-chapter)
+
+  (test-equal
+      "List the modules before documenting them, so one is found by name."
+    '(*fragment*
+      (c (% (all "NOTE: Autogenerated documentation. Do not edit manually.")))
+      (node (% (name "API")))
+      (chapter "API")
+      (para "The following is the list of modules provided by this library.")
+      (itemize
+       (item (ref (% (node "somelib_amodule")
+                     (name "(somelib amodule)")))
+             "\n")
+       (item (ref (% (node "somelib_bmodule")
+                     (name "(somelib bmodule)")))
+             "\n")))
+    (stexi:api-chapter '((somelib amodule) (somelib bmodule)) '())))
 
 
 

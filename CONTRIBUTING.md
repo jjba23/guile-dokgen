@@ -28,6 +28,7 @@ and nothing else.
 | Path | What it holds |
 |---|---|
 | `src/dokgen/data.scm` | extracting the API data from a module |
+| `src/dokgen/diagrams.scm` | the mermaid diagrams a docstring carries |
 | `src/dokgen/templates/stexi.scm` | rendering that data as stexi |
 | `src/dokgen/writer.scm` | writing the result to disk |
 | `src/dokgen/cli.scm`, `commands.scm` | arguments and dispatch |
@@ -47,6 +48,21 @@ is a summary that stands alone; each argument follows as
 `@strong{name} (type):` and the result as `@strong{Return value} (type):`.  A
 module's description is its `;;; Commentary:` or a `#| ... |#` block, and every
 exported name has one.  Run `maak docs` to see how they render.
+
+A docstring may carry a mermaid diagram as a fenced block; the manual's
+*Diagrams* chapter says how one is drawn.  This project builds its own manual
+from the images it has committed, because the renderer is a JavaScript tool
+the pinned environment does not have: `maak docs` writes each diagram's
+`.mmd` next to the reference and points at the `.png` beside it, so a diagram
+that changed without its image following is a stale reference that
+`maak docs-check` reports.  Draw one with
+
+```shell
+npx --yes @mermaid-js/mermaid-cli@11 \
+    --input manual/api/diagrams/NAME.mmd --output manual/api/diagrams/NAME.png
+```
+
+and commit both files.
 
 Every source file starts with the header:
 

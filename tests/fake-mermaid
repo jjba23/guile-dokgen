@@ -1,0 +1,22 @@
+#!/bin/sh
+# guile-dokgen --- a stand-in for a mermaid renderer, for the test suites.
+#
+# SPDX-License-Identifier: MIT
+# Copyright © Josep Bigorra <jjbigorra@gmail.com>
+#
+# The suites need to watch dokgen render a diagram without depending on the
+# renderer a user happens to have.  This one is called the way a real renderer
+# is: the diagram's source and the path to write, with no extension.  It writes
+# the source back inside an SVG, so a test can tell one diagram from another.
+#
+# Usage: sh fake-mermaid DIAGRAM.mmd OUTPUT-WITHOUT-EXTENSION
+
+set -eu
+
+test -r "$1" || { echo "no such diagram: $1" >&2; exit 1; }
+
+{
+    printf '<svg xmlns="http://www.w3.org/2000/svg"><text>'
+    cat "$1"
+    printf '</text></svg>\n'
+} > "$2.png"
