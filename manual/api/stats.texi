@@ -7,7 +7,7 @@
 This chapter is written by @command{dokgen stats} from the tree itself,
 so it says what the code is rather than what someone remembers it to be.
 
-It describes the tree at commit @code{b99d99f}, on 2026-11-21.
+It describes the tree at commit @code{13ddf68}, on 2026-11-21.
 
 @section Size
 @example 
@@ -49,7 +49,7 @@ removed.
 
 @example 
 name                added  removed  changed
-Josep Bigorra       8258   3755     12013
+Josep Bigorra       8268   3765     12033
 Luis Felipe         7038   1266     8304
 Christopher Baines  3      19       22
 @end example
@@ -67,11 +67,11 @@ src/dokgen/commands.scm         272    61       333
 src/dokgen/diagrams.scm         309    2        311
 src/dokgen/data.scm             97     40       137
 src/dokgen/exceptions.scm       76     26       102
-src/dokgen/cli.scm              43     12       55
+src/dokgen/cli.scm              44     13       57
 src/dokgen/utils.scm            5      1        6
 @end example
 
-The repository holds 107 commits, the first on 2023-02-16.
+The repository holds 108 commits, the first on 2023-02-16.
 
 A decision point is an @code{if}, @code{cond}, @code{case}, @code{when},
 @code{unless} or @code{do} in the code.  It counts shapes and not paths,

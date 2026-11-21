@@ -65,7 +65,7 @@ command line to the procedure that carries it out. |#
    (synopsis "Generate API documentation.")
    (description
     "This is the command-line interface of Guile Dokgen, a software to generate API documentation for GNU Guile Scheme projects.")
-   (version "0.9.1")
+   (version "0.9.2")
    (license expat)
    (author "Josep Bigorra")
 
