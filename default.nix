@@ -28,6 +28,7 @@
 , guile
 , guile-config
 , guile-lib
+, gnuplot
 , source ? ./.
 }:
 
@@ -48,7 +49,7 @@ stdenv.mkDerivation {
   src = source;
 
   nativeBuildInputs = [ guile ];
-  buildInputs = [ guile ];
+  buildInputs = [ guile gnuplot ];
 
   # There is nothing to compile in the build phase: what is worth checking is
   # that the tool runs, that it documents its own sources, and that `check'
@@ -78,9 +79,11 @@ stdenv.mkDerivation {
     cp -r src/dokgen "$site/dokgen"
 
     install -m 755 bin/dokgen "$out/bin/dokgen"
+    # A plot is drawn during a documentation build; a project that uses
+    # dokgen should not have to install gnuplot itself.
     substituteInPlace "$out/bin/dokgen" \
       --replace-fail '$here/../src' "$site" \
-      --replace-fail 'exec guile' "exec ${guile}/bin/guile -C $out/lib/guile/3.0/site-ccache${dependencyFlags}"
+      --replace-fail 'exec guile' "PATH=${gnuplot}/bin:\$PATH exec ${guile}/bin/guile -C $out/lib/guile/3.0/site-ccache${dependencyFlags}""}
 
     runHook postInstall
   '';
@@ -103,10 +106,12 @@ stdenv.mkDerivation {
       parameter object and record type, with the docstring that documents it.
       The documentation is read from the module that is loaded rather than
       parsed from its text, so a name the program can call is a name the manual
-      documents.  A docstring may carry a mermaid diagram, which is drawn
-      through a renderer of the user's choice; with none installed it is
-      written as source.  A `check' command reports the exported names that
-      have no docstring, for a build that holds a library to a documented API.
+      documents.  A docstring may carry a mermaid or gnuplot diagram: mermaid
+      is drawn in the page from a bundled renderer when no image was built,
+      gnuplot is drawn at build time when it is installed, and either is kept
+      as source when it cannot be drawn.  A `check' command reports the
+      exported names that have no docstring, for a build that holds a library
+      to a documented API.
     '';
     homepage = "https://github.com/jjba23/guile-dokgen";
     license = lib.licenses.mit;

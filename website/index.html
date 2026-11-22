@@ -106,14 +106,20 @@ dokgen api mylib --destination mydocs/api</pre>
 
         <p>
           Docstrings are Texinfo, so they can carry a diagram as a fenced
-          <a href="https://mermaid.js.org/" target="_blank">mermaid</a> block: it
-          is drawn through a renderer of your choice and shown as an image, or
-          written as its source when no renderer is installed.
+          <a href="https://mermaid.js.org/" target="_blank">mermaid</a> or
+          <a href="http://www.gnuplot.info/" target="_blank">gnuplot</a>
+          block. Mermaid is drawn in the page from a bundled renderer when no
+          image was built, so reading the HTML never needs <code>mmdc</code>;
+          gnuplot plots are SVG when gnuplot is installed, and both stay
+          readable as source when no renderer is at hand.
         </p>
 
         <pre>
 <span class="comment"># Draw the diagrams your docstrings hold (the default renderer is mmdc)</span>
 dokgen api somelibx --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
+
+<span class="comment"># Draw the plots too, when gnuplot is installed</span>
+dokgen api somelibx --gnuplot-command "gnuplot %i"
 
 <span class="comment"># Fail the build when an exported procedure has no docstring</span>
 dokgen check somelibx
@@ -126,9 +132,10 @@ dokgen stats somelibx --destination doc/api</pre>
           name, so a chapter written by hand can point at one procedure with
           <code>@ref{dokgen_cli_call}</code> <span class="comment">&mdash; and the
           stylesheet and script written beside the chapter turn those definitions
-          into cards with an index you can filter, signatures you can copy, details
-          you can fold and diagrams you can zoom. This manual is an example: its
-          API chapter is that output.</span>
+          into cards with an index you can filter, signatures you can copy, a warm
+          page that follows your light or dark preference, and diagrams that fit
+          the column. This manual is an example: its API chapter is that
+          output.</span>
         </p>
 
         <p>

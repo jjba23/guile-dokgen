@@ -108,7 +108,8 @@ graph LR
 
 (define* (api sources
               #:optional (destination DEFAULT_DOC_PATH)
-              (mermaid-command diagrams:DEFAULT_MERMAID_COMMAND))
+              (mermaid-command diagrams:DEFAULT_MERMAID_COMMAND)
+              (gnuplot-command diagrams:DEFAULT_GNUPLOT_COMMAND))
   "Extract the API documentation of the given set of Guile Scheme
    modules.
 
@@ -134,7 +135,14 @@ graph LR
     Optional command that draws a mermaid diagram, with @code{%i} standing
     for the diagram's source and @code{%o} for the path to write its image
     to.  An empty command draws nothing and uses the diagrams already in
-    the destination.
+    the destination.  With no image the source is written into the
+    chapter, and the HTML the script presents draws it in the page.
+
+  @strong{gnuplot-command} (string):
+    Optional command that draws a gnuplot diagram, with @code{%i} standing
+    for the script that sets the output file and loads the plot and
+    @code{%o} for the path to write its image to.  An empty command draws
+    nothing and uses the images already in the destination.
 
   @strong{Result}:
     The API documentation is saved to the @var{destination} directory."
@@ -147,7 +155,8 @@ graph LR
     ;; the run, so they are set once here instead of being passed through
     ;; the templates that write the documentation.
     (parameterize [(diagrams:*diagram-destination* destination)
-                   (diagrams:*mermaid-command* mermaid-command)]
+                   (diagrams:*mermaid-command* mermaid-command)
+                   (diagrams:*gnuplot-command* gnuplot-command)]
       (save (stexi->texi
              (stexi:api-chapter
               module-names

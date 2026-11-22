@@ -32,20 +32,24 @@ What exists and is tested:
   renderer passes it through stexi, so `@var`, `@code` and `@example` in a
   docstring become the same markup in the manual. A module's commentary is
   its description, either as `;;; Commentary:` lines or as a `#| … |#` block.
-- **Diagrams in the documentation.** A fenced mermaid block in a docstring is
-  drawn through a renderer command and shown as an image; with no renderer it
-  is written as source, so nothing silently disappears. Each diagram is named
-  after a digest of its own text, which is what keeps a stale drawing from
-  being shown as the current one.
+- **Diagrams in the documentation.** A fenced mermaid or gnuplot block in a
+  docstring is drawn through a renderer command and shown as an image. Mermaid
+  has a second path: with no image, the page draws the source from a bundled
+  renderer, so reading the HTML never requires `mmdc`. Gnuplot is drawn as SVG
+  when gnuplot is installed. With no renderer at all the diagram is written as
+  source, so nothing silently disappears. Each diagram is named after a digest
+  of its own text, which is what keeps a stale drawing from being shown as the
+  current one.
 - **Definitions that can be pointed at.** Every definition carries an anchor
   built from its module and its name, so a hand-written chapter can reference
   one procedure rather than a whole section.
 - **A page built to be read.** Beside the Texinfo, dokgen writes a stylesheet
   and a script: one card per definition with its signature at the top, an
-  index of them down the side with a filter, a button that copies a signature,
-  a folded tail on the long ones, a light and a dark page, and diagrams that
-  open into something a reader can zoom into. They are progressive: a manual
-  that ignores them gets the same chapter it would have had.
+  index of the sections and definitions down the side with a filter, a button
+  that copies a signature, a warm light and dark page, and diagrams that fit
+  the column. They are progressive: a manual that ignores them gets the same
+  chapter it would have had, and a page without JavaScript keeps its own table
+  of contents.
 - **Numbers about the tree.** `dokgen stats` measures the sources and the
   history and writes them as a chapter: lines of code and comment, the
   decision points the code branches through, how much of the exported API is

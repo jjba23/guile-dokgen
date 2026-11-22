@@ -22,13 +22,15 @@
 ;; lands in the tree and goes away with the suite.
 (define TEST_DIR (format #f "/tmp/dokgen-test-~a" (getpid)))
 
-;; The renderer the suites use: the program under test spawns it the way it
-;; spawns a real one, so the spawn itself is tested too.
+;; The renderers the suites use: the program under test spawns them the way
+;; it spawns a real one, so the spawn itself is tested too.
 (define FAKE_RENDERER
   (format #f "sh ~a/fake-mermaid %i %o" (dirname (current-filename))))
+(define FAKE_GNUPLOT
+  (format #f "sh ~a/fake-gnuplot %i %o" (dirname (current-filename))))
 
 (define EXAMPLE "graph TD\n  source --> manual")
-
+(define PLOT "plot sin(x)")
 
 
 ;;; HELPERS
@@ -56,16 +58,27 @@
   (test-equal
       "Split a fenced diagram out of the prose around it."
     (list (cons 'text "Before.")
-          (cons 'diagram EXAMPLE)
+          (list 'diagram "mermaid" EXAMPLE)
           (cons 'text "After."))
     (diagrams:diagram-blocks
      (format #f "Before.~%```mermaid~%~a~%```~%After." EXAMPLE)))
 
   (test-equal
       "Read a fence that stands on an indented line."
-    (list (cons 'diagram EXAMPLE))
+    (list (list 'diagram "mermaid" EXAMPLE))
     (diagrams:diagram-blocks
      (format #f "  ```mermaid~%~a~%  ```" EXAMPLE)))
+
+  (test-equal
+      "Read a gnuplot fence as gnuplot."
+    (list (list 'diagram "gnuplot" PLOT))
+    (diagrams:diagram-blocks
+     (format #f "```gnuplot~%~a~%```" PLOT)))
+
+  (test-equal
+      "Leave a fence of a language dokgen does not read as text."
+    (list (cons 'text (format #f "```dot~%digraph { a -> b }~%```")))
+    (diagrams:diagram-blocks "```dot\ndigraph { a -> b }\n```"))
 
   (test-equal
       "Keep an unterminated fence as text, so nothing is lost."
@@ -75,9 +88,9 @@
 
   (test-equal
       "Read two diagrams in one docstring."
-    (list (cons 'diagram EXAMPLE)
+    (list (list 'diagram "mermaid" EXAMPLE)
           (cons 'text "Prose.")
-          (cons 'diagram EXAMPLE))
+          (list 'diagram "mermaid" EXAMPLE))
     (diagrams:diagram-blocks
      (format #f "```mermaid~%~a~%```~%Prose.~%```mermaid~%~a~%```"
              EXAMPLE EXAMPLE)))
@@ -115,7 +128,7 @@
   (let* [(stem (diagrams:diagram-stem "render-me" EXAMPLE))
          (nodes (parameterize ((diagrams:*diagram-destination* TEST_DIR)
                                (diagrams:*mermaid-command* FAKE_RENDERER))
-                  (diagrams:diagram-stexi EXAMPLE "render-me")))]
+                  (diagrams:diagram-stexi "mermaid" EXAMPLE "render-me")))]
 
     (test-equal
         "Show a rendered diagram as an image, in a paragraph of its own."
@@ -134,7 +147,7 @@
 
   (let [(nodes (parameterize ((diagrams:*diagram-destination* TEST_DIR)
                               (diagrams:*mermaid-command* ""))
-                 (diagrams:diagram-stexi EXAMPLE "unrendered")))]
+                 (diagrams:diagram-stexi "mermaid" EXAMPLE "unrendered")))]
 
     (test-equal
         "Show the source when no renderer is configured."
@@ -142,10 +155,46 @@
       (map car nodes))
 
     (test-equal
-        "Keep the diagram's text, so a reader can still follow it."
-      EXAMPLE
+        "Mark the source so the script can draw it in the page."
+      (format #f "~a~%~a" EXAMPLE diagrams:MERMAID_SOURCE_MARKER)
       (cadr (second nodes))))
 
+
+  (let* [(stem (diagrams:diagram-stem "plot-me" PLOT))
+         (nodes (parameterize ((diagrams:*diagram-destination* TEST_DIR)
+                               (diagrams:*gnuplot-command* FAKE_GNUPLOT))
+                  (diagrams:diagram-stexi "gnuplot" PLOT "plot-me")))]
+
+    (test-equal
+        "Show a plot as the SVG gnuplot wrote, and name its own extension."
+      `(para (image (% (file ,(format #f "diagrams/~a" stem))
+                       (alt-text "Gnuplot diagram")
+                       (extension "svg"))))
+      (first nodes))
+
+    (test-assert
+        "Keep the plot's source, without the terminal the run chose."
+      (file-exists? (format #f "~a/diagrams/~a.gp" TEST_DIR stem)))
+
+    (test-assert
+        "Use the image gnuplot wrote."
+      (file-exists? (format #f "~a/diagrams/~a.svg" TEST_DIR stem)))
+
+    (test-assert
+        "Leave no wrapper script behind."
+      (not (file-exists? (format #f "~a/diagrams/~a.render.gp" TEST_DIR stem)))))
+
+
+  (let* [(stem (diagrams:diagram-stem "unrendered-plot" PLOT))
+         (nodes (parameterize ((diagrams:*diagram-destination* TEST_DIR)
+                               (diagrams:*gnuplot-command* ""))
+                  (diagrams:diagram-stexi "gnuplot" PLOT "unrendered-plot")))]
+
+    (test-equal
+        "Show a gnuplot diagram as source when nothing draws it."
+      (list '(para "Gnuplot diagram, as source:")
+            `(example ,PLOT))
+      nodes))
 
   (let* [(stem (diagrams:diagram-stem "pre-rendered" EXAMPLE))
          (image (format #f "~a/diagrams/~a.png" TEST_DIR stem))]
@@ -159,8 +208,7 @@
                        (alt-text "Mermaid diagram"))))
       (first (parameterize ((diagrams:*diagram-destination* TEST_DIR)
                             (diagrams:*mermaid-command* ""))
-               (diagrams:diagram-stexi EXAMPLE "pre-rendered"))))))
-
+               (diagrams:diagram-stexi "mermaid" EXAMPLE "pre-rendered"))))))
 
 (test-end SUITE_NAME)
 

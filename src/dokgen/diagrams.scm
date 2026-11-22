@@ -1,16 +1,16 @@
-;; guile-dokgen --- mermaid diagrams in the documentation
+;; guile-dokgen --- diagrams in the documentation
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>
 
 ;;; Commentary:
 
-#| This module turns the mermaid diagrams a documentation string carries
-into images the manual can show.
+#| This module turns the diagrams a documentation string carries into
+images the manual can show, or into source a browser can draw.
 
 A diagram is written in a docstring as a fenced block, the way a markdown
-reader already knows.  What follows is one, and it is drawn where the
-manual shows this module:
+reader already knows.  Two languages are read: mermaid and gnuplot.  What
+follows is one, and it is drawn where the manual shows this module:
 
 ```mermaid
 graph LR
@@ -20,25 +20,27 @@ graph LR
 ```
 
 The fence is consumed, the diagram is written next to the generated
-Texinfo as @file{diagrams/NAME-HASH.mmd}, and a renderer turns it into
-@file{diagrams/NAME-HASH.png}, which the API chapter references with
-@code{@@image}. The name carries a digest of the diagram's own text, so a
-diagram that changed gets a file of its own and an old rendering can never
-be shown as the current one.
+Texinfo as @file{diagrams/NAME-HASH.mmd} (or @file{.gp} for gnuplot), and
+a renderer turns it into @file{diagrams/NAME-HASH.png} or @file{.svg},
+which the API chapter references with @code{@@image}.  The name carries a
+digest of the diagram's own text, so a diagram that changed gets a file of
+its own and an old rendering can never be shown as the current one.
 
-The renderer is a command, not a library: mermaid is JavaScript, and a
-documentation generator that embedded a browser to draw an arrow would be a
-worse trade than one that calls the tool a project already uses. The
-command @code{mmdc} (from @code{mermaid-cli}) is the default; the
-parameters @code{*mermaid-command*} and @code{*diagram-destination*} say
-what to run and where to write, so a caller sets them once around a whole
-run. A command left empty renders nothing, which is how a tree that
-commits its images builds its manual without a renderer.
+A renderer is a command, not a build-time library: @code{mmdc} is a Node
+program, and a manual should not need it to show a diagram.  Each language
+has a command of its own, and a command left empty draws nothing.  A
+command whose program is not installed is skipped in silence: a diagram
+that cannot be drawn is still a diagram that can be read, and a project
+without the renderer should not be told off on every build.
 
-When there is no image, the diagram's source is written into the manual
-instead, in an @code{@@example} block with a line saying what it is. A
-diagram that silently disappeared from a manual would be worse than one a
-reader has to copy. |#
+Mermaid has a second path: when there is no image, the source is written
+into the manual with a marker, and the script dokgen writes beside the
+chapter draws it in the reader's browser from a bundled copy of mermaid.
+That is what lets a project show its diagrams without installing
+@code{mmdc} at all.  A reader without JavaScript, and every Info or print
+reader, gets the source instead.  Gnuplot has no such path -- it is a
+small program that draws an SVG at build time -- but its source stays
+readable when the program is missing. |#
 
 ;;; Code:
 
@@ -51,8 +53,11 @@ reader has to copy. |#
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
   #:export (DEFAULT_MERMAID_COMMAND
+            DEFAULT_GNUPLOT_COMMAND
+            MERMAID_SOURCE_MARKER
             *diagram-destination*
             *mermaid-command*
+            *gnuplot-command*
             diagram-blocks
             diagram-stem
             diagram-stexi))
@@ -60,51 +65,79 @@ reader has to copy. |#
 
 ;;; CONSTANTS
 
-;; Opens a fenced mermaid block in a documentation string.
-(define DIAGRAM_FENCE "```mermaid")
+;; Opens a fenced diagram in a documentation string.
+(define FENCE_OPEN "```")
 
 ;; Closes one.
 (define FENCE "```")
 
-;; The command that renders a diagram when the caller names no other.  The
-;; renderer gets the diagram's source as %i and the path to write as %o,
-;; without an extension, so that a renderer writing PNG and one writing SVG
-;; are configured by the same option.  Twice the size and no background,
+;; The languages a fence may name.
+(define DIAGRAM_LANGUAGES '("mermaid" "gnuplot"))
+
+;; The default renderer for a mermaid diagram.  The renderer gets the
+;; diagram's source as %i and the path to write as %o, without an
+;; extension, so that a renderer writing PNG and one writing SVG are
+;; configured by the same option.  Twice the size and no background,
 ;; because the image is read on a page of any width and on a page that may
 ;; be dark.
 (define DEFAULT_MERMAID_COMMAND "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent")
 
-;; The extensions an image may have, most portable first: texi2any looks
-;; for the first four on its own, and an SVG has to be named in the
-;; @code{@@image} command itself.
-(define IMAGE_EXTENSIONS '("png" "jpg" "gif" "svg"))
+;; Gnuplot reads a script that says where its own output goes, so dokgen
+;; writes one and hands the renderer that script.  The source a project
+;; commits stays the plot alone.
+(define DEFAULT_GNUPLOT_COMMAND "gnuplot %i")
+
+;; The extensions an image may have: an SVG first for gnuplot, because it
+;; is what the default terminal writes; the others are what texi2any finds
+;; on its own.
+(define MERMAID_EXTENSIONS '("png" "jpg" "gif" "svg"))
+(define GNUPLOT_EXTENSIONS '("svg" "png"))
+
+;; The last line of a mermaid diagram left as source.  It is a mermaid
+;; comment, so the source is still a diagram, and the script uses it to
+;; tell a diagram from a code sample.
+(define MERMAID_SOURCE_MARKER "%% dokgen-mermaid")
 
 
 ;;; PARAMETERS
 
-;; Where diagrams are written, and what renders them.  Both are set once
+;; Where diagrams are written, and what renders them.  They are set once
 ;; around a whole extraction rather than passed through every template:
 ;; the destination reaches the diagrams from the command, eight calls up
 ;; the rendering stack, and it is the only thing those calls would add.
 (define *diagram-destination* (make-parameter #f))
 (define *mermaid-command* (make-parameter DEFAULT_MERMAID_COMMAND))
+(define *gnuplot-command* (make-parameter DEFAULT_GNUPLOT_COMMAND))
 
 
 ;;; PROCEDURES
 
-(define (fence? line)
-  "Return @code{#t} when @var{line} opens a mermaid diagram."
-  (string-prefix? DIAGRAM_FENCE (string-trim-both line)))
+(define (diagram-language line)
+  "Return the language of the fence on LINE, or @code{#false}.
+
+  @strong{line} (string):
+    One line of a documentation string.
+
+  @strong{Return value} (string or @code{#false}):
+    @samp{mermaid}, @samp{gnuplot}, or @code{#false} when the line is
+    not a fence dokgen reads.  A closing fence names no language and is
+    not an opening one."
+  (let [(trimmed (string-trim-both line))]
+    (and (string-prefix? FENCE_OPEN trimmed)
+         (let [(language (string-trim-both
+                          (substring trimmed (string-length FENCE_OPEN))))]
+           (and (member language DIAGRAM_LANGUAGES)
+                language)))))
 
 (define (closing-fence? line)
-  "Return @code{#t} when @var{line} closes a mermaid diagram."
+  "Return @code{#t} when @var{line} closes a diagram."
   (string=? FENCE (string-trim-both line)))
 
 (define (opens-verbatim line)
   "Return the name of the Texinfo block @var{line} opens, or @code{#f}.
 
-  A mermaid block written inside one of these quotes the syntax instead
-  of drawing it: a reader of a docstring that shows how to write a diagram
+  A diagram written inside one of these quotes the syntax instead of
+  drawing it: a reader of a docstring that shows how to write a diagram
   must not find the sample drawn."
   (and=> (string-match
           "^\\s*@(example|smallexample|lisp|smalllisp|format|display|verbatim)\\s*$"
@@ -137,11 +170,11 @@ reader has to copy. |#
     The documentation of a module or of one of its objects.
 
   @strong{Return value} (list of pairs):
-    Every pair is either @code{(text . STRING)} or
-    @code{(diagram . STRING)}, in the order they are written.  A fence
-    that is never closed stays prose, because a docstring with a typo in
-    it should still reach the reader, and so does one written inside a
-    Texinfo block that quotes it."
+    Every item is either @code{(text . STRING)} or
+    @code{(diagram LANGUAGE SOURCE)}, in the order they are written.  A
+    fence that is never closed stays prose, because a docstring with a
+    typo in it should still reach the reader, and so does one written
+    inside a Texinfo block that quotes it."
   (define (add-prose prose blocks)
     "Cons the prose so far onto BLOCKS, unless there is none."
     (if (or (null? prose) (string-null? (string-trim-both (string-join prose ""))))
@@ -157,16 +190,17 @@ reader has to copy. |#
      [(opens-verbatim (first lines))
       => (lambda (block)
            (loop (cdr lines) (cons (first lines) prose) blocks block))]
-     [(fence? (first lines))
-      (call-with-values (lambda () (take-diagram (cdr lines)))
-        (lambda (diagram rest)
-          (if diagram
-              (loop rest '()
-                    (cons (cons 'diagram (string-join diagram "\n"))
-                          (add-prose prose blocks))
-                    #false)
-              ;; The fence never closes, so the whole tail is prose.
-              (loop '() (append (reverse lines) prose) blocks #false))))]
+     [(diagram-language (first lines))
+      => (lambda (language)
+           (call-with-values (lambda () (take-diagram (cdr lines)))
+             (lambda (diagram rest)
+               (if diagram
+                   (loop rest '()
+                         (cons (list 'diagram language (string-join diagram "\n"))
+                               (add-prose prose blocks))
+                         #false)
+                   ;; The fence never closes, so the whole tail is prose.
+                   (loop '() (append (reverse lines) prose) blocks #false)))))]
      [else (loop (cdr lines) (cons (first lines) prose) blocks verbatim)])))
 
 (define (digest text)
@@ -190,7 +224,7 @@ reader has to copy. |#
     What holds the diagram: a procedure's name, or a module's name.
 
   @strong{source} (string):
-    The diagram, as mermaid.
+    The diagram's own text.
 
   @strong{Return value} (string):
     The owner, with every character a shell or a URL would have to escape
@@ -206,12 +240,36 @@ reader has to copy. |#
                 (string->list owner)))
           (digest source)))
 
-(define (image-extension base)
-  "Return the extension of the image that exists under @var{base}, or #f."
-  (find (lambda (extension) (file-exists? (format #f "~a.~a" base extension)))
-        IMAGE_EXTENSIONS))
+(define (diagram-command language)
+  "Return the renderer configured for @var{language}."
+  (cond
+   [(string=? language "mermaid") (*mermaid-command*)]
+   [(string=? language "gnuplot") (*gnuplot-command*)]
+   [else ""]))
 
-(define (render! command source-file base)
+(define (diagram-extensions language)
+  "Return the image extensions @var{language} may have written."
+  (if (string=? language "gnuplot") GNUPLOT_EXTENSIONS MERMAID_EXTENSIONS))
+
+(define (source-extension language)
+  "Return the extension the diagram's own source is written with."
+  (if (string=? language "gnuplot") "gp" "mmd"))
+
+(define (executable? program)
+  "Return @code{#t} when PROGRAM names something that can be run.
+
+  A renderer that is not installed is not an error: the diagram is left as
+  source.  A path is looked at as a path, and a bare name is looked for on
+  @var{PATH}, the same order a shell uses."
+  (if (string-contains program file-name-separator-string)
+      (file-exists? program)
+      (let [(path (getenv "PATH"))]
+        (and path
+             (any (lambda (directory)
+                    (file-exists? (in-vicinity directory program)))
+                  (string-split path #\:))))))
+
+(define (render! command language source-file base)
   "Render the diagram in @var{source-file} to @var{base}, without extension.
 
   @strong{command} (string):
@@ -220,26 +278,55 @@ reader has to copy. |#
     replaced by the source and @code{%o} by @var{base}.
 
   @strong{Result}:
-    The renderer is run; a failure is reported and not raised, because a
-    diagram that could not be drawn is still a diagram that can be read as
-    source."
-  (let [(arguments
-         (map (lambda (word)
-                (string-replace-substring
-                 (string-replace-substring word "%i" source-file)
-                 "%o" base))
-              (string-tokenize command)))]
-    (unless (and (pair? arguments)
-                 (false-if-exception (zero? (apply system* arguments))))
-      (format (current-error-port)
-              "warning: the mermaid renderer failed on ~a: ~a~%"
-              source-file command))))
+    The renderer is run when its program is on @var{PATH}; a failure is
+    reported and not raised, because a diagram that could not be drawn is
+    still a diagram that can be read as source.  A program that is not
+    installed is skipped in silence for the same reason."
+  (let [(program (first (string-tokenize command)))]
+    (when (and program (executable? program))
+      (let [(arguments
+             (map (lambda (word)
+                    (string-replace-substring
+                     (string-replace-substring word "%i" source-file)
+                     "%o" base))
+                  (string-tokenize command)))]
+        (unless (and (pair? arguments)
+                     (false-if-exception (zero? (apply system* arguments))))
+          (format (current-error-port)
+                  "warning: the ~a renderer failed on ~a: ~a~%"
+                  language source-file command))))))
 
-(define (diagram-file source stem destination)
+(define (gnuplot-string text)
+  "Return TEXT quoted as a gnuplot string."
+  (string-append "\""
+                 (string-replace-substring
+                  (string-replace-substring text "\\" "\\\\")
+                  "\"" "\\\"")
+                 "\""))
+
+(define (gnuplot-wrapper source-file base)
+  "Return a gnuplot script that draws SOURCE-FILE to BASE.svg.
+
+  The source a project commits says what is plotted; the terminal and the
+  output path belong to the run and are written here, so the same source
+  draws the same picture on any machine."
+  (format #f "set terminal svg size 900,520 background transparent~%set output ~a~%load ~a~%"
+          (gnuplot-string (string-append base ".svg"))
+          (gnuplot-string source-file)))
+
+(define (image-extension base extensions)
+  "Return the extension of the image that exists under @var{base}, or #f."
+  (find (lambda (extension) (file-exists? (format #f "~a.~a" base extension)))
+        extensions))
+
+(define (diagram-file language source stem destination)
   "Write @var{source} as a diagram, and return its image's path, or #f.
 
+  @strong{language} (string):
+    @samp{mermaid} or @samp{gnuplot}.
+
   @strong{source} (string):
-    The diagram, as mermaid.
+    The diagram's own text.
 
   @strong{stem} (string):
     The name of its files, as from @code{diagram-stem}.
@@ -255,20 +342,28 @@ reader has to copy. |#
     either way, so that a reader can draw it later with the tool of their
     choice."
   (let* [(base (format #f "~a/diagrams/~a" destination stem))
-         (command (*mermaid-command*))
-         (extension (begin
-                      (let [(source-file (string-append base ".mmd"))]
-                        (save source source-file)
-                        (when (and command (not (string-null? command)))
-                          (render! command source-file base)))
-                      (image-extension base)))]
-    (and extension (format #f "diagrams/~a.~a" stem extension))))
+         (source-file (format #f "~a.~a" base (source-extension language)))
+         (command (diagram-command language))]
+    (save source source-file)
+    (when (and command (not (string-null? command)))
+      (if (string=? language "gnuplot")
+          (let [(wrapper (string-append base ".render.gp"))]
+            (save (gnuplot-wrapper source-file base) wrapper)
+            (render! command language wrapper base)
+            (false-if-exception (delete-file wrapper)))
+          (render! command language source-file base)))
+    (and=> (image-extension base (diagram-extensions language))
+           (lambda (extension) (format #f "diagrams/~a.~a" stem extension)))))
 
-(define (image-stexi path)
+(define (image-stexi path language)
   "Return the stexi that shows the image at @var{path}.
 
   @strong{path} (string):
     The image's path, relative to the Texinfo file that references it.
+
+  @strong{language} (string):
+    What drew it, so that a reader who does not see the image knows what
+    it would have been.
 
   @strong{Return value} (stexi):
     An @code{@@image} node.  The extension is left out of the file name,
@@ -277,31 +372,48 @@ reader has to copy. |#
   (let* [(dot (string-rindex path #\.))
          (extension (and dot (string-downcase (substring path (+ 1 dot)))))
          (file (if dot (substring path 0 dot) path))
-         (alt-text "Mermaid diagram")]
+         (alt-text (format #f "~a diagram"
+                           (if (string=? language "gnuplot") "Gnuplot" "Mermaid")))]
     (if (and extension (string=? extension "svg"))
         `(image (% (file ,file) (alt-text ,alt-text) (extension "svg")))
         `(image (% (file ,file) (alt-text ,alt-text))))))
 
-(define (diagram-stexi source owner)
+(define (diagram-source language source)
+  "Return the stexi that shows a diagram @var{source} no image was made of.
+
+  A mermaid diagram is marked for the script, which draws it in the page;
+  a reader without JavaScript, and every Info or print reader, sees the
+  source.  A gnuplot diagram is left as source: the picture is made by
+  gnuplot, not by a browser."
+  (if (string=? language "mermaid")
+      (list '(para "Mermaid diagram:")
+            `(example ,(format #f "~a~%~a"
+                               (string-trim-right source #\newline)
+                               MERMAID_SOURCE_MARKER)))
+      (list '(para "Gnuplot diagram, as source:")
+            `(example ,source))))
+
+(define (diagram-stexi language source owner)
   "Return the stexi nodes that show the diagram @var{source}.
 
+  @strong{language} (string):
+    @samp{mermaid} or @samp{gnuplot}.
+
   @strong{source} (string):
-    The diagram, as mermaid.
+    The diagram's own text.
 
   @strong{owner} (string):
     What holds the diagram; see @code{diagram-stem}.
 
   @strong{Return value} (list of stexi):
     One node holding the image, in a paragraph of its own because Texinfo
-    writes an image inline where it stands, or two nodes holding the
-    diagram's source and a line that says what it is when no image could
-    be made."
+    writes an image inline where it stands, or the diagram's source and a
+    line that says what it is when no image could be made."
   (let* [(destination (*diagram-destination*))
          (image (and destination
-                     (diagram-file source
+                     (diagram-file language source
                                    (diagram-stem owner source)
                                    destination)))]
     (if image
-        (list (list 'para (image-stexi image)))
-        (list '(para "Mermaid diagram, as source:")
-              `(example ,source)))))
+        (list (list 'para (image-stexi image language)))
+        (diagram-source language source))))

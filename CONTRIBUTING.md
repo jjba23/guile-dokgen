@@ -28,7 +28,7 @@ and nothing else.
 | Path | What it holds |
 |---|---|
 | `src/dokgen/data.scm` | extracting the API data from a module |
-| `src/dokgen/diagrams.scm` | the mermaid diagrams a docstring carries |
+| `src/dokgen/diagrams.scm` | the mermaid and gnuplot diagrams a docstring carries |
 | `src/dokgen/templates/stexi.scm` | rendering that data as stexi |
 | `src/dokgen/writer.scm` | writing the result to disk |
 | `src/dokgen/cli.scm`, `commands.scm` | arguments and dispatch |
@@ -49,17 +49,21 @@ is a summary that stands alone; each argument follows as
 module's description is its `;;; Commentary:` or a `#| ... |#` block, and every
 exported name has one.  Run `maak docs` to see how they render.
 
-A docstring may carry a mermaid diagram as a fenced block; the manual's
-*Diagrams* chapter says how one is drawn.  This project builds its own manual
-from the images it has committed, because the renderer is a JavaScript tool
-the pinned environment does not have: `maak docs` writes each diagram's
-`.mmd` next to the reference and points at the `.png` beside it, so a diagram
-that changed without its image following is a stale reference that
+A docstring may carry a mermaid or gnuplot diagram as a fenced block; the
+manual's *Diagrams* chapter says how each is drawn.  The HTML does not need a
+renderer: a mermaid diagram with no image is drawn in the page from the
+bundled `mermaid.min.js`, and a gnuplot diagram is drawn at build time when
+`gnuplot` is installed.  This project still commits its images so that Info
+and print output have them.  `maak docs` writes each diagram's `.mmd` or `.gp`
+next to the reference and points at the image beside it, so a diagram that
+changed without its image following is a stale reference that
 `maak docs-check` reports.  Draw one with
 
 ```shell
 npx --yes @mermaid-js/mermaid-cli@11 \
     --input manual/api/diagrams/NAME.mmd --output manual/api/diagrams/NAME.png
+gnuplot -e 'set terminal svg; set output "manual/api/diagrams/NAME.svg"' \
+    manual/api/diagrams/NAME.gp
 ```
 
 and commit both files.

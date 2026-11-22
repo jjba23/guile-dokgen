@@ -5,14 +5,16 @@
  *
  * dokgen writes this file beside the Texinfo chapter it generates.  It
  * adds, on top of what texi2any emits, the few things that make a page of
- * reference documentation pleasant to read: an index of the definitions
- * down the side with a filter, a button that copies a signature, a folded
- * tail on the long ones, a theme that follows the reader, and diagrams
- * that open into something they can zoom into and drag.
+ * reference documentation pleasant to read: one index holding the sections
+ * and every definition, a filter over it, a bar with the theme and, on a
+ * phone, the button that opens the index as a drawer.  It also folds the
+ * body's own table of contents away, because the index already is one, and
+ * draws a diagram the build left as source from the bundled renderer.
  *
  * Everything is progressive: the page is complete without this file, and
  * every feature is one selector away from disappearing if the HTML it
- * looks for is not there.  No dependencies, no network, no globals.
+ * looks for is not there.  No network and no global of its own: the
+ * renderer is a local file, loaded only when a page needs it.
  */
 
 (function () {
@@ -20,6 +22,8 @@
 
     var THEME_KEY = "dokgen-theme";
     var root = document.documentElement;
+    var body = document.body;
+    var phone = window.matchMedia("(max-width: 1024px)");
 
     function each(list, fn) {
         Array.prototype.forEach.call(list, fn);
@@ -27,6 +31,14 @@
 
     function definitions() {
         return document.querySelectorAll("dl.def-block");
+    }
+
+    function tidy(text) {
+        return (text || "")
+            .replace(/\s+/g, " ")
+            .replace(/\s*¶+$/, "")
+            .replace(/^\d+(\.\d+)*\s+/, "")
+            .trim();
     }
 
     function signatureOf(block) {
@@ -40,7 +52,7 @@
         if (args && args.textContent.trim()) {
             text += " " + args.textContent.trim();
         }
-        return text.trim();
+        return text.replace(/\s+/g, " ").trim();
     }
 
     function nameOf(block) {
@@ -54,9 +66,13 @@
     }
 
     function summaryOf(block) {
-        var body = block.querySelector(":scope > dd");
-        var first = body && body.querySelector("p");
-        return first ? first.textContent.trim() : "";
+        var statement = block.querySelector(":scope > dd");
+        var first = statement && statement.querySelector("p");
+        return first ? first.textContent.replace(/\s+/g, " ").trim() : "";
+    }
+
+    function reduceMotion() {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
     /* --- the theme ---------------------------------------------------- */
@@ -97,6 +113,7 @@
             button.className = "dk-copy";
             button.textContent = "copy";
             button.title = "Copy " + signature;
+            button.setAttribute("aria-label", "Copy the signature of " + signature);
             button.addEventListener("click", function () {
                 var wrote = navigator.clipboard && navigator.clipboard.writeText(signature);
                 if (wrote && wrote.then) {
@@ -116,248 +133,712 @@
         });
     }
 
-    /* --- the tail of a long definition -------------------------------- */
+    /* --- the index ---------------------------------------------------- */
 
-    function foldLongDefinitions() {
-        each(definitions(), function (block) {
-            var body = block.querySelector(":scope > dd");
-            /* A definition short enough to read is not folded: only the
-               ones with a tail worth skipping get one. */
-            if (!body || body.children.length <= 6) {
-                return;
-            }
-            var details = document.createElement("details");
-            details.className = "dk-more";
-            var summary = document.createElement("summary");
-            summary.textContent = "Details";
-            details.appendChild(summary);
-            while (body.children.length > 4) {
-                details.appendChild(body.children[4]);
-            }
-            body.appendChild(details);
-        });
+    function targetOf(link) {
+        var href = link.getAttribute("href") || "";
+        if (href.charAt(0) !== "#") {
+            return null;
+        }
+        return document.getElementById(href.slice(1));
     }
 
-    /* --- the index of the definitions --------------------------------- */
+    function anchorTarget(block, position) {
+        var anchor = block.previousElementSibling;
+        while (anchor && !(anchor.tagName === "A" && anchor.id)) {
+            anchor = anchor.previousElementSibling;
+        }
+        if (anchor) {
+            return anchor;
+        }
+        var id = "dk-definition-" + position;
+        block.id = id;
+        return block;
+    }
 
     function buildIndex() {
+        var toc = document.querySelector("ul.mini-toc");
         var blocks = definitions();
-        if (!blocks.length) {
-            return;
+        if (!toc && !blocks.length) {
+            return null;
         }
+
         var nav = document.createElement("nav");
         nav.className = "dk-index";
-        nav.setAttribute("aria-label", "Definitions");
+        nav.id = "dk-index";
+        nav.setAttribute("aria-label", "Contents");
 
+        var head = document.createElement("div");
+        head.className = "dk-index-head";
         var title = document.createElement("h2");
-        title.textContent = "Definitions";
-        nav.appendChild(title);
+        title.textContent = "Contents";
+        var close = createIcon("✕", "Close the contents");
+        close.className += " dk-index-close";
+        head.appendChild(title);
+        head.appendChild(close);
+        nav.appendChild(head);
 
         var filter = document.createElement("input");
         filter.type = "search";
-        filter.placeholder = "Filter\u2026";
-        filter.setAttribute("aria-label", "Filter the definitions on this page");
+        filter.className = "dk-index-filter";
+        filter.placeholder = "Filter the contents…";
+        filter.setAttribute("aria-label", "Filter the contents of this page");
         nav.appendChild(filter);
 
+        var scroll = document.createElement("div");
+        scroll.className = "dk-index-scroll";
         var list = document.createElement("ul");
+        list.className = "dk-nav";
+        var empty = document.createElement("p");
+        empty.className = "dk-index-empty";
+        empty.textContent = "Nothing here matches.";
+        empty.hidden = true;
+        scroll.appendChild(list);
+        scroll.appendChild(empty);
+        nav.appendChild(scroll);
+
+        var groups = [];
         var entries = [];
+        var position = 0;
 
-        each(blocks, function (block, position) {
-            var anchor = block.previousElementSibling;
-            while (anchor && !(anchor.tagName === "A" && anchor.id)) {
-                anchor = anchor.previousElementSibling;
+        function entryFor(block) {
+            var name = nameOf(block) || signatureOf(block);
+            if (!name) {
+                return null;
             }
-            var id = anchor ? anchor.id : "dk-definition-" + position;
-            if (!anchor) {
-                block.id = id;
-            }
-
+            var anchor = anchorTarget(block, position++);
             var item = document.createElement("li");
             var link = document.createElement("a");
-            link.href = "#" + id;
+            link.className = "dk-def-link";
+            link.href = "#" + anchor.id;
+            link.title = signatureOf(block) || name;
             var kind = document.createElement("span");
             kind.className = "dk-kind";
             kind.textContent = kindOf(block);
             link.appendChild(kind);
-            link.appendChild(document.createTextNode(nameOf(block) || signatureOf(block)));
+            link.appendChild(document.createTextNode(name));
             item.appendChild(link);
-            list.appendChild(item);
-
-            entries.push({
-                item: item,
+            return {
+                li: item,
                 link: link,
                 block: block,
+                anchor: anchor,
+                group: null,
                 text: (kindOf(block) + " " + signatureOf(block) + " " + summaryOf(block)).toLowerCase()
+            };
+        }
+
+        function openGroup(group, open) {
+            if (!group.list) {
+                return;
+            }
+            group.list.hidden = !open;
+            group.toggle.setAttribute("aria-expanded", open ? "true" : "false");
+            group.li.classList.toggle("dk-open", open);
+        }
+
+        function headingLevel(heading) {
+            /* The top node is an unnumbered chapter, not a container for
+               the numbered ones: the index lists it beside them. */
+            if (heading.tagName === "H1") {
+                return 2;
+            }
+            if (heading.classList.contains("chapter")) {
+                return 2;
+            }
+            return heading.classList.contains("section") ? 3 : 4;
+        }
+
+        function headingTarget(heading) {
+            var box = heading.parentElement;
+            while (box && !box.id) {
+                box = box.parentElement;
+            }
+            var target = box && box.id ? box : heading;
+            if (!target.id) {
+                target.id = "dk-" + tidy(heading.textContent).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            }
+            return target;
+        }
+
+        function headingGroup(heading) {
+            var label = tidy(heading.textContent);
+            var item = document.createElement("li");
+            item.className = "dk-group";
+            var row = document.createElement("div");
+            row.className = "dk-row";
+            var target = headingTarget(heading);
+            var anchor = document.createElement("a");
+            anchor.href = "#" + target.id;
+            anchor.textContent = label;
+            anchor.title = label;
+            row.appendChild(anchor);
+            item.appendChild(row);
+            var children = document.createElement("ul");
+            children.hidden = true;
+            item.appendChild(children);
+            return {
+                li: item,
+                row: row,
+                link: anchor,
+                target: target,
+                label: label.toLowerCase(),
+                entries: [],
+                list: children,
+                toggle: null,
+                parent: null
+            };
+        }
+
+        function finishGroup(group) {
+            if (!group.list || !group.list.children.length) {
+                if (group.list) {
+                    group.list.remove();
+                    group.list = null;
+                }
+                var spacer = document.createElement("span");
+                spacer.className = "dk-toggle dk-toggle-empty";
+                group.row.insertBefore(spacer, group.link);
+                return;
+            }
+            var toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "dk-toggle";
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.setAttribute("aria-label", "Show what " + group.link.textContent + " contains");
+            toggle.addEventListener("click", function () {
+                openGroup(group, group.list.hidden);
             });
-        });
+            group.row.insertBefore(toggle, group.link);
+            group.toggle = toggle;
+        }
 
-        nav.appendChild(list);
-
-        var theme = document.createElement("button");
-        theme.type = "button";
-        theme.className = "dk-copy";
-        theme.style.opacity = "1";
-        theme.style.margin = "1rem 0 0";
-        theme.textContent = "Theme";
-        theme.title = "Switch between a light and a dark page";
-        theme.addEventListener("click", function () {
-            applyTheme(root.getAttribute("data-dk-theme") === "dark" ? "light" : "dark");
-        });
-        nav.appendChild(theme);
-
-        filter.addEventListener("input", function () {
-            var needle = filter.value.trim().toLowerCase();
-            entries.forEach(function (entry) {
-                var matches = needle === "" || entry.text.indexOf(needle) !== -1;
-                entry.item.hidden = !matches;
-                entry.block.hidden = needle !== "" && !matches;
-            });
-        });
-
-        document.body.insertBefore(nav, document.body.firstChild);
-        document.body.classList.add("dk-has-index");
-
-        /* The entry of the definition being read is marked as it scrolls. */
-        var active = null;
-        var spy = function () {
-            var best = null;
-            entries.forEach(function (entry) {
-                if (filter.value.trim() !== "") {
+        /* A page that holds its own sections is indexed from its
+           headings, which is the whole page even in a single-page manual. */
+        function buildTree() {
+            var stack = [];
+            each(document.querySelectorAll("h1, h2.chapter, h3.section, h4.subsection, dl.def-block"), function (node) {
+                if (node.classList.contains("settitle")) {
                     return;
                 }
-                var top = entry.block.getBoundingClientRect().top;
-                if (top <= 120) {
-                    best = entry;
+                if (node.tagName === "DL") {
+                    var entry = entryFor(node);
+                    if (!entry) {
+                        return;
+                    }
+                    var holder = stack.length ? stack[stack.length - 1].group : null;
+                    entry.group = holder;
+                    if (holder) {
+                        holder.entries.push(entry);
+                        holder.list.appendChild(entry.li);
+                    } else {
+                        list.appendChild(entry.li);
+                    }
+                    entries.push(entry);
+                    return;
                 }
+                var level = headingLevel(node);
+                while (stack.length && stack[stack.length - 1].level >= level) {
+                    stack.pop();
+                }
+                var group = headingGroup(node);
+                var parent = stack.length ? stack[stack.length - 1].group : null;
+                group.depth = parent ? parent.depth + 1 : 0;
+                if (parent) {
+                    group.parent = parent;
+                    parent.list.appendChild(group.li);
+                } else {
+                    list.appendChild(group.li);
+                }
+                stack.push({ level: level, group: group });
+                groups.push(group);
             });
-            if (best === active) {
+            each(groups, finishGroup);
+        }
+
+        function groupFor(link) {
+            var label = tidy(link.textContent);
+            var target = targetOf(link);
+            var item = document.createElement("li");
+            item.className = "dk-group";
+            var row = document.createElement("div");
+            row.className = "dk-row";
+            var group = { li: item, row: row, link: null, target: target, label: label.toLowerCase(), entries: [], list: null, toggle: null, parent: null, depth: 0 };
+
+            if (target) {
+                each(target.querySelectorAll("dl.def-block"), function (block) {
+                    var entry = entryFor(block);
+                    if (!entry) {
+                        return;
+                    }
+                    entry.group = group;
+                    group.entries.push(entry);
+                });
+            }
+
+            if (group.entries.length) {
+                var toggle = document.createElement("button");
+                toggle.type = "button";
+                toggle.className = "dk-toggle";
+                toggle.setAttribute("aria-expanded", "false");
+                toggle.setAttribute("aria-label", "Show what " + label + " contains");
+                toggle.addEventListener("click", function () {
+                    openGroup(group, group.list.hidden);
+                });
+                row.appendChild(toggle);
+                group.toggle = toggle;
+                group.list = document.createElement("ul");
+                group.list.hidden = true;
+                each(group.entries, function (entry) {
+                    group.list.appendChild(entry.li);
+                });
+            } else {
+                var spacer = document.createElement("span");
+                spacer.className = "dk-toggle dk-toggle-empty";
+                row.appendChild(spacer);
+            }
+
+            var anchor = document.createElement("a");
+            anchor.href = link.getAttribute("href");
+            anchor.textContent = label;
+            anchor.title = label;
+            row.appendChild(anchor);
+            item.appendChild(row);
+            if (group.list) {
+                item.appendChild(group.list);
+            }
+            group.link = anchor;
+            return group;
+        }
+
+        /* A chapter page of a split manual has no sections of its own: its
+           mini-toc names the pages that follow, so that is the tree. */
+        if (document.querySelector(".section-level-extent, .subsection-level-extent")) {
+            buildTree();
+        } else if (toc) {
+            each(toc.children, function (item) {
+                var link = item.querySelector("a");
+                if (!link) {
+                    return;
+                }
+                var group = groupFor(link);
+                list.appendChild(group.li);
+                groups.push(group);
+                each(group.entries, function (entry) {
+                    entries.push(entry);
+                });
+            });
+        }
+
+        if (!groups.length) {
+            each(blocks, function (block) {
+                var entry = entryFor(block);
+                if (!entry) {
+                    return;
+                }
+                list.appendChild(entry.li);
+                entries.push(entry);
+            });
+        }
+
+        if (!groups.length && !entries.length) {
+            return null;
+        }
+
+        /* A reference index shows its shape before it is touched: the
+           top level is open, so a chapter lists its sections (or a
+           module its subsections) without a click.  The definitions
+           below them stay folded until a section is opened. */
+        each(groups, function (group) {
+            if (group.depth === 0 && group.list) {
+                openGroup(group, true);
+            }
+        });
+
+        /* The definition being read is marked as it scrolls, and the
+           group that holds it opens, so the index says where the reader
+           is even after a jump from a link. */
+        var active = null;
+        function activate(item) {
+            if (active === item) {
                 return;
             }
             if (active) {
                 active.link.removeAttribute("aria-current");
             }
-            active = best || entries[0];
-            active.link.setAttribute("aria-current", "true");
+            active = item;
+            item.link.setAttribute("aria-current", "location");
+            var holder = item.group || item.parent || null;
+            while (holder) {
+                if (holder.list && holder.list.hidden) {
+                    openGroup(holder, true);
+                }
+                holder = holder.parent;
+            }
+            var linkBox = item.link.getBoundingClientRect();
+            var scrollBox = scroll.getBoundingClientRect();
+            if (linkBox.top < scrollBox.top || linkBox.bottom > scrollBox.bottom) {
+                scroll.scrollTop += linkBox.top - scrollBox.top - scrollBox.height / 2;
+            }
+        }
+
+        /* The bar marks the heading or definition being read: the last one
+           whose top has passed under the bar is the one in view. */
+        var byTarget = new Map();
+        each(groups, function (group) {
+            if (group.target) {
+                byTarget.set(group.target, group);
+            }
+        });
+        each(entries, function (entry) {
+            byTarget.set(entry.anchor, entry);
+        });
+        var watched = [];
+        each(document.querySelectorAll(".top-level-extent, .chapter-level-extent, .section-level-extent, .subsection-level-extent, a.anchor, dl.def-block"), function (target) {
+            if (byTarget.has(target)) {
+                watched.push(target);
+            }
+        });
+        function mark() {
+            // The bar is inserted after the index, so it is looked up now.
+            var bar = document.querySelector(".dk-bar");
+            var line = (bar ? bar.getBoundingClientRect().bottom : 0) + 32;
+            var found = null;
+            each(watched, function (target) {
+                if (target.getBoundingClientRect().top <= line) {
+                    found = byTarget.get(target);
+                }
+            });
+            if (!found && groups.length) {
+                found = groups[0];
+            }
+            if (found) {
+                activate(found);
+            }
+        }
+
+        if (watched.length) {
+            var waiting = false;
+            var later = function () {
+                waiting = false;
+                mark();
+            };
+            window.addEventListener("scroll", function () {
+                if (!waiting) {
+                    waiting = true;
+                    window.requestAnimationFrame(later);
+                }
+            }, { passive: true });
+            window.addEventListener("resize", later);
+            mark();
+        }
+
+        filter.addEventListener("input", function () {
+            var needle = filter.value.trim().toLowerCase();
+            var found = 0;
+            each(groups, function (group) {
+                var shown = 0;
+                each(group.entries, function (entry) {
+                    var hit = needle === "" || entry.text.indexOf(needle) !== -1;
+                    entry.li.hidden = !hit;
+                    if (hit) {
+                        shown += 1;
+                    }
+                });
+                var named = needle !== "" && group.label.indexOf(needle) !== -1;
+                group.li.hidden = needle !== "" && !named && shown === 0;
+                if (group.list) {
+                    openGroup(group, needle !== "");
+                }
+                if (!group.li.hidden) {
+                    found += 1;
+                }
+            });
+            each(entries, function (entry) {
+                if (entry.group) {
+                    return;
+                }
+                var hit = needle === "" || entry.text.indexOf(needle) !== -1;
+                entry.li.hidden = !hit;
+                if (!entry.li.hidden) {
+                    found += 1;
+                }
+            });
+            /* A matching definition can sit under a group whose own title
+               does not match: the path to it is shown with it. */
+            if (needle !== "") {
+                for (var index = groups.length - 1; index >= 0; index -= 1) {
+                    var group = groups[index];
+                    if (!group.li.hidden && group.parent) {
+                        group.parent.li.hidden = false;
+                    }
+                }
+            }
+            empty.hidden = !(needle !== "" && found === 0);
+            /* Clearing the filter should not hide the reader's place. */
+            if (needle === "" && active && active.group) {
+                openGroup(active.group, true);
+            }
+        });
+
+        return { nav: nav, filter: filter, close: close, groups: groups };
+    }
+
+    /* --- the bar and the drawer --------------------------------------- */
+
+    function createIcon(label, description) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "dk-icon";
+        button.textContent = label;
+        button.title = description;
+        button.setAttribute("aria-label", description);
+        return button;
+    }
+
+    function pageTitle() {
+        var heading = document.querySelector("h2.chapter, h3.section, h4.subsection, h1");
+        var title = heading ? tidy(heading.textContent) : "";
+        if (!title) {
+            title = tidy(document.title);
+        }
+        return title || "Contents";
+    }
+
+    function buildBar(index) {
+        var bar = document.createElement("header");
+        bar.className = "dk-bar";
+
+        var menu = createIcon("☰", "Open the contents");
+        menu.className += " dk-menu";
+        menu.setAttribute("aria-controls", index.nav.id);
+        menu.setAttribute("aria-expanded", "false");
+
+        var title = document.createElement("span");
+        title.className = "dk-bar-title";
+        title.textContent = pageTitle();
+
+        var top = createIcon("↑", "Back to the top");
+        top.className += " dk-top";
+        top.hidden = true;
+
+        var theme = createIcon("◐", "Switch between a light and a dark page");
+        theme.className += " dk-theme";
+
+        bar.appendChild(menu);
+        bar.appendChild(title);
+        bar.appendChild(top);
+        bar.appendChild(theme);
+
+        theme.addEventListener("click", function () {
+            applyTheme(root.getAttribute("data-dk-theme") === "dark" ? "light" : "dark");
+        });
+        top.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" });
+        });
+        window.addEventListener("scroll", function () {
+            top.hidden = window.scrollY < 640;
+        }, { passive: true });
+
+        return { bar: bar, menu: menu, theme: theme, top: top };
+    }
+
+    function isTyping(element) {
+        if (!element) {
+            return false;
+        }
+        var tag = element.tagName;
+        return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || element.isContentEditable;
+    }
+
+    function wireDrawer(chrome, index) {
+        var scrim = document.createElement("div");
+        scrim.className = "dk-scrim";
+        scrim.hidden = true;
+
+        function open() {
+            if (!phone.matches) {
+                return;
+            }
+            body.classList.add("dk-index-open");
+            chrome.menu.setAttribute("aria-expanded", "true");
+            scrim.hidden = false;
+            index.filter.focus();
+        }
+
+        function close() {
+            var wasOpen = body.classList.contains("dk-index-open");
+            body.classList.remove("dk-index-open");
+            chrome.menu.setAttribute("aria-expanded", "false");
+            scrim.hidden = true;
+            if (wasOpen) {
+                chrome.menu.focus();
+            }
+        }
+
+        chrome.menu.addEventListener("click", function () {
+            if (body.classList.contains("dk-index-open")) {
+                close();
+            } else {
+                open();
+            }
+        });
+        index.close.addEventListener("click", close);
+        scrim.addEventListener("click", close);
+        each(index.nav.querySelectorAll("a"), function (link) {
+            link.addEventListener("click", close);
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && body.classList.contains("dk-index-open")) {
+                close();
+            } else if (event.key === "/" && !isTyping(event.target)) {
+                event.preventDefault();
+                open();
+                index.filter.focus();
+            }
+        });
+        var onResize = function () {
+            if (!phone.matches) {
+                close();
+            }
         };
-        window.addEventListener("scroll", spy, { passive: true });
-        spy();
+        if (phone.addEventListener) {
+            phone.addEventListener("change", onResize);
+        } else {
+            phone.addListener(onResize);
+        }
+        return scrim;
+    }
+
+    function buildSkip() {
+        var target = document.querySelector(".chapter-level-extent[id], .section-level-extent[id]");
+        if (!target) {
+            return null;
+        }
+        target.setAttribute("tabindex", "-1");
+        var link = document.createElement("a");
+        link.className = "dk-skip";
+        link.href = "#" + target.id;
+        link.textContent = "Skip to the content";
+        link.addEventListener("click", function () {
+            target.focus();
+        });
+        return link;
     }
 
     /* --- diagrams ----------------------------------------------------- */
 
-    function addZoom() {
-        each(document.querySelectorAll("img.image"), function (image) {
-            image.title = "Click to zoom";
-            image.addEventListener("click", function (event) {
-                event.preventDefault();
-                openLightbox(image);
-            });
-        });
+    var MERMAID_MARKER = "%%dokgen-mermaid";
+
+    function diagramSource(pre) {
+        var lines = pre.textContent.replace(/\s+$/, "").split("\n");
+        if (lines.length < 2) {
+            return null;
+        }
+        if (lines[lines.length - 1].replace(/\s/g, "") !== MERMAID_MARKER) {
+            return null;
+        }
+        lines.pop();
+        return lines.join("\n");
     }
 
-    function openLightbox(source) {
-        var overlay = document.createElement("div");
-        overlay.className = "dk-lightbox";
-        overlay.setAttribute("role", "dialog");
-        overlay.setAttribute("aria-modal", "true");
-        overlay.setAttribute("aria-label", "Diagram");
-
-        var image = document.createElement("img");
-        image.src = source.src;
-        image.alt = source.alt || "Diagram";
-
-        var controls = document.createElement("div");
-        controls.className = "dk-zoom";
-
-        var scale = 1;
-        var offsetX = 0;
-        var offsetY = 0;
-        var draw = function () {
-            image.style.transform = "translate(" + offsetX + "px, " + offsetY + "px) scale(" + scale + ")";
-        };
-
-        var zoom = function (factor) {
-            scale = Math.min(8, Math.max(0.25, scale * factor));
-            if (scale <= 1) {
-                offsetX = 0;
-                offsetY = 0;
-            }
-            draw();
-        };
-
-        [
-            { label: "+", title: "Zoom in", action: function () { zoom(1.25); } },
-            { label: "\u2212", title: "Zoom out", action: function () { zoom(0.8); } },
-            { label: "1:1", title: "Actual size", action: function () { scale = 1; offsetX = 0; offsetY = 0; draw(); } },
-            { label: "\u2715", title: "Close", action: function () { close(); } }
-        ].forEach(function (control) {
-            var button = document.createElement("button");
-            button.type = "button";
-            button.textContent = control.label;
-            button.title = control.title;
-            button.addEventListener("click", function (event) {
-                event.stopPropagation();
-                control.action();
-            });
-            controls.appendChild(button);
-        });
-
-        overlay.appendChild(image);
-        overlay.appendChild(controls);
-
-        var close = function () {
-            overlay.remove();
-            document.removeEventListener("keydown", onKey);
-        };
-
-        var onKey = function (event) {
-            if (event.key === "Escape") {
-                close();
-            } else if (event.key === "+" || event.key === "=") {
-                zoom(1.25);
-            } else if (event.key === "-") {
-                zoom(0.8);
-            }
-        };
-
-        overlay.addEventListener("click", function (event) {
-            if (event.target === overlay) {
-                close();
+    function loadMermaid(done) {
+        if (window.mermaid) {
+            done();
+            return;
+        }
+        var base = "";
+        each(document.scripts, function (tag) {
+            if (tag.src && /dokgen\.js(?:\?|$)/.test(tag.src)) {
+                base = tag.src.replace(/[^\/]*$/, "");
             }
         });
-        overlay.addEventListener("wheel", function (event) {
-            event.preventDefault();
-            zoom(event.deltaY < 0 ? 1.12 : 0.89);
-        }, { passive: false });
+        var script = document.createElement("script");
+        script.src = base + "dokgen-mermaid.js";
+        script.onload = done;
+        /* A page built without the bundled renderer keeps the source. */
+        script.onerror = function () {};
+        document.head.appendChild(script);
+    }
 
-        var dragging = null;
-        image.addEventListener("mousedown", function (event) {
-            event.preventDefault();
-            dragging = { x: event.clientX - offsetX, y: event.clientY - offsetY };
-            image.style.cursor = "grabbing";
+    function renderDiagrams() {
+        var pending = [];
+        each(document.querySelectorAll("pre"), function (pre) {
+            var source = diagramSource(pre);
+            if (source) {
+                pending.push({ pre: pre, source: source });
+            }
         });
-        window.addEventListener("mousemove", function (event) {
-            if (!dragging) {
+        if (!pending.length) {
+            return;
+        }
+        loadMermaid(function () {
+            var boxes = [];
+            var restore = function () {
+                each(pending, function (item) {
+                    item.pre.hidden = false;
+                });
+                each(boxes, function (box) {
+                    box.remove();
+                });
+            };
+            try {
+                window.mermaid.initialize({
+                    startOnLoad: false,
+                    securityLevel: "strict",
+                    theme: "neutral"
+                });
+            } catch (error) {
+                restore();
                 return;
             }
-            offsetX = event.clientX - dragging.x;
-            offsetY = event.clientY - dragging.y;
-            draw();
+            each(pending, function (item) {
+                var box = document.createElement("div");
+                box.className = "mermaid dk-diagram";
+                box.textContent = item.source;
+                item.pre.parentNode.insertBefore(box, item.pre.nextSibling);
+                item.pre.hidden = true;
+                boxes.push(box);
+            });
+            var drawing;
+            try {
+                drawing = window.mermaid.run({ nodes: boxes });
+            } catch (error) {
+                restore();
+                return;
+            }
+            if (drawing && drawing.catch) {
+                drawing.catch(restore);
+            }
         });
-        window.addEventListener("mouseup", function () {
-            dragging = null;
-            image.style.cursor = "grab";
-        });
-
-        document.addEventListener("keydown", onKey);
-        document.body.appendChild(overlay);
     }
 
     /* --- start -------------------------------------------------------- */
 
     applyTheme(preferredTheme());
     addCopyButtons();
-    foldLongDefinitions();
-    buildIndex();
-    addZoom();
+    renderDiagrams();
+
+    var index = buildIndex();
+    if (index) {
+        body.classList.add("dk-has-index");
+        /* A split manual links between pages in its navigation rows; a
+           single-page manual repeats links to itself before every
+           section, and the index already offers those. */
+        if (!document.querySelector(".nav-panel a[href$='.html']")) {
+            body.classList.add("dk-flat");
+        }
+        var chrome = buildBar(index);
+        var scrim = wireDrawer(chrome, index);
+        var skip = buildSkip();
+        body.insertBefore(index.nav, body.firstChild);
+        body.insertBefore(scrim, index.nav);
+        body.insertBefore(chrome.bar, scrim);
+        if (skip) {
+            body.insertBefore(skip, chrome.bar);
+        }
+        /* The index was built before the bar existed; measuring now that
+           both are in the page marks the reader's place on arrival. */
+        window.dispatchEvent(new Event("scroll"));
+    }
 }());

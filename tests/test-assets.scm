@@ -45,7 +45,15 @@
 
   (test-assert
       "Leave the page alone when it is printed."
-    (string-contains assets:STYLESHEET "@media print")))
+    (string-contains assets:STYLESHEET "@media print"))
+
+  (test-assert
+      "Close the index into a drawer on a narrow page."
+    (string-contains assets:STYLESHEET "translateX(-103%)"))
+
+  (test-assert
+      "Drop the body's table of contents when the index holds a whole manual."
+    (string-contains assets:STYLESHEET ".region-contents#SEC_Contents")))
 
 
 (test-group
@@ -56,8 +64,23 @@
     (string-contains assets:SCRIPT "def-block"))
 
   (test-assert
-      "Open a diagram into something a reader can zoom into."
-    (string-contains assets:SCRIPT "dk-lightbox")))
+      "Draw a diagram the renderer left as source."
+    (and (string-contains assets:SCRIPT "dokgen-mermaid.js")
+         (string-contains assets:SCRIPT "dk-diagram")))
+
+  (test-assert
+      "Let the index take the place of the body's table of contents."
+    (and (string-contains assets:SCRIPT "ul.mini-toc")
+         (string-contains assets:SCRIPT "dk-has-index")))
+
+  (test-assert
+      "Read a page that holds its own sections as a tree of its headings."
+    (and (string-contains assets:SCRIPT "h2.chapter")
+         (string-contains assets:SCRIPT "subsection-level-extent")))
+
+  (test-assert
+      "Keep the path to a definition that matches the filter."
+    (string-contains assets:SCRIPT "group.parent.li.hidden")))
 
 
 (test-group
@@ -73,6 +96,10 @@
     (test-assert
         "Write the script beside it too."
       (file-exists? (format #f "~a/dokgen.js" TEST_DIR)))
+
+    (test-assert
+        "Copy the bundled renderer beside them."
+      (file-exists? (format #f "~a/dokgen-mermaid.js" TEST_DIR)))
 
     (test-assert
         "Write what the module says, and not something it read from the tree."

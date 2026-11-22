@@ -123,10 +123,8 @@
         (% (category "Record type")
            (name "<being>")
            (attributes))
-        (para "This record type has the following fields:")
-        (itemize
-         (item (code "name") "\n")
-         (item (code "binomial") "\n"))))
+        (para "This record type has" " 2 fields: "
+              (code "name") ", " (code "binomial") ".")))
     (stexi:api-binding '<being> <being> '(somelib amodule)))
 
 
@@ -138,15 +136,36 @@
       "\n"
       (defvar
         (% (name "panda"))
-        (para "This is a record of the type " (code "<being>") ", "
-              "which has the following fields:")
-        (itemize
-         (item (code "name") "\n")
-         (item (code "binomial") "\n"))))
+        (para "This is a record of the type " (code "<being>") ", with"
+              " 2 fields: " (code "name") ", " (code "binomial") ".")))
     (stexi:api-binding
      'panda
      (make-being "panda" "ailuropoda melanoleuca")
      '(somelib amodule)))
+
+
+  (test-equal
+      "Render a variable whose value is short enough to print."
+    '(*fragment*
+      (anchor (% (name "somelib_amodule_greeting")))
+      ;; Texinfo wants an anchor on a line of its own.
+      "\n"
+      (defvr
+        (% (category "Variable") (name "greeting"))
+        (verbatim "\"hello\"")))
+    (stexi:api-binding 'greeting "hello" '(somelib amodule)))
+
+
+  (test-equal
+      "Describe a value too long to print instead of printing it."
+    `(*fragment*
+      (anchor (% (name "somelib_amodule_big")))
+      "\n"
+      (defvr
+        (% (category "Variable") (name "big"))
+        (para "The value is a string of " (code "500")
+              " characters, too long to print here.")))
+    (stexi:api-binding 'big (make-string 500 #\x) '(somelib amodule)))
 
 
   (let [(test-name "Render a parameterless procedure.")]
@@ -217,8 +236,8 @@
            (name "diagrammed-procedure")
            (arguments ""))
         (para "This procedure is drawn.")
-        (para "Mermaid diagram, as source:")
-        (example "graph TD\n  a --> b")))
+        (para "Mermaid diagram:")
+        (example "graph TD\n  a --> b\n%% dokgen-mermaid")))
     (stexi:api-binding 'diagrammed-procedure
                        diagrammed-procedure
                        '(somelib amodule))))
@@ -311,17 +330,47 @@
 (test-group
     (unit-name stexi:api-chapter)
 
-  (test-equal
-      "List the modules before documenting them, so one is found by name."
-    '((item (ref (% (node "somelib_amodule") (name "(somelib amodule)"))) "\n")
-      (item (ref (% (node "somelib_bmodule") (name "(somelib bmodule)"))) "\n"))
-    (cdr (find (lambda (node) (and (pair? node) (eq? (car node) 'itemize)))
-               (stexi:api-chapter '((somelib amodule) (somelib bmodule)) '()))))
+  (let* [(nodes (stexi:api-chapter '((somelib amodule) (somelib bmodule)) '()))
+         (intro (find (lambda (node) (and (pair? node) (eq? (car node) 'para)))
+                      nodes))
+         (text (apply string-append (filter string? intro)))]
+
+    (test-assert
+        "Introduce the library instead of listing its sections twice."
+      (and (not (any (lambda (node) (and (pair? node) (eq? (car node) 'itemize)))
+                     nodes))
+           (equal? (second intro) "The API reference for ")
+           (equal? (third intro) '(code "somelib"))))
+
+    (test-assert
+        "Say how much the chapter documents, in one sentence a reader can use."
+      (and (string-contains text "2 modules and 0 exported names")
+           (string-contains text "the index filters all of them"))))
 
   (test-equal
       "Open the chapter with the name a manual includes it by."
     '(node (% (name "API")))
     (second (cdr (stexi:api-chapter '((somelib amodule)) '())))))
+
+
+(test-group
+    "the count of what the chapter documents"
+
+  (let* [(section
+          '(*fragment*
+            (deffn (% (category "Procedure") (name "first") (arguments ""))
+                   (para "The first one."))
+            (itemize
+             (item (code "a") "\n"))
+            (defvr (% (name "second")) (verbatim "2"))))
+         (nodes (stexi:api-chapter '((somelib amodule)) (list section)))
+         (intro (find (lambda (node) (and (pair? node) (eq? (car node) 'para)))
+                      nodes))
+         (text (apply string-append (filter string? intro)))]
+
+    (test-assert
+        "Count the definitions wherever they sit, and nothing else."
+      (string-contains text "1 module and 2 exported names"))))
 
 
 

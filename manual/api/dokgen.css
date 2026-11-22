@@ -3,92 +3,635 @@
  * SPDX-License-Identifier: MIT
  * Copyright © Josep Bigorra <jjbigorra@gmail.com>
  *
- * dokgen writes this file beside the Texinfo chapter it generates.  Its
- * stylesheet turns what texi2any emits into what a reader of modern
- * reference documentation expects: a card per definition, the signature
- * of each one readable at a glance, an index of them down the side, and
- * diagrams that open into something they can zoom into.
+ * dokgen writes this file beside the Texinfo chapter it generates.  It
+ * turns what texi2any emits into a page of reference documentation: one
+ * index down the side with the sections and every definition, a card per
+ * definition, a signature that can be copied, a light and a dark page,
+ * and diagrams that sit on a plate of their own.
  *
  * Nothing here is required: the chapter is complete Texinfo without it,
- * and Info and print output never see a line of it.  It is written for
- * the HTML readers, and every rule is either a `dk-` class that the
- * script adds or a selector texi2any is known to emit.
+ * and Info and print output never see a line of it.  Every rule is either
+ * a `dk-' class that the script adds or a selector texi2any is known to
+ * emit.
  */
 
 :root {
-    --dk-fg: #1b1b1f;
-    --dk-muted: #5f5f6b;
-    --dk-card: #fbfbfd;
-    --dk-signature: #f2f2f7;
-    --dk-border: #dcdce6;
-    --dk-accent: #a8480c;
-    --dk-accent-soft: rgba(168, 72, 12, 0.12);
-    --dk-radius: 10px;
-    --dk-shadow: 0 1px 2px rgba(16, 16, 24, 0.06), 0 4px 14px rgba(16, 16, 24, 0.05);
+    --dk-bg: #faf7f2;
+    --dk-fg: #232019;
+    --dk-muted: #6d6457;
+    --dk-card: #fffdf9;
+    --dk-signature: #f3ece1;
+    --dk-code: #f6f0e6;
+    --dk-border: #e3d8c8;
+    --dk-accent: #b45309;
+    --dk-accent-strong: #8f3f06;
+    --dk-accent-soft: rgba(180, 83, 9, 0.10);
+    --dk-radius: 8px;
+    --dk-sidebar: 17rem;
+    --dk-bar: 3.25rem;
+    --dk-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --dk-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     --dk-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --dk-ease: cubic-bezier(0.2, 0.6, 0.3, 1);
+    color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --dk-fg: #e9e9ef;
-        --dk-muted: #a3a3b0;
-        --dk-card: #1b1b20;
-        --dk-signature: #232329;
-        --dk-border: #2f2f38;
-        --dk-accent: #ffa066;
-        --dk-accent-soft: rgba(255, 160, 102, 0.14);
-        --dk-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.35);
+        --dk-bg: #171411;
+        --dk-fg: #ece5da;
+        --dk-muted: #a99d8c;
+        --dk-card: #1e1a15;
+        --dk-signature: #272119;
+        --dk-code: #241f19;
+        --dk-border: #3a3127;
+        --dk-accent: #e9a15f;
+        --dk-accent-strong: #f1b67f;
+        --dk-accent-soft: rgba(233, 161, 95, 0.12);
     }
 }
 
 [data-dk-theme="light"] {
-    --dk-fg: #1b1b1f;
-    --dk-muted: #5f5f6b;
-    --dk-card: #fbfbfd;
-    --dk-signature: #f2f2f7;
-    --dk-border: #dcdce6;
-    --dk-accent: #a8480c;
-    --dk-accent-soft: rgba(168, 72, 12, 0.12);
-    --dk-shadow: 0 1px 2px rgba(16, 16, 24, 0.06), 0 4px 14px rgba(16, 16, 24, 0.05);
+    --dk-bg: #faf7f2;
+    --dk-fg: #232019;
+    --dk-muted: #6d6457;
+    --dk-card: #fffdf9;
+    --dk-signature: #f3ece1;
+    --dk-code: #f6f0e6;
+    --dk-border: #e3d8c8;
+    --dk-accent: #b45309;
+    --dk-accent-strong: #8f3f06;
+    --dk-accent-soft: rgba(180, 83, 9, 0.10);
+    color-scheme: light;
 }
 
 [data-dk-theme="dark"] {
-    --dk-fg: #e9e9ef;
-    --dk-muted: #a3a3b0;
-    --dk-card: #1b1b20;
-    --dk-signature: #232329;
-    --dk-border: #2f2f38;
-    --dk-accent: #ffa066;
-    --dk-accent-soft: rgba(255, 160, 102, 0.14);
-    --dk-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.35);
+    --dk-bg: #171411;
+    --dk-fg: #ece5da;
+    --dk-muted: #a99d8c;
+    --dk-card: #1e1a15;
+    --dk-signature: #272119;
+    --dk-code: #241f19;
+    --dk-border: #3a3127;
+    --dk-accent: #e9a15f;
+    --dk-accent-strong: #f1b67f;
+    --dk-accent-soft: rgba(233, 161, 95, 0.12);
+    color-scheme: dark;
 }
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--dk-bar) + 1.5rem);
+    background: var(--dk-bg);
 }
 
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
     }
+
+    .dk-index,
+    .dk-toggle::before {
+        transition: none;
+    }
 }
 
-/* One card per definition, which is the unit a reader comes for. */
+/* --- the page, once the script has built the index ------------------ */
+
+body.dk-has-index {
+    box-sizing: border-box;
+    max-width: 1120px;
+    margin-left: var(--dk-sidebar);
+    margin-right: 0;
+    padding: 0 clamp(1.1rem, 3vw, 2.8rem) 6rem;
+    color: var(--dk-fg);
+    background: var(--dk-bg);
+    font-family: var(--dk-sans);
+    font-size: 1rem;
+    line-height: 1.68;
+}
+
+body.dk-has-index h2.chapter,
+body.dk-has-index h3.section,
+body.dk-has-index h4.subsection,
+body.dk-has-index .anchor,
+body.dk-has-index dl.def-block {
+    scroll-margin-top: calc(var(--dk-bar) + 1.5rem);
+}
+
+body.dk-has-index h1.top,
+body.dk-has-index h2.chapter,
+body.dk-has-index h3.section,
+body.dk-has-index h4.subsection {
+    color: var(--dk-fg);
+    font-family: var(--dk-serif);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+}
+
+body.dk-has-index h1.top,
+body.dk-has-index h2.chapter {
+    margin: 2.8rem 0 1rem;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+body.dk-has-index h1.top {
+    margin-top: 0;
+}
+
+body.dk-has-index h3.section {
+    margin: 2.6rem 0 0.9rem;
+    font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+}
+
+body.dk-has-index h4.subsection {
+    margin: 2.1rem 0 0.7rem;
+    font-size: 1.25rem;
+}
+
+body.dk-has-index a {
+    color: var(--dk-accent-strong);
+    text-decoration-color: color-mix(in srgb, var(--dk-accent) 40%, transparent);
+    text-underline-offset: 0.18em;
+}
+
+body.dk-has-index a:hover {
+    color: var(--dk-accent);
+}
+
+body.dk-has-index p {
+    max-width: 74ch;
+}
+
+/* The sentence that says what the chapter is. */
+
+h1.top + p,
+h2.chapter + p {
+    max-width: 64ch;
+    margin: 0 0 2.4rem;
+    padding-bottom: 1.7rem;
+    border-bottom: 1px solid var(--dk-border);
+    color: var(--dk-muted);
+    font-family: var(--dk-serif);
+    font-size: clamp(1.12rem, 1.5vw, 1.3rem);
+    line-height: 1.62;
+}
+
+/* The one index replaces the list texi2any writes into the body.  It is
+   hidden only after the script has built its own, so a reader without
+   JavaScript keeps a table of contents. */
+
+body.dk-has-index ul.mini-toc {
+    display: none;
+}
+
+/* The manual's title is in the bar above every page; on the page that
+   carries it, it does not need a second heading of its own. */
+body.dk-has-index h1.settitle {
+    display: none;
+}
+
+body.dk-has-index h1.settitle + hr {
+    display: none;
+}
+
+/* A single-page manual repeats Next/Previous/Up before every section;
+   with the index down the side those rows only get in the way.  A split
+   manual keeps them, because they carry the Contents and Index links. */
+
+body.dk-flat .nav-panel,
+body.dk-flat .nav-panel + hr {
+    display: none;
+}
+
+/* On a single page the index holds the whole manual, so the body's own
+   table of contents would be the second copy of it. */
+
+body.dk-flat .region-contents#SEC_Contents {
+    display: none;
+}
+
+.nav-panel {
+    max-width: 100%;
+    color: var(--dk-muted);
+    font: 0.78rem/1.6 var(--dk-sans);
+}
+
+body.dk-has-index .nav-panel a {
+    color: var(--dk-muted);
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--dk-border);
+}
+
+body.dk-has-index .nav-panel a:hover {
+    color: var(--dk-accent-strong);
+    border-bottom-color: currentColor;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--dk-border);
+    margin: 1.8rem 0;
+}
+
+/* --- code and examples ---------------------------------------------- */
+
+body.dk-has-index code,
+body.dk-has-index kbd,
+body.dk-has-index samp,
+body.dk-has-index var {
+    font-family: var(--dk-mono);
+    font-size: 0.9em;
+}
+
+body.dk-has-index :not(pre) > code {
+    padding: 0.08em 0.32em;
+    color: var(--dk-fg);
+    background: var(--dk-code);
+    border: 1px solid var(--dk-border);
+    border-radius: 4px;
+}
+
+body.dk-has-index div.example,
+body.dk-has-index pre,
+body.dk-has-index pre.example,
+body.dk-has-index pre.verbatim {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+body.dk-has-index div.example {
+    margin: 1rem 0;
+    padding: 0.85rem 1rem;
+    background: var(--dk-code);
+    border: 1px solid var(--dk-border);
+    border-radius: 6px;
+}
+
+body.dk-has-index div.example pre {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+}
+
+body.dk-has-index pre {
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+    color: var(--dk-fg);
+    background: var(--dk-signature);
+    border: 1px solid var(--dk-border);
+    border-radius: 6px;
+    box-shadow: none;
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+/* --- lists and tables ----------------------------------------------- */
+
+body.dk-has-index ul,
+body.dk-has-index ol {
+    padding-left: 1.2rem;
+}
+
+body.dk-has-index li {
+    margin: 0.24rem 0;
+}
+
+body.dk-has-index li::marker {
+    color: var(--dk-muted);
+}
+
+body.dk-has-index table {
+    width: 100%;
+    margin: 1.1rem 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+body.dk-has-index th,
+body.dk-has-index td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--dk-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+body.dk-has-index th {
+    color: var(--dk-muted);
+    font-family: var(--dk-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+body.dk-has-index blockquote {
+    margin: 1.2rem 0;
+    padding: 0.1rem 0 0.1rem 1rem;
+    border-left: 2px solid var(--dk-border);
+    color: var(--dk-muted);
+}
+
+/* --- the bar -------------------------------------------------------- */
+
+.dk-skip {
+    position: absolute;
+    left: -9999px;
+    z-index: 60;
+    padding: 0.55rem 0.9rem;
+    color: var(--dk-fg);
+    background: var(--dk-card);
+    border: 1px solid var(--dk-accent);
+    border-radius: 6px;
+}
+
+.dk-skip:focus {
+    left: 0.6rem;
+    top: 0.6rem;
+}
+
+.dk-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 calc(-1 * clamp(1.1rem, 3vw, 2.8rem));
+    padding: 0.5rem clamp(1.1rem, 3vw, 2.8rem);
+    background: var(--dk-bg);
+    border-bottom: 1px solid var(--dk-border);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+    .dk-bar {
+        background: color-mix(in srgb, var(--dk-bg) 88%, transparent);
+        backdrop-filter: blur(12px) saturate(120%);
+    }
+}
+
+.dk-bar-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--dk-fg);
+    font-family: var(--dk-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dk-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    min-width: 2.15rem;
+    height: 2.15rem;
+    padding: 0 0.45rem;
+    color: var(--dk-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font: 500 0.95rem/1 var(--dk-sans);
+    cursor: pointer;
+}
+
+.dk-icon:hover {
+    color: var(--dk-accent-strong);
+    background: var(--dk-accent-soft);
+}
+
+.dk-menu {
+    display: none;
+}
+
+.dk-top[hidden] {
+    display: none;
+}
+
+.dk-scrim {
+    display: none;
+}
+
+/* --- the index ------------------------------------------------------ */
+
+.dk-index {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    width: var(--dk-sidebar);
+    overflow: hidden;
+    background: var(--dk-card);
+    border-right: 1px solid var(--dk-border);
+    font: 0.85rem/1.5 var(--dk-sans);
+}
+
+.dk-index-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.1rem 1rem 0.55rem;
+}
+
+.dk-index-head h2 {
+    flex: 1;
+    margin: 0;
+    color: var(--dk-muted);
+    font-family: var(--dk-sans);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dk-index-close {
+    display: none;
+}
+
+.dk-index-filter {
+    display: block;
+    width: calc(100% - 2rem);
+    margin: 0 1rem 0.8rem;
+    padding: 0.42rem 0.6rem;
+    color: var(--dk-fg);
+    background: var(--dk-signature);
+    border: 1px solid var(--dk-border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.dk-index-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 0.6rem 1.5rem;
+    /* Its own surface, so a page stylesheet's link decoration cannot
+       show through the rows of the index. */
+    background: var(--dk-card);
+    scrollbar-color: var(--dk-border) transparent;
+}
+
+.dk-index-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dk-index-scroll::-webkit-scrollbar-thumb {
+    background: var(--dk-border);
+    border-radius: 999px;
+}
+
+.dk-index-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dk-index-empty {
+    margin: 0.8rem 0.5rem 0;
+    color: var(--dk-muted);
+    font-size: 0.8rem;
+}
+
+.dk-nav,
+.dk-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dk-nav ul {
+    margin: 0.1rem 0 0.35rem 0.55rem;
+    padding-left: 0.3rem;
+    border-left: 1px solid var(--dk-border);
+}
+
+.dk-nav [hidden] {
+    display: none;
+}
+
+.dk-row {
+    display: flex;
+    align-items: center;
+    gap: 0.05rem;
+    border-radius: 5px;
+}
+
+.dk-row > a {
+    flex: 1;
+    min-width: 0;
+    padding: 0.28rem 0.45rem;
+    color: var(--dk-fg);
+    text-decoration: none;
+    /* The site stylesheet underlines every link; a row of the index is
+       read as a list, so its underline is the surface it sits on. */
+    border-bottom: 0;
+    box-shadow: none;
+    border-radius: 5px;
+}
+
+.dk-group > .dk-row > a {
+    font-family: var(--dk-serif);
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.dk-nav ul .dk-group > .dk-row > a {
+    font-family: var(--dk-sans);
+    font-size: 0.81rem;
+    font-weight: 500;
+    color: var(--dk-muted);
+}
+
+.dk-row > a:hover {
+    background: var(--dk-accent-soft);
+}
+
+.dk-row > a[aria-current="location"] {
+    color: var(--dk-accent-strong);
+    background: var(--dk-accent-soft);
+}
+
+.dk-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    color: var(--dk-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dk-toggle::before {
+    content: "▸";
+    font-size: 0.66rem;
+    transition: transform 0.15s ease;
+}
+
+.dk-toggle[aria-expanded="true"]::before {
+    transform: rotate(90deg);
+}
+
+.dk-toggle-empty {
+    visibility: hidden;
+}
+
+.dk-def-link {
+    display: block;
+    padding: 0.24rem 0.45rem;
+    color: var(--dk-fg);
+    font-family: var(--dk-mono);
+    font-size: 0.74rem;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    border-bottom: 0;
+    box-shadow: none;
+    border-radius: 5px;
+}
+
+.dk-def-link:hover {
+    background: var(--dk-accent-soft);
+}
+
+.dk-def-link[aria-current="location"] {
+    color: var(--dk-accent-strong);
+    background: var(--dk-accent-soft);
+}
+
+.dk-kind {
+    display: inline-block;
+    margin-right: 0.35rem;
+    color: var(--dk-muted);
+    font-family: var(--dk-sans);
+    font-size: 0.56rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: 0.08em;
+}
+
+/* --- a definition --------------------------------------------------- */
 
 dl.def-block {
     position: relative;
-    margin: 1.3rem 0;
-    padding: 0.85rem 1.1rem 1rem;
+    margin: 1.1rem 0;
+    padding: 0.9rem 1.1rem 1rem;
     background: var(--dk-card);
     border: 1px solid var(--dk-border);
     border-left: 3px solid var(--dk-accent);
     border-radius: var(--dk-radius);
-    box-shadow: var(--dk-shadow);
-    transition: box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-dl.def-block:hover {
-    box-shadow: 0 2px 4px rgba(16, 16, 24, 0.08), 0 10px 28px rgba(16, 16, 24, 0.08);
 }
 
 dl.def-block:target {
@@ -100,35 +643,41 @@ dl.def-block > dt.def-line {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.5rem;
-    margin: 0 0 0.6rem;
-    padding: 0.5rem 0.65rem;
+    gap: 0.45rem;
+    margin: 0 0 0.65rem;
+    padding: 0.5rem 0.7rem;
+    overflow-wrap: anywhere;
     background: var(--dk-signature);
-    border-radius: calc(var(--dk-radius) - 4px);
+    border-radius: 5px;
     font-family: var(--dk-mono);
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 dl.def-block .category-def {
-    font-family: system-ui, sans-serif;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--dk-accent);
+    padding: 0.16rem 0.5rem;
+    color: var(--dk-accent-strong);
     background: var(--dk-accent-soft);
     border-radius: 999px;
-    padding: 0.18rem 0.55rem;
+    font-family: var(--dk-sans);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
 }
 
 dl.def-block .def-name {
-    font-size: 1.06rem;
-    font-weight: 700;
+    color: var(--dk-fg);
+    font-family: var(--dk-mono);
+    font-size: 1.02rem;
+    font-style: normal;
+    font-weight: 600;
 }
 
 dl.def-block .def-var-arguments,
 dl.def-block .def-type {
     color: var(--dk-muted);
+    font-family: var(--dk-mono);
+    font-style: normal;
     font-weight: 400;
 }
 
@@ -136,174 +685,43 @@ dl.def-block > dd {
     margin: 0;
 }
 
-dl.def-block > dd > p:first-child {
-    font-size: 1.03rem;
-}
-
 dl.def-block > dd > p {
     max-width: 78ch;
 }
 
-/* The paragraph that says what a parameter is reads as a definition. */
+dl.def-block > dd > p:first-child {
+    font-size: 1.02rem;
+}
 
 dl.def-block > dd strong.strong {
     color: var(--dk-fg);
 }
 
-/* What the script adds: a copy button, a folding tail, an index pane. */
+/* --- what the script adds ------------------------------------------- */
 
 .dk-copy {
     margin-left: auto;
-    font: 500 0.72rem/1 system-ui, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    padding: 0.28rem 0.45rem;
     color: var(--dk-muted);
     background: transparent;
-    border: 1px solid var(--dk-border);
-    border-radius: 6px;
-    padding: 0.3rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font: 500 0.68rem/1 var(--dk-sans);
+    letter-spacing: 0.02em;
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-dl.def-block:hover .dk-copy,
-.dk-copy:focus-visible {
-    opacity: 1;
 }
 
 .dk-copy:hover {
-    color: var(--dk-accent);
-    border-color: var(--dk-accent);
+    color: var(--dk-accent-strong);
+    background: var(--dk-accent-soft);
 }
 
 .dk-copy[data-dk-copied="yes"] {
-    color: var(--dk-accent);
-    border-color: var(--dk-accent);
-    opacity: 1;
-}
-
-details.dk-more {
-    margin-top: 0.6rem;
-}
-
-details.dk-more > summary {
-    cursor: pointer;
-    font: 500 0.82rem/1.4 system-ui, sans-serif;
-    color: var(--dk-accent);
-    list-style: none;
-}
-
-details.dk-more > summary::-webkit-details-marker {
-    display: none;
-}
-
-details.dk-more > summary::before {
-    content: "▸ ";
-}
-
-details.dk-more[open] > summary::before {
-    content: "▾ ";
-}
-
-nav.dk-index {
-    position: fixed;
-    inset: 0 auto 0 0;
-    width: 270px;
-    padding: 1.1rem 0.9rem 2rem;
-    overflow-y: auto;
-    background: var(--dk-card);
-    border-right: 1px solid var(--dk-border);
-    font: 0.86rem/1.45 system-ui, sans-serif;
-    z-index: 20;
-}
-
-body.dk-has-index {
-    margin-left: 270px;
-}
-
-nav.dk-index h2 {
-    margin: 0 0 0.6rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--dk-muted);
-}
-
-nav.dk-index input {
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 0.7rem;
-    padding: 0.4rem 0.55rem;
-    color: inherit;
-    background: var(--dk-signature);
-    border: 1px solid var(--dk-border);
-    border-radius: 6px;
-    font: inherit;
-}
-
-nav.dk-index input:focus-visible {
-    outline: 2px solid var(--dk-accent);
-    outline-offset: 1px;
-}
-
-nav.dk-index ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-nav.dk-index li {
-    margin: 0;
-}
-
-nav.dk-index a {
-    display: block;
-    padding: 0.28rem 0.45rem;
-    color: var(--dk-fg);
-    text-decoration: none;
-    border-radius: 6px;
-    border-left: 2px solid transparent;
-    font-family: var(--dk-mono);
-    font-size: 0.84rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-nav.dk-index a:hover {
+    color: var(--dk-accent-strong);
     background: var(--dk-accent-soft);
 }
 
-nav.dk-index a[aria-current="true"] {
-    color: var(--dk-accent);
-    border-left-color: var(--dk-accent);
-    background: var(--dk-accent-soft);
-}
-
-nav.dk-index .dk-kind {
-    color: var(--dk-muted);
-    font: 0.66rem/1 system-ui, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-right: 0.35rem;
-}
-
-@media (max-width: 1080px) {
-    nav.dk-index {
-        position: static;
-        width: auto;
-        margin: 0 0 1rem;
-        border-right: 0;
-        border-bottom: 1px solid var(--dk-border);
-    }
-
-    body.dk-has-index {
-        margin-left: 0;
-    }
-}
-
-/* Diagrams: the image is the content, so it scales and it opens. */
+/* --- diagrams ------------------------------------------------------- */
 
 img.image {
     display: block;
@@ -314,68 +732,162 @@ img.image {
     background: #ffffff;
     border: 1px solid var(--dk-border);
     border-radius: var(--dk-radius);
-    cursor: zoom-in;
 }
 
-.dk-lightbox {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(8, 8, 12, 0.86);
-    z-index: 50;
-}
-
-.dk-lightbox img {
-    max-width: 92vw;
-    max-height: 92vh;
-    width: auto;
-    height: auto;
-    cursor: grab;
-    transform-origin: center center;
-    transition: transform 0.05s linear;
+.dk-diagram {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    text-align: center;
     background: #ffffff;
-    border-radius: 4px;
-    padding: 0.6rem;
+    border: 1px solid var(--dk-border);
+    border-radius: var(--dk-radius);
 }
 
-.dk-lightbox .dk-zoom {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    gap: 0.4rem;
+.dk-diagram svg {
+    max-width: 100%;
+    height: auto;
 }
 
-.dk-lightbox button {
-    font: 600 0.9rem/1 system-ui, sans-serif;
-    min-width: 2.4rem;
-    padding: 0.55rem 0.7rem;
-    color: #f4f4f8;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
-    cursor: pointer;
+/* --- focus ---------------------------------------------------------- */
+
+.dk-index a:focus-visible,
+.dk-icon:focus-visible,
+.dk-copy:focus-visible,
+.dk-toggle:focus-visible,
+.dk-skip:focus-visible,
+.dk-index-filter:focus-visible {
+    outline: 2px solid var(--dk-accent);
+    outline-offset: 2px;
 }
 
-.dk-lightbox button:hover {
-    background: rgba(255, 255, 255, 0.22);
-}
+/* --- the phone and the tablet --------------------------------------- */
 
-@media print {
-    nav.dk-index,
-    .dk-copy,
-    .dk-lightbox {
-        display: none !important;
-    }
-
+@media (max-width: 1024px) {
     body.dk-has-index {
         margin-left: 0;
+        padding: 0 1.1rem 4rem;
+    }
+
+    .dk-bar {
+        margin: 0 -1.1rem;
+        padding: 0.5rem 1.1rem;
+    }
+
+    .dk-menu {
+        display: inline-flex;
+    }
+
+    .dk-index {
+        width: min(86vw, 20rem);
+        visibility: hidden;
+        transform: translateX(-103%);
+        /* Stay visible while the drawer slides away, then leave the tab
+           order; opening makes it visible at once so the filter can take
+           the focus. */
+        transition: transform 0.24s var(--dk-ease), visibility 0s linear 0.24s;
+    }
+
+    /* A closed drawer is out of the tab order too, not only out of sight. */
+    body.dk-index-open .dk-index {
+        visibility: visible;
+        transform: none;
+        transition: transform 0.24s var(--dk-ease), visibility 0s linear 0s;
+        box-shadow: 0 0 0 1px var(--dk-border), 0 24px 64px rgba(8, 8, 12, 0.28);
+    }
+
+    .dk-index-close {
+        display: inline-flex;
+    }
+
+    body.dk-index-open {
+        overflow: hidden;
+    }
+
+    .dk-scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 45;
+        display: block;
+        background: rgba(20, 16, 12, 0.45);
+    }
+
+    .dk-scrim[hidden] {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    body.dk-has-index h2.chapter {
+        margin-top: 2rem;
+        font-size: clamp(1.8rem, 8vw, 2.3rem);
+    }
+
+    body.dk-has-index h3.section {
+        font-size: 1.35rem;
+    }
+
+    h2.chapter + p {
+        font-size: 1.08rem;
     }
 
     dl.def-block {
-        box-shadow: none;
+        padding: 0.75rem 0.85rem 0.9rem;
+    }
+
+    dl.def-block > dt.def-line {
+        font-size: 0.9rem;
+    }
+
+    dl.def-block .def-name {
+        font-size: 0.98rem;
+    }
+
+    .dk-bar-title {
+        font-size: 0.92rem;
+    }
+
+    body.dk-has-index table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* --- print ---------------------------------------------------------- */
+
+@media print {
+    .dk-index,
+    .dk-bar,
+    .dk-skip,
+    .dk-scrim,
+    .dk-copy {
+        display: none !important;
+    }
+
+    body,
+    body.dk-has-index {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: none;
+        font-size: 11pt;
+    }
+
+    /* The index is not printed, so the body's own table of contents
+       comes back for the paper. */
+    body.dk-has-index ul.mini-toc,
+    body.dk-flat .region-contents#SEC_Contents {
+        display: block;
+    }
+
+    dl.def-block {
+        break-inside: avoid;
+        border: 1px solid #cccccc;
+        border-left: 3px solid #888888;
+    }
+
+    .dk-diagram,
+    img.image {
         break-inside: avoid;
     }
 }

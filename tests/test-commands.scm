@@ -24,14 +24,22 @@
 
 (define BARE_DIR (format #f "~a-bare" TEST_DIR))
 
+(define PLOT_DIR (format #f "~a-plot" TEST_DIR))
+
+(define PLOT_BARE_DIR (format #f "~a-plot-bare" TEST_DIR))
+
 (define FAKE_RENDERER
   (format #f "sh ~a/fake-mermaid %i %o" (dirname (current-filename))))
+
+(define FAKE_GNUPLOT
+  (format #f "sh ~a/fake-gnuplot %i %o" (dirname (current-filename))))
 
 ;; Two libraries: one with gaps in it, and one a check has nothing to say
 ;; about.  Each is a directory whose modules are named after it, which is
 ;; how a project lays its own tree out.
 (define LIBRARY "tests/examplelib")
 (define CLEAN_LIBRARY "tests/cleanlib")
+(define PLOT_LIBRARY "tests/plotlib")
 
 
 ;;; HELPERS
@@ -90,9 +98,10 @@
     (string-contains (index-of TEST_DIR) "@image{diagrams/examplelib_diagrammed-"))
 
   (test-assert
-      "Write the stylesheet and the script the chapter is read with."
+      "Write the stylesheet and the scripts the chapter is read with."
     (and (file-exists? (format #f "~a/dokgen.css" TEST_DIR))
-         (file-exists? (format #f "~a/dokgen.js" TEST_DIR))))
+         (file-exists? (format #f "~a/dokgen.js" TEST_DIR))
+         (file-exists? (format #f "~a/dokgen-mermaid.js" TEST_DIR))))
 
   (test-assert
       "Write the diagram's image beside the chapter."
@@ -111,7 +120,25 @@
 
   (test-assert
       "Write a diagram's source when it has no image and no renderer."
-    (string-contains (index-of BARE_DIR) "@example")))
+    (and (string-contains (index-of BARE_DIR) "@example")
+         ;; The script the page loads tells the diagram from a code sample.
+         (string-contains (index-of BARE_DIR) "%% dokgen-mermaid")))
+
+
+  (commands:api (list PLOT_LIBRARY) PLOT_DIR "" FAKE_GNUPLOT)
+
+  (test-assert
+      "Draw a gnuplot diagram with the command it was given."
+    (and (string-contains (index-of PLOT_DIR)
+                          "@image{diagrams/plotlib_plot-")
+         (pair? (scandir (format #f "~a/diagrams" PLOT_DIR)
+                         (lambda (name) (string-suffix? ".svg" name))))))
+
+  (commands:api (list PLOT_LIBRARY) PLOT_BARE_DIR "" "")
+
+  (test-assert
+      "Keep a plot as source when no renderer is configured."
+    (string-contains (index-of PLOT_BARE_DIR) "Gnuplot diagram, as source:")))
 
 
 (test-group
@@ -146,3 +173,5 @@
 ;; take no dependency they do not test.
 (false-if-exception (system* "rm" "-rf" TEST_DIR))
 (false-if-exception (system* "rm" "-rf" BARE_DIR))
+(false-if-exception (system* "rm" "-rf" PLOT_DIR))
+(false-if-exception (system* "rm" "-rf" PLOT_BARE_DIR))

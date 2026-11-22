@@ -152,6 +152,7 @@ that changed without its image following."
          "--destination" "manual/api"
          ;; Quoted, so the empty value survives the shell the task runs in.
          "--mermaid-command" (shell-quote "")
+         "--gnuplot-command" (shell-quote "")
          "./src/dokgen")
    #:verbose? #t)
   (stats))
@@ -184,7 +185,8 @@ commit after it makes it different by design."
   (git:git (list "diff" "--exit-code" "--"
                  "manual/api/index.texi"
                  "manual/api/dokgen.css"
-                 "manual/api/dokgen.js")))
+                 "manual/api/dokgen.js"
+                 "manual/api/dokgen-mermaid.js")))
 
 (define (manual)
   "Build the HTML manual into reports/manual.
@@ -212,7 +214,7 @@ pages that point at them."
               (when (file-exists? (in-vicinity "manual/api" asset))
                 (run (list "cp" (in-vicinity "manual/api" asset) manual-dist)
                      #:verbose? #t)))
-            '("dokgen.css" "dokgen.js"))
+            '("dokgen.css" "dokgen.js" "dokgen-mermaid.js"))
   (when (file-exists? (in-vicinity "manual/api" "diagrams"))
     (run (list "cp" "-r" "manual/api/diagrams" manual-dist) #:verbose? #t))
   (log-info "open file://~a/~a/index.html" (getcwd) manual-dist))

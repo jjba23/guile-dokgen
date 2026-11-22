@@ -6,7 +6,43 @@
 Notable changes, newest first.  Releases before 0.5.0 were made by the
 original author; their record is the version history in the manual.
 
-* Unreleased
+* 0.10.0 — 2026-11-22
+
+** Added
+
+- Mermaid diagrams no longer need a renderer to be read: when no image was
+  drawn, the chapter carries the diagram's source and a marker, and the
+  page draws it from a bundled Mermaid 11.4.1.  ~mmdc~ is still used when
+  it is installed, but a project that only builds HTML does not have to
+  install it or add a build step.
+- Gnuplot diagrams: a fenced ~gnuplot~ block in a docstring is written
+  beside the chapter and drawn as SVG when ~gnuplot~ is on the ~PATH~.
+  The new ~--gnuplot-command~ option replaces the command; the default is
+  ~gnuplot %i~.  Without gnuplot the plot stays readable as source.
+- The bundled Mermaid renderer is written beside the chapter as
+  ~dokgen-mermaid.js~, and only a page that carries a diagram loads it.
+
+** Changed
+
+- The HTML page is one page a reader can navigate on any screen.  The
+  chapter no longer lists its modules below the heading, where the table of
+  contents beside the page already listed them: the index now follows the
+  page's headings down to every definition, and it is the only table of
+  contents in the reading view -- on a single-page manual the body's own
+  table of contents goes too, since the index holds the whole manual.  On a
+  narrow screen it becomes a drawer behind a button, and a bar keeps the
+  page's title, the theme and a way back to the top.
+- The page is warmer and quieter: serif headings on warm neutrals, a
+  calmer index whose top level is open, quieter cards, and less furniture.
+  The diagram lightbox and the folded tail of long definitions are gone;
+  a definition reads in place and a diagram fits the column.
+- The chapter opens with a sentence about what it documents -- the name the
+  modules share, how many modules there are and how many names they export
+  -- instead of a paragraph about dokgen's own stylesheet.
+- A record type and a record are described in one sentence with their
+  fields instead of a bullet list.  A variable whose value is a string too
+  long to read is described by its length, which keeps the stylesheet and
+  the script from burying the rest of the reference.
 
 ** Fixed
 

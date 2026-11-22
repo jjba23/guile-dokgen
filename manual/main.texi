@@ -157,31 +157,47 @@ command. For example:
 @section In a browser
 
 The chapter is complete Texinfo, and Info and print readers need nothing
-else.  For the HTML a reader arrives at, @command{dokgen} also writes two
+else.  For the HTML a reader arrives at, @command{dokgen} also writes three
 files beside it:
 
 @table @file
 @item dokgen.css
-The stylesheet: a card for each definition with its signature at the top,
-an index of them down the side, a light and a dark page, and diagrams that
-fit the column they sit in.
+The stylesheet: one index down the side holding the sections and every
+definition (a drawer on a phone), a card for each definition with its
+signature at the top, a theme that follows the reader, and diagrams that
+sit on a plate of their own.  A bar holds the page's title, the theme and
+a way back to the top.
 @item dokgen.js
-The behaviour: a filter over that index, a button that copies a signature,
-a folded tail on the long definitions, and a diagram that opens into
-something a reader can zoom into and drag.
+The behaviour: it follows the page's headings and definitions into that
+index, so the table of contents texi2any writes into the body gives way to
+the one that stays in view -- on a single-page manual, the body's own
+table of contents as well.  The index opens the top level, marks the
+heading or definition the reader has reached, filters every row, and
+copies a signature.  A reader without JavaScript keeps the body's table
+of contents and every definition the chapter wrote.
+@item dokgen-mermaid.js
+A bundled copy of @url{https://mermaid.js.org/, mermaid} (version 11),
+2.5 MB, loaded only by a page whose chapter carries a diagram no renderer
+drew.  It has its own license, beside it in the source tree.
 @end table
 
-Neither is required, and nothing in the chapter depends on them: a manual
-that ignores both still reads.  A build that uses them copies both beside
-the pages, because Texinfo copies neither, and points at them from the
-page head:
+The index is the page's own map: chapters, sections and subsections down
+to the definitions they hold.  A chapter page in a split manual has no
+sections of its own, so there it lists the pages that follow instead.  The
+top level is open, so a chapter shows its sections at once; the definitions
+under them wait for a click.
+
+None of the three is required, and nothing in the chapter depends on them:
+a manual that ignores them still reads.  A build that uses them copies them
+beside the pages, because Texinfo copies none of them, and points at them
+from the page head:
 
 @example
 $ makeinfo --html -I doc/api \
     --css-ref=dokgen.css \
     -c 'EXTRA_HEAD=<script src="dokgen.js" defer></script>' \
     -o html doc/main.texi
-$ cp doc/api/dokgen.css doc/api/dokgen.js html/
+$ cp doc/api/dokgen.css doc/api/dokgen.js doc/api/dokgen-mermaid.js html/
 @end example
 
 @code{EXTRA_HEAD} is what reaches every page of a manual split into one
@@ -192,16 +208,27 @@ in the output directory, which is where the copy above puts it.
 @quotation Note
 The reader's own preference decides the theme, and the light or dark
 choice they make on a page is remembered in the browser.  Nothing is sent
-anywhere: the script has no dependency, no network call and no global
-name beyond its own closure.
+anywhere: the stylesheet and the script reach no network, the bundled
+renderer is a local file, and a diagram that cannot be drawn stays as its
+source.
 @end quotation
 
-The chapter opens with the list of modules it documents, each one a link,
-and every definition carries an anchor built from the module's name and
-the name of the object: the procedure @code{call} of the module
+The chapter opens with a sentence about what it documents: the name the
+modules share, how many modules there are and how many names they export,
+so a reader knows what the page is before meeting the first definition.
+The sections and the definitions are listed together in the index beside
+the page, and every definition carries an anchor built from the module's
+name and the name of the object: the procedure @code{call} of the module
 @code{(dokgen cli)} is @code{dokgen_cli_call}. A chapter written by hand
 can therefore point at a definition with @code{@@ref@{dokgen_cli_call@}},
 and a name that is renamed breaks the reference rather than the prose.
+
+A record type and a record are described in one sentence instead of a
+bullet list: ``This record type has 2 fields: @code{name},
+@code{binomial}.''  A variable whose value is a string too long to read in
+the page is described by its length instead of printed; the stylesheet and
+the script are such values, and printing them would bury every other
+definition.
 @c END CHAPTER: Usage
 
 
@@ -210,9 +237,11 @@ and a name that is renamed breaks the reference rather than the prose.
 @node Diagrams
 @chapter Diagrams
 
-A documentation string can carry a @url{https://mermaid.js.org/, mermaid}
-diagram. It is written as a fenced block, the way a markdown reader
-already knows, and it may sit anywhere in a commentary or a docstring:
+A documentation string can carry a diagram.  It is written as a fenced
+block, the way a markdown reader already knows, and it may sit anywhere in
+a commentary or a docstring.  Two languages are read: mermaid and gnuplot.
+
+A mermaid block looks like this:
 
 @verbatim
 ;;; Commentary:
@@ -227,67 +256,87 @@ already knows, and it may sit anywhere in a commentary or a docstring:
 ;;; Code:
 @end verbatim
 
-@command{dokgen} takes the block out of the documentation, writes the
-diagram beside the generated Texinfo as
-@file{diagrams/@var{name}-@var{hash}.mmd}, and asks a renderer to draw it
-as @file{diagrams/@var{name}-@var{hash}.png}, which the API chapter then
-shows with @code{@@image}. The @var{hash} is a digest of the diagram's own
-text, so a diagram that changed gets a file of its own: a manual can never
-show last week's drawing of this week's text.
+@command{dokgen} takes the block out of the documentation and writes it
+beside the generated Texinfo as @file{diagrams/@var{name}-@var{hash}.mmd}.
+The @var{hash} is a digest of the diagram's own text, so a diagram that
+changed gets a file of its own: a manual can never show last week's
+drawing of this week's text.
 
-The renderer is a command, not a library, because mermaid is JavaScript
-and a documentation generator that carried a browser to draw an arrow
-would be a worse trade than one that calls the tool a project already
-uses. @code{mmdc}, from @url{https://github.com/mermaid-js/mermaid-cli,
-mermaid-cli}, is the default:
+If a renderer is at hand, it draws the diagram as a @file{.png} and the
+chapter shows it with @code{@@image}.  If none is, the source is written
+into the chapter with a marker, and the bundled renderer in the page draws
+it in the reader's browser: a project shows its mermaid diagrams without
+installing @code{mmdc} or adding a build step.  A reader without
+JavaScript, and every Info and print reader, sees the source instead.
+
+A gnuplot block is the same fence with a plot in it:
+
+@verbatim
+;; ```gnuplot
+;; set xlabel "requests"
+;; plot sin(x) title "response"
+;; ```
+@end verbatim
+
+@command{dokgen} writes the script and, when @command{gnuplot} is on the
+@env{PATH}, draws it as a @file{.svg} beside it.  The command it runs is
+@code{gnuplot %i}; it writes a wrapper that sets the SVG terminal and the
+output file, so the plot a reader sees is the plot the source describes.
+A gnuplot that is not installed is skipped in silence and the source
+stays, exactly as a mermaid without a renderer does.
+
+A renderer is a command, not a library: @code{mmdc} is a Node program and
+a documentation build should not need it to show a diagram.  Both commands
+can be replaced or turned off.  Mermaid defaults to
 
 @example
 $ dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
 @end example
 
-@code{%i} is the file @command{dokgen} wrote for the diagram and @code{%o}
-is the path to write the image to, without an extension, so a renderer
-that writes PNG and one that writes SVG are configured by the same
-option. With no @code{--mermaid-command}, the default is that exact
-command; with an empty one, nothing is drawn at all, and the diagrams
-already in the destination are used.
+and gnuplot to @code{gnuplot %i}; @code{%i} is the file @command{dokgen}
+wrote and @code{%o} the path to write the image to, without an extension,
+so a renderer that writes PNG and one that writes SVG are configured by the
+same option.  An empty command draws nothing and uses the images already in
+the destination:
+
+@example
+$ dokgen api mylib --mermaid-command "" --gnuplot-command ""
+@end example
 
 @quotation Note
-An empty @code{--mermaid-command} is how a project that commits its
-images builds its manual without a renderer. It is also why
-@command{dokgen} writes the @file{.mmd} whatever happens: a diagram whose
-image is missing is still a diagram a reader can draw later.
+An empty command is how a project that commits its images builds its manual
+without a renderer.  It is also why @command{dokgen} writes the source
+whatever happens: a diagram whose image is missing is still a diagram a
+reader can draw later.
 @end quotation
 
-A diagram is drawn at twice the size it is shown at and with no
-background, so that it stays sharp on a page of any width and on a page
-that is dark.  With the stylesheet and the script beside it
-(see @ref{Usage}) the image is the thing a reader clicks: it opens
-over the page, where the wheel zooms, a drag moves it, and @kbd{Escape}
-closes it.
+The mermaid images are drawn at twice the size they are shown at and with
+no background, so they stay sharp on a page of any width and on a dark
+page; a gnuplot plot is an SVG and stays sharp at any size.
 
 When a diagram has no image --- because no renderer is installed, or
 because the one that ran failed --- the source is written into the manual
-instead, in an @code{@@example} block under the line ``Mermaid diagram, as
-source:''. A diagram that silently disappeared from a manual would be
-worse than one a reader has to copy.
+under the line ``Mermaid diagram:'' or ``Gnuplot diagram, as source:''.
+A diagram that silently disappeared would be worse than one a reader has
+to copy.
 
 Two things are left to the manual that includes the chapter, because
-Texinfo keeps them out of it. @command{texi2any} looks for an image where
+Texinfo keeps them out of it.  @command{texi2any} looks for an image where
 its include path says, not where the text that names it lives, so the
 generated directory goes on the path; and it copies no image into its
-output, so the diagrams go beside the pages. With the default
+output, so the diagrams go beside the pages.  With the default
 @file{doc/api} destination, that is:
 
 @example
 $ makeinfo --html -I doc/api -o html main.texi
 $ cp -r doc/api/diagrams html/
+$ cp doc/api/dokgen.css doc/api/dokgen.js doc/api/dokgen-mermaid.js html/
 @end example
 
-The diagram syntax is mermaid's own; @command{dokgen} only reads the
-fence. A fence written inside an @code{@@example} block is a sample of the
-syntax and is left as written, which is how a manual shows a reader how to
-write one.
+The syntax inside a fence is the renderer's own; @command{dokgen} only
+reads the language.  A fence written inside an @code{@@example} block is a
+sample of the syntax and is left as written, which is how a manual shows a
+reader how to write one.
 @c END CHAPTER: Diagrams
 
 
@@ -378,12 +427,15 @@ dokgen api mylib --destination mydoc/api
 
 # Draw the diagrams the docstrings hold:
 dokgen api mylib --mermaid-command "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent"
+
+# Draw the plots too, when gnuplot is installed:
+dokgen api mylib --gnuplot-command "gnuplot %i"
 @end example
 
 @subsection Interface specification
 
 @verbatim
-dokgen api sources [--destination] [--mermaid-command]
+dokgen api sources [--destination] [--mermaid-command] [--gnuplot-command]
 @end verbatim
 
 @defblock
@@ -392,18 +444,25 @@ Absolute or relative paths to Guile Scheme modules that compose the
 code whose API documentation will be extracted. These paths can lead
 to both Scheme files or Scheme directories.
 
-@defline {Keyword argument} --destination or -d
+@defline {Keyword argument} --destination
 Optional path to a directory where the final
 Texinfo files will be saved. If not provided, @var{DEFAULT_DOC_PATH}
 is used (see the module @ref{dokgen_commands}). The diagrams the
 documentation holds are saved to a @file{diagrams} directory inside it.
 
-@defline {Keyword argument} --mermaid-command or -m
+@defline {Keyword argument} --mermaid-command
 Optional command that draws a mermaid diagram, with @code{%i} standing
 for the diagram's source and @code{%o} for the path its image is
 written to, without an extension. It defaults to
 @code{mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent}; an empty value draws nothing
-and uses the diagrams already in the destination
+and uses the diagrams already in the destination. A diagram with no image
+is still drawn in the page by the bundled renderer (@pxref{Diagrams}).
+
+@defline {Keyword argument} --gnuplot-command
+Optional command that draws a gnuplot diagram, with @code{%i} standing for
+the script @command{dokgen} writes and @code{%o} for the path its image is
+written to, without an extension. It defaults to @code{gnuplot %i}; an
+empty value draws nothing and uses the images already in the destination
 (@pxref{Diagrams}).
 @end defblock
 
@@ -507,7 +566,7 @@ dokgen stats sources [--destination]
 Absolute or relative paths to Guile Scheme modules, as for the
 @code{api} command.
 
-@defline {Keyword argument} --destination or -d
+@defline {Keyword argument} --destination
 Optional path to a directory where the chapter will be saved. If not
 provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @file{stats.texi}.
@@ -527,6 +586,25 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.10.0, November 22, 2026
+@itemize
+@item
+The HTML page is warmer and quieter: serif headings on warm neutrals, a
+single index that opens the top level, definitions as cards, and no
+lightbox or folded tails.  A page without JavaScript keeps its table of
+contents and every definition.
+@item
+Mermaid diagrams are drawn in the page from a bundled renderer when no
+image was built, so a project no longer installs @code{mmdc} to show one.
+@item
+Gnuplot diagrams: a fenced @code{gnuplot} block is drawn as SVG at build
+time when @command{gnuplot} is installed, and kept as source when it is
+not.  New @code{--gnuplot-command} option.
+@item
+Record types and records are described in one sentence with their fields;
+a variable whose value is a very long string is described by its length.
+@end itemize
+
 @item Version 0.9.0, November 21, 2026
 @itemize
 @item

@@ -32,21 +32,24 @@ manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds i
 - *Every definition, with its docstring.*  The documentation is read from the
   running module, not parsed from its text, so a name that is exported is a
   name in the manual.
-- *Diagrams.*  A docstring may carry a [[https://mermaid.js.org/][mermaid]] diagram as a fenced block.
-  It is drawn through a renderer of your choice, by default
-  [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]], and shown as an image --- or written as its source when no
-  renderer is installed.
+- *Diagrams.*  A docstring may carry a [[https://mermaid.js.org/][mermaid]] or
+  [[http://www.gnuplot.info/][gnuplot]] diagram as a fenced block.  Mermaid is drawn through
+  [[https://github.com/mermaid-js/mermaid-cli][mermaid-cli]] when it is installed; with no image, the page draws the
+  diagram itself from a bundled renderer, so no ~mmdc~ is needed to read
+  the HTML.  Gnuplot is drawn as SVG when ~gnuplot~ is on the ~PATH~.  A
+  diagram with no renderer stays readable as source.
 - *Anchors.*  Every definition gets one, built from its module and its name, so
   a chapter written by hand can ~@ref{dokgen_cli_call}~ a single procedure.
 - *A check.*  ~dokgen check src/mylib~ exits non-zero when an exported
   procedure or macro has no docstring, so a build can hold a library to a
   documented API.
-- *A page built to be read.*  Beside the Texinfo, ~dokgen~ writes a stylesheet
-  and a script: a card for each definition with its signature, an index of
-  them with a filter, copyable signatures, a folded tail on the long ones, a
-  light and a dark page, and diagrams that zoom.  Include the chapter and
-  point the HTML build at the two files; a manual that ignores them still
-  reads.
+- *A page built to be read.*  Beside the Texinfo, ~dokgen~ writes a stylesheet,
+  a script and the bundled Mermaid renderer: one index of the sections and the
+  definitions (a drawer on a phone), a card for each definition with its
+  signature, copyable signatures, a warm light and dark page, and diagrams
+  that fit the column.  Include the chapter and point the HTML build at the
+  files; a manual that ignores them still reads, and a page without
+  JavaScript keeps its own table of contents.
 - *A measurement.*  ~dokgen stats src/mylib~ writes a chapter of numbers about
   the tree: lines of code and of comment, the decision points it branches
   through, how much of its API is documented, and the authors and churn

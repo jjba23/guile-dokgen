@@ -51,9 +51,15 @@ command line to the procedure that carries it out. |#
 
 (define mermaid-command
   (switch (name 'mermaid-command)
-          (synopsis "Command that draws a mermaid diagram, with %i standing for the diagram's source and %o for the path its image is written to. An empty command draws nothing.")
+          (synopsis "Command that draws a mermaid diagram, with %i standing for the diagram's source and %o for the path its image is written to. An empty command draws nothing; without an image the page draws the diagram itself.")
           (example "mmdc --input %i --output %o.png --scale 2 --backgroundColor transparent")
           (default DEFAULT_MERMAID_COMMAND)))
+
+(define gnuplot-command
+  (switch (name 'gnuplot-command)
+          (synopsis "Command that draws a gnuplot diagram, with %i standing for the script dokgen writes and %o for the path its image is written to. An empty command draws nothing.")
+          (example "gnuplot %i")
+          (default DEFAULT_GNUPLOT_COMMAND)))
 
 
 
@@ -75,7 +81,7 @@ command line to the procedure that carries it out. |#
       (name 'api)
       (synopsis "Extract the API documentation of the given Guile Scheme package or module.")
       (arguments (list sources))
-      (keywords (list destination mermaid-command)))
+      (keywords (list destination mermaid-command gnuplot-command)))
 
      (configuration
       (name 'check)
@@ -110,12 +116,14 @@ command line to the procedure that carries it out. |#
          (sources (option-ref options '(sources)))
          (destination (or (option-ref options 'destination) DEFAULT_DOC_PATH))
          (mermaid-command (or (option-ref options 'mermaid-command)
-                              DEFAULT_MERMAID_COMMAND))]
+                              DEFAULT_MERMAID_COMMAND))
+         (gnuplot-command (or (option-ref options 'gnuplot-command)
+                              DEFAULT_GNUPLOT_COMMAND))]
 
     (catch 'match-error
       (lambda ()
         (match (full-command options)
-          ((_ "api") (api sources destination mermaid-command))
+          ((_ "api") (api sources destination mermaid-command gnuplot-command))
           ((_ "stats") (stats sources destination))
           ;; A name with no documentation is what `check' exists to find,
           ;; so it is what its exit status has to say.
