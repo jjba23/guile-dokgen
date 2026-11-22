@@ -9,6 +9,7 @@
              (ice-9 format)
              (ice-9 ftw)
              (ice-9 regex)
+             (ice-9 textual-ports)
              (proba utils)
              (srfi srfi-1)
              (srfi srfi-64))
@@ -182,7 +183,15 @@
 
     (test-assert
         "Leave no wrapper script behind."
-      (not (file-exists? (format #f "~a/diagrams/~a.render.gp" TEST_DIR stem)))))
+      (not (file-exists? (format #f "~a/diagrams/~a.render.gp" TEST_DIR stem))))
+
+    (test-assert
+        "Write a terminal gnuplot can run."
+      (let [(svg (call-with-input-file
+                     (format #f "~a/diagrams/~a.svg" TEST_DIR stem)
+                   get-string-all))]
+        (and (string-contains svg "set terminal svg")
+             (not (string-contains svg "transparent"))))))
 
 
   (let* [(stem (diagrams:diagram-stem "unrendered-plot" PLOT))

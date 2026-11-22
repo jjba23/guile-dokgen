@@ -586,6 +586,15 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.10.1, November 22, 2026
+@itemize
+@item
+Gnuplot plots are drawn with the default command again: the wrapper asked
+for a transparent background, which gnuplot 6 refuses, so a plot without a
+committed image fell back to source.  The SVG terminal is transparent by
+default and the wrapper no longer asks.
+@end itemize
+
 @item Version 0.10.0, November 22, 2026
 @itemize
 @item

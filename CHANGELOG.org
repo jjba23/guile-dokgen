@@ -6,6 +6,16 @@
 Notable changes, newest first.  Releases before 0.5.0 were made by the
 original author; their record is the version history in the manual.
 
+* 0.10.1 — 2026-11-22
+
+** Fixed
+
+- Gnuplot plots are drawn again with the default command: the wrapper asked
+  for a transparent background, which gnuplot 6 refuses, so a plot without a
+  committed image fell back to source.  The SVG terminal is transparent by
+  default and the wrapper no longer asks.
+
+
 * 0.10.0 — 2026-11-22
 
 ** Added

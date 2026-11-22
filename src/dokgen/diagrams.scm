@@ -310,7 +310,9 @@ readable when the program is missing. |#
   The source a project commits says what is plotted; the terminal and the
   output path belong to the run and are written here, so the same source
   draws the same picture on any machine."
-  (format #f "set terminal svg size 900,520 background transparent~%set output ~a~%load ~a~%"
+  ;; The SVG terminal draws on a transparent canvas by default; asking for
+  ;; `background transparent' makes gnuplot 6 refuse the whole script.
+  (format #f "set terminal svg size 900,520~%set output ~a~%load ~a~%"
           (gnuplot-string (string-append base ".svg"))
           (gnuplot-string source-file)))
 
