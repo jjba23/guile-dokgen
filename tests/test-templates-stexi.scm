@@ -236,7 +236,7 @@
            (name "diagrammed-procedure")
            (arguments ""))
         (para "This procedure is drawn.")
-        (para "Mermaid diagram:")
+        (para "Mermaid diagram, as source:")
         (example "graph TD\n  a --> b\n%% dokgen-mermaid")))
     (stexi:api-binding 'diagrammed-procedure
                        diagrammed-procedure
@@ -345,7 +345,35 @@
     (test-assert
         "Say how much the chapter documents, in one sentence a reader can use."
       (and (string-contains text "2 modules and 0 exported names")
-           (string-contains text "the index filters all of them"))))
+           (string-contains text "the index filters all of them")))
+
+    (test-assert
+        "Tell a reader how to use the index, not list the sections again."
+      (let [(heading (find (lambda (node)
+                             (and (pair? node) (eq? (car node) 'heading)))
+                           nodes))
+            (steps (find (lambda (node)
+                           (and (pair? node) (eq? (car node) 'enumerate)))
+                         nodes))]
+        (and heading
+             (equal? (second heading) "How to read this reference")
+             steps
+             (= 3 (length (cdr steps))))))
+
+    (test-assert
+        "Say that the page is generated and where to correct it."
+      (let [(heading (find (lambda (node)
+                             (and (pair? node)
+                                  (eq? (car node) 'heading)
+                                  (equal? (second node) "A generated chapter")))
+                           nodes))]
+        (and heading
+             (find (lambda (node)
+                     (and (pair? node)
+                          (eq? (car node) 'para)
+                          (string? (second node))
+                          (string-contains (second node) "docstring")))
+                   nodes)))))
 
   (test-equal
       "Open the chapter with the name a manual includes it by."
@@ -370,7 +398,27 @@
 
     (test-assert
         "Count the definitions wherever they sit, and nothing else."
-      (string-contains text "1 module and 2 exported names"))))
+      (string-contains text "1 module and 2 exported names")))
+
+  (let* [(section
+          '(*fragment*
+            (section "Module"
+             (*fragment* (subsection "Overview"))
+             (*fragment*
+              (subsection "Macros")
+              (defmac (% (name "first")) (para "A macro.")))
+             (*fragment*
+              (subsection "Procedures")
+              (deffn (% (name "second")) (para "A procedure."))
+              (deffn (% (name "third")) (para "Another procedure."))))))
+         (nodes (stexi:api-chapter '((somelib amodule)) (list section)))
+         (intro (find (lambda (node) (and (pair? node) (eq? (car node) 'para)))
+                      nodes))
+         (text (apply string-append (filter string? intro)))]
+
+    (test-assert
+        "Say what kinds of names the chapter documents."
+      (string-contains text "2 procedures and 1 macro"))))
 
 
 

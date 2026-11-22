@@ -5,9 +5,29 @@
 @node API
 @chapter API
 The API reference for @code{dokgen}: 10 modules and 48 exported names,
-generated from the source and the docstrings in it.  Every module has a
-section of its own and every name links to its definition; the index
-filters all of them.
+generated from the source and the docstrings in it.  They are 37
+procedures, 3 parameters, 1 record type and 7 variables.  Every module
+has a section of its own and every name links to its definition; the
+index filters all of them.
+
+@heading How to read this reference
+@enumerate 
+@item
+Every module has a section of its own; open it in the index, or
+with the menu button on a phone.
+@item
+A module section opens with its exported names and a one-line
+summary of each.  Follow a name to its definition, where its signature, its
+category and the docstring sit together.
+@item
+To find a name across the whole API, press @code{/} and type
+in the index filter.
+@end enumerate
+
+@heading A generated chapter
+This chapter is generated from the source and the docstrings beside it.
+To correct a definition, change the source or its docstring and rebuild
+the manual; an edit to this page is lost.
 
 
 @c %start of fragment
@@ -110,7 +130,7 @@ here.
 
 @anchor{dokgen_assets_STYLESHEET}
 @defvr Variable STYLESHEET
-The value is a string of @code{19605} characters, too long to print
+The value is a string of @code{24508} characters, too long to print
 here.
 
 @end defvr

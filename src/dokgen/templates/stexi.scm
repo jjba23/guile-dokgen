@@ -224,6 +224,88 @@ of the Texinfo documentation of a given software project. |#
   "Return NUMBER with THING beside it, in the singular or the plural."
   (format #f "~a ~a~a" number thing (if (= number 1) "" "s")))
 
+(define (and-list strings)
+  "Return STRINGS with commas between them and `and' before the last."
+  (cond
+   [(null? strings) ""]
+   [(null? (cdr strings)) (car strings)]
+   [else (string-append (string-join (drop-right strings 1) ", ")
+                        " and " (last strings))]))
+
+(define (api-kind-counts sections)
+  "Return how many names of each kind the chapter documents.
+
+  @strong{sections} (list of stexi):
+    The module sections of an API chapter.
+
+  @strong{Return value} (alist):
+    Pairs of a subsection title and the number of definitions it holds,
+    such as @code{((Procedures . 22) (Variables . 15))}.  The
+    @code{Overview} subsection lists links and not definitions, so it is
+    left out."
+  (define (subsection-counts node)
+    "Return the kind-count pairs of every subsection under NODE.
+
+    A module subsection is a @code{subsection} marker followed by the
+    definitions it introduces, all inside one @code{*fragment*}; the
+    marker is a heading, not their parent."
+    (cond
+     [(and (pair? node) (eq? (car node) '*fragment*))
+      (let [(marker (find (lambda (child)
+                            (and (pair? child)
+                                 (eq? (car child) 'subsection)))
+                          (cdr node)))]
+        (if marker
+            (let [(kind (second marker))]
+              (if (string=? kind "Overview")
+                  '()
+                  (list (cons kind
+                              (count-definitions
+                               (filter (lambda (child)
+                                         (not (eq? child marker)))
+                                       (cdr node)))))))
+            (append-map subsection-counts (cdr node))))]
+     [(pair? node) (append-map subsection-counts node)]
+     [else '()]))
+  (fold (lambda (entry counts)
+          (let* [(kind (car entry))
+                 (number (cdr entry))
+                 (known (find (lambda (count)
+                                (string=? (car count) kind))
+                              counts))]
+            (if known
+                (map (lambda (count)
+                       (if (string=? (car count) kind)
+                           (cons kind (+ (cdr count) number))
+                           count))
+                     counts)
+                (cons entry counts))))
+        '()
+        (append-map subsection-counts sections)))
+
+(define (api-kind-summary sections)
+  "Return a sentence saying what kinds of names the chapter documents.
+
+  @strong{sections} (list of stexi):
+    The module sections of an API chapter.
+
+  @strong{Return value} (string or @code{#false}):
+    A sentence such as @code{They are 22 procedures and 15 variables.},
+    or @code{#false} when the sections hold no definitions yet."
+  (let* [(counts (api-kind-counts sections))
+         (kinds '("Procedures" "Macros" "Parameters" "Record Types" "Variables"))
+         (labels (filter-map
+                  (lambda (kind)
+                    (let [(entry (find (lambda (count)
+                                        (string=? (car count) kind))
+                                      counts))]
+                      (and entry
+                           (counted (cdr entry)
+                                    (string-drop-right (string-downcase kind) 1)))))
+                  kinds))]
+    (and (pair? labels)
+         (string-append " They are " (and-list labels) "."))))
+
 (define (library-name module-names)
   "Return the name every module of MODULE-NAMES starts with, or @code{#false}.
 
@@ -256,8 +338,9 @@ of the Texinfo documentation of a given software project. |#
                    '("The API reference for this library: ")))
          (counts (format #f "~a and ~a, generated from the source and the docstrings in it."
                          (counted (length module-names) "module")
-                         (counted (count-definitions sections) "exported name")))]
-    `(para ,@head ,counts
+                         (counted (count-definitions sections) "exported name")))
+         (kinds (api-kind-summary sections))]
+    `(para ,@head ,counts ,(or kinds "")
            "  Every module has a section of its own and every name links to its
 definition; the index filters all of them.")))
 
@@ -279,6 +362,19 @@ definition; the index filters all of them.")))
     (node (% (name "API")))
     (chapter "API")
     ,(api-introduction module-names sections)
+    (heading "How to read this reference")
+    (enumerate
+     (item "Every module has a section of its own; open it in the index, or
+with the menu button on a phone.\n")
+     (item "A module section opens with its exported names and a one-line
+summary of each.  Follow a name to its definition, where its signature, its
+category and the docstring sit together.\n")
+     (item "To find a name across the whole API, press " (code "/") " and type
+in the index filter.\n"))
+    (heading "A generated chapter")
+    (para "This chapter is generated from the source and the docstrings beside
+it.  To correct a definition, change the source or its docstring and rebuild
+the manual; an edit to this page is lost.")
     ,@sections))
 
 

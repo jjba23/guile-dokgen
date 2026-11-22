@@ -138,6 +138,167 @@ html {
     }
 }
 
+/* --- the page before the script builds the index -------------------- */
+
+/* The script adds `dk-has-index' and the rules below take over.  Until
+   it runs, and for a reader who never runs it, this is the page: the
+   same type and colours, a readable column, and a body table of contents
+   with room for its nested levels. */
+
+body:not(.dk-has-index) {
+    box-sizing: border-box;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 clamp(1.1rem, 3vw, 2.8rem) 6rem;
+    color: var(--dk-fg);
+    background: var(--dk-bg);
+    font-family: var(--dk-sans);
+    font-size: 1rem;
+    line-height: 1.68;
+}
+
+body:not(.dk-has-index) h1.top,
+body:not(.dk-has-index) h1.settitle,
+body:not(.dk-has-index) h2.chapter,
+body:not(.dk-has-index) h3.section,
+body:not(.dk-has-index) h3.heading,
+body:not(.dk-has-index) h4.subsection {
+    color: var(--dk-fg);
+    font-family: var(--dk-serif);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+}
+
+body:not(.dk-has-index) h1.settitle {
+    margin: 1.8rem 0 0;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+body:not(.dk-has-index) h1.top,
+body:not(.dk-has-index) h2.chapter {
+    margin: 2.4rem 0 1rem;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+body:not(.dk-has-index) h3.section {
+    margin: 2.2rem 0 0.8rem;
+    font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+}
+
+body:not(.dk-has-index) h3.heading,
+body:not(.dk-has-index) h4.subsection {
+    margin: 2rem 0 0.7rem;
+    font-size: 1.25rem;
+}
+
+body:not(.dk-has-index) a {
+    color: var(--dk-accent-strong);
+    text-underline-offset: 0.18em;
+}
+
+body:not(.dk-has-index) a:hover {
+    color: var(--dk-accent);
+}
+
+body:not(.dk-has-index) p {
+    max-width: 74ch;
+}
+
+.nav-panel .nav-button {
+    white-space: nowrap;
+}
+
+.nav-panel .nav-button + .nav-button {
+    margin-left: 0.35rem;
+}
+
+.nav-panel a {
+    color: var(--dk-muted);
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--dk-border);
+}
+
+.nav-panel a:hover {
+    color: var(--dk-accent-strong);
+    border-bottom-color: currentColor;
+}
+
+body:not(.dk-has-index) #SEC_Contents {
+    margin: 2rem 0 2.6rem;
+    padding: 1rem 1.2rem;
+    background: var(--dk-card);
+    border: 1px solid var(--dk-border);
+    border-radius: var(--dk-radius);
+}
+
+body:not(.dk-has-index) #SEC_Contents .contents-heading {
+    margin-top: 0;
+    font-size: 1.35rem;
+}
+
+body:not(.dk-has-index) #SEC_Contents ul {
+    padding-left: 1.1rem;
+}
+
+body:not(.dk-has-index) #SEC_Contents li {
+    margin: 0.18rem 0;
+}
+
+body:not(.dk-has-index) #SEC_Contents a {
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+body:not(.dk-has-index) ul.mini-toc {
+    margin: 1rem 0 1.8rem;
+    padding: 0.8rem 1.1rem 0.8rem 2rem;
+    background: var(--dk-card);
+    border: 1px solid var(--dk-border);
+    border-radius: var(--dk-radius);
+}
+
+body:not(.dk-has-index) h3.heading + ol.enumerate {
+    margin: 1rem 0 1.8rem;
+    padding: 1.1rem 1.35rem 1.1rem 2.6rem;
+    background: var(--dk-card);
+    border: 1px solid var(--dk-border);
+    border-radius: var(--dk-radius);
+}
+
+body:not(.dk-has-index) h3.heading + ol.enumerate li {
+    margin: 0.45rem 0;
+}
+
+body:not(.dk-has-index) h3.heading + ol.enumerate li::marker {
+    color: var(--dk-accent);
+    font-weight: 650;
+}
+
+body:not(.dk-has-index) div.example {
+    margin: 1rem 0;
+}
+
+body:not(.dk-has-index) pre {
+    max-width: 100%;
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+    overflow-x: auto;
+    color: var(--dk-fg);
+    background: var(--dk-signature);
+    border: 1px solid var(--dk-border);
+    border-radius: 6px;
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+body:not(.dk-has-index) table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 /* --- the page, once the script has built the index ------------------ */
 
 body.dk-has-index {
@@ -155,6 +316,7 @@ body.dk-has-index {
 
 body.dk-has-index h2.chapter,
 body.dk-has-index h3.section,
+body.dk-has-index h3.heading,
 body.dk-has-index h4.subsection,
 body.dk-has-index .anchor,
 body.dk-has-index dl.def-block {
@@ -164,6 +326,7 @@ body.dk-has-index dl.def-block {
 body.dk-has-index h1.top,
 body.dk-has-index h2.chapter,
 body.dk-has-index h3.section,
+body.dk-has-index h3.heading,
 body.dk-has-index h4.subsection {
     color: var(--dk-fg);
     font-family: var(--dk-serif);
@@ -187,9 +350,34 @@ body.dk-has-index h3.section {
     font-size: clamp(1.45rem, 2.4vw, 1.85rem);
 }
 
+body.dk-has-index h3.heading {
+    margin: 2.4rem 0 0.8rem;
+    font-size: clamp(1.3rem, 1.8vw, 1.5rem);
+}
+
 body.dk-has-index h4.subsection {
     margin: 2.1rem 0 0.7rem;
     font-size: 1.25rem;
+}
+
+/* The reading guide on a chapter landing page: a short numbered list in
+   a card, not another copy of the index. */
+
+body.dk-has-index h3.heading + ol.enumerate {
+    margin: 1rem 0 1.8rem;
+    padding: 1.1rem 1.35rem 1.1rem 2.6rem;
+    background: var(--dk-card);
+    border: 1px solid var(--dk-border);
+    border-radius: var(--dk-radius);
+}
+
+body.dk-has-index h3.heading + ol.enumerate li {
+    margin: 0.45rem 0;
+}
+
+body.dk-has-index h3.heading + ol.enumerate li::marker {
+    color: var(--dk-accent);
+    font-weight: 650;
 }
 
 body.dk-has-index a {
@@ -869,6 +1057,15 @@ img.image {
         font-size: 1.35rem;
     }
 
+    body.dk-has-index h3.heading {
+        font-size: 1.2rem;
+    }
+
+    body.dk-has-index h3.heading + ol.enumerate,
+    body:not(.dk-has-index) h3.heading + ol.enumerate {
+        padding: 0.9rem 1rem 0.9rem 2.2rem;
+    }
+
     h2.chapter + p {
         font-size: 1.08rem;
     }
@@ -907,7 +1104,8 @@ img.image {
     }
 
     body,
-    body.dk-has-index {
+    body.dk-has-index,
+    body:not(.dk-has-index) {
         max-width: none;
         margin: 0;
         padding: 0;
@@ -926,6 +1124,14 @@ img.image {
         break-inside: avoid;
         border: 1px solid #cccccc;
         border-left: 3px solid #888888;
+    }
+
+    body.dk-has-index h3.heading + ol.enumerate,
+    body:not(.dk-has-index) h3.heading + ol.enumerate,
+    body:not(.dk-has-index) #SEC_Contents,
+    body:not(.dk-has-index) ul.mini-toc {
+        background: none;
+        border-color: #cccccc;
     }
 
     .dk-diagram,

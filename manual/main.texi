@@ -174,7 +174,8 @@ the one that stays in view -- on a single-page manual, the body's own
 table of contents as well.  The index opens the top level, marks the
 heading or definition the reader has reached, filters every row, and
 copies a signature.  A reader without JavaScript keeps the body's table
-of contents and every definition the chapter wrote.
+of contents, the navigation and every definition the chapter wrote, laid
+out in one readable column.
 @item dokgen-mermaid.js
 A bundled copy of @url{https://mermaid.js.org/, mermaid} (version 11),
 2.5 MB, loaded only by a page whose chapter carries a diagram no renderer
@@ -214,10 +215,14 @@ source.
 @end quotation
 
 The chapter opens with a sentence about what it documents: the name the
-modules share, how many modules there are and how many names they export,
-so a reader knows what the page is before meeting the first definition.
-The sections and the definitions are listed together in the index beside
-the page, and every definition carries an anchor built from the module's
+modules share, how many modules there are, how many names they export and
+which kinds those names are, so a reader knows what the page is before
+meeting the first definition.  A short guide then says how to use the
+index, and a note says that the chapter is generated and where to correct
+it.  When the index is built, a chapter landing page does not repeat its
+section pages in the body as well.  The sections and the definitions are
+listed together in the index beside the page, and every definition carries
+an anchor built from the module's
 name and the name of the object: the procedure @code{call} of the module
 @code{(dokgen cli)} is @code{dokgen_cli_call}. A chapter written by hand
 can therefore point at a definition with @code{@@ref@{dokgen_cli_call@}},
@@ -586,6 +591,19 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.11.0, November 22, 2026
+@itemize
+@item
+A split manual's API chapter opens with what it documents, how to read the
+index and a note that the chapter is generated, instead of a blank page once
+its module list moves into the index.
+@item
+Without JavaScript, the manual keeps its body table of contents, navigation
+and definitions in a readable single column; long source blocks scroll
+instead of widening the page.  A Mermaid fallback says that its source is
+shown as source.
+@end itemize
+
 @item Version 0.10.2, November 22, 2026
 @itemize
 @item

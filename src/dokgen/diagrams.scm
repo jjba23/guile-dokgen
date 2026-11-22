@@ -388,7 +388,7 @@ readable when the program is missing. |#
   source.  A gnuplot diagram is left as source: the picture is made by
   gnuplot, not by a browser."
   (if (string=? language "mermaid")
-      (list '(para "Mermaid diagram:")
+      (list '(para "Mermaid diagram, as source:")
             `(example ,(format #f "~a~%~a"
                                (string-trim-right source #\newline)
                                MERMAID_SOURCE_MARKER)))

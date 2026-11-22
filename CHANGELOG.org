@@ -6,6 +6,21 @@
 Notable changes, newest first.  Releases before 0.5.0 were made by the
 original author; their record is the version history in the manual.
 
+* 0.11.0 — 2026-11-22
+
+** Added
+
+- A split manual's API chapter landing page explains what the chapter holds
+  and how to read it, instead of leaving the page empty once its module list
+  moves into the index.
+
+** Fixed
+
+- Without JavaScript, the page keeps a readable column, its body table of
+  contents and navigation, and source blocks that scroll instead of widening
+  the page.
+
+
 * 0.10.2 — 2026-11-22
 
 ** Fixed
