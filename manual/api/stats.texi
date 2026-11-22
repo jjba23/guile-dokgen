@@ -7,7 +7,7 @@
 This chapter is written by @command{dokgen stats} from the tree itself,
 so it says what the code is rather than what someone remembers it to be.
 
-It describes the tree at commit @code{11d4753}, on 2026-11-22.
+It describes the tree at commit @code{b94b8d5}, on 2026-11-22.
 
 @section Size
 @example 
@@ -15,9 +15,9 @@ size
 files             10
 modules           10
 lines of code     1101
-lines of comment  274
+lines of comment  276
 blank lines       676
-bytes             147869
+bytes             147992
 decision points   78
 @end example
 
@@ -28,7 +28,7 @@ decision points that sit beside it.
 @example 
 file                            code  comment  decisions
 src/dokgen/templates/stexi.scm  332   26       25
-src/dokgen/diagrams.scm         177   63       20
+src/dokgen/diagrams.scm         177   65       20
 src/dokgen/stats.scm            162   34       14
 src/dokgen/commands.scm         142   38       9
 src/dokgen/data.scm             116   15       4
@@ -49,7 +49,7 @@ removed.
 
 @example 
 name                added  removed  changed
-Josep Bigorra       16710  5010     21720
+Josep Bigorra       16755  5025     21780
 Luis Felipe         7038   1266     8304
 Christopher Baines  3      19       22
 @end example
@@ -61,17 +61,17 @@ where a change costs the most to review.
 @example 
 name                            added  removed  changed
 src/dokgen/assets.scm           2226   410      2636
-src/dokgen/diagrams.scm         521    102      623
+src/dokgen/diagrams.scm         524    103      627
 src/dokgen/templates/stexi.scm  443    79       522
 src/dokgen/stats.scm            395    21       416
 src/dokgen/commands.scm         284    64       348
 src/dokgen/data.scm             97     40       137
 src/dokgen/exceptions.scm       76     26       102
-src/dokgen/cli.scm              57     18       75
+src/dokgen/cli.scm              58     19       77
 src/dokgen/utils.scm            5      1        6
 @end example
 
-The repository holds 111 commits, the first on 2023-02-16.
+The repository holds 113 commits, the first on 2023-02-16.
 
 A decision point is an @code{if}, @code{cond}, @code{case}, @code{when},
 @code{unless} or @code{do} in the code.  It counts shapes and not paths,
