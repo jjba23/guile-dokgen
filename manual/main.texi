@@ -8,7 +8,7 @@
 
 
 @c HEADER
-@set VERSION 0.10.2
+@set VERSION 0.11.0
 @settitle Guile Dokgen
 @documentlanguage en
 @documentencoding UTF-8
