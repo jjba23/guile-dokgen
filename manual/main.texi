@@ -586,6 +586,13 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.10.2, November 22, 2026
+@itemize
+@item
+The Nix derivation writes the launcher's PATH change as a quoted shell
+word, so a Nix build installs a working launcher.
+@end itemize
+
 @item Version 0.10.1, November 22, 2026
 @itemize
 @item

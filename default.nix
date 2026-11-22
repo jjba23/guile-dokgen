@@ -83,7 +83,7 @@ stdenv.mkDerivation {
     # dokgen should not have to install gnuplot itself.
     substituteInPlace "$out/bin/dokgen" \
       --replace-fail '$here/../src' "$site" \
-      --replace-fail 'exec guile' "PATH=${gnuplot}/bin:\$PATH exec ${guile}/bin/guile -C $out/lib/guile/3.0/site-ccache${dependencyFlags}""}
+      --replace-fail 'exec guile' "PATH=${gnuplot}/bin:\$PATH exec ${guile}/bin/guile -C $out/lib/guile/3.0/site-ccache${dependencyFlags}"
 
     runHook postInstall
   '';
