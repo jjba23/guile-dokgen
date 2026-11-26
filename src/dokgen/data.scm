@@ -21,11 +21,13 @@ formats. See, for example, the templates used to work with the
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 session)
+  #:use-module (ice-9 textual-ports)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
   #:use-module (srfi srfi-34)
   #:export (api-symbols
+            definition-source
             file-path->module-name
             get-file-paths
             group-api-objects
@@ -185,6 +187,80 @@ formats. See, for example, the templates used to work with the
 
     module-name))
 
+
+;; The forms that give a name to a value.
+(define DEFINITION_FORMS
+  '(define define* define-public define*-public
+    define-syntax define-syntax-rule define-record-type))
+
+(define (module-file module-name)
+  "Return the file that holds MODULE-NAME, or @code{#false} when none does.
+
+  @strong{module-name} (list of symbols):
+    For example: @code{'(mylib amodule)}.
+
+  @strong{Return value} (string or @code{#false}):
+    The first file on the load path that the module name spells, which is
+    the file Guile itself loads the module from."
+  (let [(file (string-append
+               (string-join (map symbol->string module-name)
+                            file-name-separator-string)
+               ".scm"))]
+    (find file-exists?
+          (map (lambda (directory) (in-vicinity directory file))
+               %load-path))))
+
+(define (definition-form? name form)
+  "Return @code{#true} when FORM is the top-level form that defines NAME.
+
+  @strong{name} (symbol):
+    The name a binding is exported under.
+
+  @strong{form} (anything):
+    One top-level form of the module's file, as @code{read} returns it."
+  (and (pair? form)
+       (memq (car form) DEFINITION_FORMS)
+       (pair? (cdr form))
+       (let [(defined (cadr form))]
+         (if (pair? defined)
+             (eq? (car defined) name)
+             (eq? defined name)))))
+
+(define (definition-source module-name name)
+  "Return the source of NAME as MODULE-NAME defines it, or @code{#false}.
+
+  @strong{module-name} (list of symbols):
+    The module the object belongs to.  For example:
+    @code{'(mylib amodule)}.
+
+  @strong{name} (symbol):
+    The name it is exported under.
+
+  @strong{Return value} (string or @code{#false}):
+    The text of the top-level form that defines @var{name}, exactly as the
+    file writes it, so that a reader of the documentation sees the code
+    behind a definition and not a second copy of it.  @code{#false} when no
+    file on the load path holds the module, and when no form defines the
+    name: a binding a macro invents has no source of its own."
+  (and=> (module-file module-name)
+         (lambda (file)
+           (call-with-input-file file
+             (lambda (port)
+               (let loop ()
+                 (let [(start (ftell port))
+                       (form (read port))]
+                   (cond
+                    [(eof-object? form) #false]
+                    [(definition-form? name form)
+                     (let* [(end (ftell port))
+                            ;; The form starts where `read' met its opening
+                            ;; bracket; the comment above it is not shown.
+                            (text (begin
+                                    (seek port start SEEK_SET)
+                                    (get-string-n port (- end start))))
+                            (open (or (string-index text #\() 0))]
+                       (string-trim-both (substring text open)))]
+                    [else (loop)]))))))))
 
 (define (record-field record field)
   "Get the value of @var{field} from @var{record}.

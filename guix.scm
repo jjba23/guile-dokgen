@@ -78,7 +78,7 @@
                      (chmod (string-append bin "/dokgen") #o755)))))))
     (inputs (list guile-3.0))
     (propagated-inputs (list guile-config guile-lib))
-    (native-inputs (list guile-proba texinfo))
+    (native-inputs (list texinfo))
     (home-page "https://github.com/jjba23/guile-dokgen")
     (synopsis "Generate API documentation for GNU Guile projects")
     (description

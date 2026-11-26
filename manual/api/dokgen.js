@@ -8,7 +8,8 @@
  * reference documentation pleasant to read: one index holding the sections
  * and every definition, a filter over it, a bar with the theme and, on a
  * phone, the button that opens the index as a drawer.  It also folds the
- * body's own table of contents away, because the index already is one, and
+ * body's own table of contents away, because the index already is one,
+ * opens the source a definition carries in a panel of coloured code, and
  * draws a diagram the build left as source from the bundled renderer.
  *
  * Everything is progressive: the page is complete without this file, and
@@ -130,6 +131,86 @@
                 }
             });
             line.appendChild(button);
+        });
+    }
+
+    /* --- the source of a definition ----------------------------------- */
+
+    /* A definition's source is an example the chapter marks with an
+       anchor.  texi2any writes the underscore of an anchor's name as an
+       escape, so the marker's own id carries it. */
+    var SOURCE_MARK = "dk_005fsource_005f";
+
+    /* The words a reader looks for first: what a form does, not what it is
+       called. */
+    var SPECIAL = ("define define* define-public define*-public "
+        + "define-module define-syntax define-syntax-rule "
+        + "define-record-type lambda let let* letrec letrec* let-values "
+        + "if cond case else when unless and or begin do quote quasiquote "
+        + "unquote set! delay force parameterize guard dynamic-wind").split(" ");
+
+    var TOKEN = /(;[^\n]*)|(#\|[\s\S]*?\|#)|("(?:[^"\\]|\\.)*")|(#[tf](?=[\s()\[\]"';]|$))|(#\\(?:[a-zA-Z0-9]+|.))|(#[^\s()\[\]"';]+)|([()\[\]])|(-?\d+(?:\.\d+)?)|([^\s()\[\]"';]+)|([\s\S])/g;
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function isSpecial(word) {
+        return SPECIAL.indexOf(word) !== -1;
+    }
+
+    /* Colour one form: a comment, a string, a character, a number and a
+       word are told apart by one expression, which is enough for a page
+       that shows code and never runs it.  Every token is escaped, so the
+       result is safe to put back as markup. */
+    function colourise(text) {
+        return text.replace(TOKEN, function (whole, comment, block, string, bool, char, keyword, bracket, number, word) {
+            var kind = "";
+            if (comment || block) {
+                kind = "comment";
+            } else if (string) {
+                kind = "string";
+            } else if (bool || char) {
+                kind = "constant";
+            } else if (keyword) {
+                kind = "keyword";
+            } else if (bracket) {
+                kind = "paren";
+            } else if (number) {
+                kind = "number";
+            } else if (word && isSpecial(word)) {
+                kind = "special";
+            }
+            var safe = escapeHtml(whole);
+            if (!kind) {
+                return safe;
+            }
+            return '<span class="dk-tok-' + kind + '">' + safe + '</span>';
+        });
+    }
+
+    /* The marker and the example it guards become one panel: the example
+       moves inside a details element, which a reader opens and closes
+       without this script.  The source is coloured once, when it is put
+       there. */
+    function addSourcePanels() {
+        var markers = document.querySelectorAll("a[id^='" + SOURCE_MARK + "']");
+        each(markers, function (marker) {
+            var block = marker.nextElementSibling;
+            var pre = block && block.querySelector("pre");
+            if (!pre) {
+                return;
+            }
+            var panel = document.createElement("details");
+            panel.className = "dk-source";
+            var summary = document.createElement("summary");
+            summary.textContent = "Source";
+            panel.appendChild(summary);
+            block.parentNode.insertBefore(panel, block);
+            panel.appendChild(block);
+            pre.innerHTML = colourise(pre.textContent);
         });
     }
 
@@ -817,6 +898,7 @@
 
     applyTheme(preferredTheme());
     addCopyButtons();
+    addSourcePanels();
     renderDiagrams();
 
     var index = buildIndex();

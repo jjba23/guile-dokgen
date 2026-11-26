@@ -48,8 +48,9 @@ does it. |#
  * dokgen writes this file beside the Texinfo chapter it generates.  It
  * turns what texi2any emits into a page of reference documentation: one
  * index down the side with the sections and every definition, a card per
- * definition, a signature that can be copied, a light and a dark page,
- * and diagrams that sit on a plate of their own.
+ * definition, a signature that can be copied, the source of a definition
+ * behind a panel a reader opens, a light and a dark page, and diagrams
+ * that sit on a plate of their own.
  *
  * Nothing here is required: the chapter is complete Texinfo without it,
  * and Info and print output never see a line of it.  Every rule is either
@@ -65,9 +66,17 @@ does it. |#
     --dk-signature: #f3ece1;
     --dk-code: #f6f0e6;
     --dk-border: #e3d8c8;
-    --dk-accent: #b45309;
-    --dk-accent-strong: #8f3f06;
-    --dk-accent-soft: rgba(180, 83, 9, 0.10);
+    --dk-accent: #a86a3c;
+    --dk-accent-strong: #85502a;
+    --dk-accent-soft: rgba(168, 106, 60, 0.09);
+    --dk-tok-comment: #8b8274;
+    --dk-tok-string: #6f7a4c;
+    --dk-tok-number: #8a5f3d;
+    --dk-tok-constant: #7c6090;
+    --dk-tok-keyword: #96585d;
+    --dk-tok-special: #5b6b8d;
+    --dk-tok-paren: #a99d8d;
+    --dk-blur: 14px;
     --dk-radius: 8px;
     --dk-sidebar: 17rem;
     --dk-bar: 3.25rem;
@@ -87,9 +96,16 @@ does it. |#
         --dk-signature: #272119;
         --dk-code: #241f19;
         --dk-border: #3a3127;
-        --dk-accent: #e9a15f;
-        --dk-accent-strong: #f1b67f;
-        --dk-accent-soft: rgba(233, 161, 95, 0.12);
+        --dk-accent: #d7a173;
+        --dk-accent-strong: #e6c0a0;
+        --dk-accent-soft: rgba(215, 161, 115, 0.12);
+        --dk-tok-comment: #8e8577;
+        --dk-tok-string: #a6bc8b;
+        --dk-tok-number: #d9a878;
+        --dk-tok-constant: #c2a8d6;
+        --dk-tok-keyword: #dda0a0;
+        --dk-tok-special: #9cb2d6;
+        --dk-tok-paren: #6d6357;
     }
 }
 
@@ -101,9 +117,16 @@ does it. |#
     --dk-signature: #f3ece1;
     --dk-code: #f6f0e6;
     --dk-border: #e3d8c8;
-    --dk-accent: #b45309;
-    --dk-accent-strong: #8f3f06;
-    --dk-accent-soft: rgba(180, 83, 9, 0.10);
+    --dk-accent: #a86a3c;
+    --dk-accent-strong: #85502a;
+    --dk-accent-soft: rgba(168, 106, 60, 0.09);
+    --dk-tok-comment: #8b8274;
+    --dk-tok-string: #6f7a4c;
+    --dk-tok-number: #8a5f3d;
+    --dk-tok-constant: #7c6090;
+    --dk-tok-keyword: #96585d;
+    --dk-tok-special: #5b6b8d;
+    --dk-tok-paren: #a99d8d;
     color-scheme: light;
 }
 
@@ -115,9 +138,16 @@ does it. |#
     --dk-signature: #272119;
     --dk-code: #241f19;
     --dk-border: #3a3127;
-    --dk-accent: #e9a15f;
-    --dk-accent-strong: #f1b67f;
-    --dk-accent-soft: rgba(233, 161, 95, 0.12);
+    --dk-accent: #d7a173;
+    --dk-accent-strong: #e6c0a0;
+    --dk-accent-soft: rgba(215, 161, 115, 0.12);
+    --dk-tok-comment: #8e8577;
+    --dk-tok-string: #a6bc8b;
+    --dk-tok-number: #d9a878;
+    --dk-tok-constant: #c2a8d6;
+    --dk-tok-keyword: #dda0a0;
+    --dk-tok-special: #9cb2d6;
+    --dk-tok-paren: #6d6357;
     color-scheme: dark;
 }
 
@@ -151,7 +181,11 @@ body:not(.dk-has-index) {
     margin: 0 auto;
     padding: 0 clamp(1.1rem, 3vw, 2.8rem) 6rem;
     color: var(--dk-fg);
-    background: var(--dk-bg);
+    background-color: var(--dk-bg);
+    /* A wash of the accent behind the page, so the surfaces over it have
+       something to blur. */
+    background-image: radial-gradient(120% 80% at 12% -10%, color-mix(in srgb, var(--dk-accent) 7%, transparent), transparent 62%);
+    background-attachment: fixed;
     font-family: var(--dk-sans);
     font-size: 1rem;
     line-height: 1.68;
@@ -308,7 +342,9 @@ body.dk-has-index {
     margin-right: 0;
     padding: 0 clamp(1.1rem, 3vw, 2.8rem) 6rem;
     color: var(--dk-fg);
-    background: var(--dk-bg);
+    background-color: var(--dk-bg);
+    background-image: radial-gradient(120% 80% at 12% -10%, color-mix(in srgb, var(--dk-accent) 7%, transparent), transparent 62%);
+    background-attachment: fixed;
     font-family: var(--dk-sans);
     font-size: 1rem;
     line-height: 1.68;
@@ -600,8 +636,9 @@ body.dk-has-index blockquote {
 
 @supports (backdrop-filter: blur(1px)) {
     .dk-bar {
-        background: color-mix(in srgb, var(--dk-bg) 88%, transparent);
-        backdrop-filter: blur(12px) saturate(120%);
+        background: color-mix(in srgb, var(--dk-bg) 74%, transparent);
+        -webkit-backdrop-filter: blur(var(--dk-blur)) saturate(130%);
+        backdrop-filter: blur(var(--dk-blur)) saturate(130%);
     }
 }
 
@@ -951,6 +988,123 @@ dl.def-block > dd strong.strong {
     background: var(--dk-accent-soft);
 }
 
+/* --- the source of a definition ------------------------------------- */
+
+/* The script folds the example the chapter marks into this panel, so the
+   code behind a definition is a click away instead of a page of it.  A
+   reader without the script gets the example as the chapter wrote it. */
+
+details.dk-source {
+    margin-top: 0.8rem;
+    border-top: 1px solid var(--dk-border);
+}
+
+details.dk-source > summary {
+    margin: 0.55rem 0 0;
+    padding: 0.15rem 0 0.15rem 0.15rem;
+    color: var(--dk-muted);
+    font-family: var(--dk-sans);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+details.dk-source > summary::marker {
+    color: var(--dk-accent);
+}
+
+details.dk-source > summary:hover,
+details.dk-source[open] > summary {
+    color: var(--dk-accent-strong);
+}
+
+details.dk-source > div.example {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+}
+
+details.dk-source pre {
+    margin: 0;
+    padding: 0.7rem 0.85rem;
+    background: var(--dk-signature);
+    border: 1px solid var(--dk-border);
+    border-radius: 6px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    tab-size: 4;
+}
+
+.dk-tok-comment {
+    color: var(--dk-tok-comment);
+    font-style: italic;
+}
+
+.dk-tok-string {
+    color: var(--dk-tok-string);
+}
+
+.dk-tok-number {
+    color: var(--dk-tok-number);
+}
+
+.dk-tok-constant {
+    color: var(--dk-tok-constant);
+}
+
+.dk-tok-keyword {
+    color: var(--dk-tok-keyword);
+}
+
+.dk-tok-special {
+    color: var(--dk-tok-special);
+    font-weight: 600;
+}
+
+.dk-tok-paren {
+    color: var(--dk-tok-paren);
+}
+
+/* --- the surfaces a reader reads through ---------------------------- */
+
+/* Transparent, not see-through-by-accident: a browser without
+   backdrop-filter keeps the solid surfaces declared above, and this is
+   the page showing under the cards, the index and the bar. */
+
+@supports (backdrop-filter: blur(1px)) {
+    .dk-index {
+        background: color-mix(in srgb, var(--dk-card) 78%, transparent);
+        -webkit-backdrop-filter: blur(var(--dk-blur)) saturate(130%);
+        backdrop-filter: blur(var(--dk-blur)) saturate(130%);
+    }
+
+    .dk-index-scroll {
+        background: color-mix(in srgb, var(--dk-card) 60%, transparent);
+    }
+
+    .dk-index-filter {
+        background: color-mix(in srgb, var(--dk-signature) 70%, transparent);
+    }
+
+    dl.def-block {
+        background: color-mix(in srgb, var(--dk-card) 78%, transparent);
+        -webkit-backdrop-filter: blur(10px) saturate(120%);
+        backdrop-filter: blur(10px) saturate(120%);
+    }
+
+    dl.def-block > dt.def-line {
+        background: color-mix(in srgb, var(--dk-signature) 70%, transparent);
+    }
+
+    details.dk-source pre {
+        background: color-mix(in srgb, var(--dk-signature) 58%, transparent);
+    }
+}
+
 /* --- diagrams ------------------------------------------------------- */
 
 img.image {
@@ -986,6 +1140,7 @@ img.image {
 .dk-copy:focus-visible,
 .dk-toggle:focus-visible,
 .dk-skip:focus-visible,
+.dk-source > summary:focus-visible,
 .dk-index-filter:focus-visible {
     outline: 2px solid var(--dk-accent);
     outline-offset: 2px;
@@ -1138,6 +1293,11 @@ img.image {
     img.image {
         break-inside: avoid;
     }
+
+    /* The source panel is a click on a screen and nothing on paper. */
+    details.dk-source {
+        display: none !important;
+    }
 }
 ")
 
@@ -1153,7 +1313,8 @@ img.image {
  * reference documentation pleasant to read: one index holding the sections
  * and every definition, a filter over it, a bar with the theme and, on a
  * phone, the button that opens the index as a drawer.  It also folds the
- * body's own table of contents away, because the index already is one, and
+ * body's own table of contents away, because the index already is one,
+ * opens the source a definition carries in a panel of coloured code, and
  * draws a diagram the build left as source from the bundled renderer.
  *
  * Everything is progressive: the page is complete without this file, and
@@ -1275,6 +1436,86 @@ img.image {
                 }
             });
             line.appendChild(button);
+        });
+    }
+
+    /* --- the source of a definition ----------------------------------- */
+
+    /* A definition's source is an example the chapter marks with an
+       anchor.  texi2any writes the underscore of an anchor's name as an
+       escape, so the marker's own id carries it. */
+    var SOURCE_MARK = \"dk_005fsource_005f\";
+
+    /* The words a reader looks for first: what a form does, not what it is
+       called. */
+    var SPECIAL = (\"define define* define-public define*-public \"
+        + \"define-module define-syntax define-syntax-rule \"
+        + \"define-record-type lambda let let* letrec letrec* let-values \"
+        + \"if cond case else when unless and or begin do quote quasiquote \"
+        + \"unquote set! delay force parameterize guard dynamic-wind\").split(\" \");
+
+    var TOKEN = /(;[^\\n]*)|(#\\|[\\s\\S]*?\\|#)|(\"(?:[^\"\\\\]|\\\\.)*\")|(#[tf](?=[\\s()\\[\\]\"';]|$))|(#\\\\(?:[a-zA-Z0-9]+|.))|(#[^\\s()\\[\\]\"';]+)|([()\\[\\]])|(-?\\d+(?:\\.\\d+)?)|([^\\s()\\[\\]\"';]+)|([\\s\\S])/g;
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, \"&amp;\")
+            .replace(/</g, \"&lt;\")
+            .replace(/>/g, \"&gt;\");
+    }
+
+    function isSpecial(word) {
+        return SPECIAL.indexOf(word) !== -1;
+    }
+
+    /* Colour one form: a comment, a string, a character, a number and a
+       word are told apart by one expression, which is enough for a page
+       that shows code and never runs it.  Every token is escaped, so the
+       result is safe to put back as markup. */
+    function colourise(text) {
+        return text.replace(TOKEN, function (whole, comment, block, string, bool, char, keyword, bracket, number, word) {
+            var kind = \"\";
+            if (comment || block) {
+                kind = \"comment\";
+            } else if (string) {
+                kind = \"string\";
+            } else if (bool || char) {
+                kind = \"constant\";
+            } else if (keyword) {
+                kind = \"keyword\";
+            } else if (bracket) {
+                kind = \"paren\";
+            } else if (number) {
+                kind = \"number\";
+            } else if (word && isSpecial(word)) {
+                kind = \"special\";
+            }
+            var safe = escapeHtml(whole);
+            if (!kind) {
+                return safe;
+            }
+            return '<span class=\"dk-tok-' + kind + '\">' + safe + '</span>';
+        });
+    }
+
+    /* The marker and the example it guards become one panel: the example
+       moves inside a details element, which a reader opens and closes
+       without this script.  The source is coloured once, when it is put
+       there. */
+    function addSourcePanels() {
+        var markers = document.querySelectorAll(\"a[id^='\" + SOURCE_MARK + \"']\");
+        each(markers, function (marker) {
+            var block = marker.nextElementSibling;
+            var pre = block && block.querySelector(\"pre\");
+            if (!pre) {
+                return;
+            }
+            var panel = document.createElement(\"details\");
+            panel.className = \"dk-source\";
+            var summary = document.createElement(\"summary\");
+            summary.textContent = \"Source\";
+            panel.appendChild(summary);
+            block.parentNode.insertBefore(panel, block);
+            panel.appendChild(block);
+            pre.innerHTML = colourise(pre.textContent);
         });
     }
 
@@ -1962,6 +2203,7 @@ img.image {
 
     applyTheme(preferredTheme());
     addCopyButtons();
+    addSourcePanels();
     renderDiagrams();
 
     var index = buildIndex();

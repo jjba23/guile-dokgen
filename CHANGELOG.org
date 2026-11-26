@@ -6,6 +6,39 @@
 Notable changes, newest first.  Releases before 0.5.0 were made by the
 original author; their record is the version history in the manual.
 
+* 0.12.0 — 2026-11-26
+
+** Added
+
+- Every variable, procedure, macro and record in the reference can be
+  opened to show the code behind it: the generated chapter carries the
+  top-level form the module's file writes, and the page folds it into a
+  ~Source~ panel of monospaced, syntax-highlighted Scheme.  The form is
+  read from the file, so its comments and docstring are the ones a
+  maintainer edits; a name no top-level form defines has no panel, and a
+  reader without JavaScript reads the code as an example under the
+  docstring.
+
+** Changed
+
+- The accent is a quieter terracotta instead of a bright orange, and the
+  surfaces a reader reads through -- the bar, the index, the definition
+  cards, their signatures and the source panels -- are translucent and
+  blurred over a wash of that accent.  A browser without
+  ~backdrop-filter~ keeps the solid colours.
+- The suite is written with [[https://github.com/jjba23/veritas][veritas]]:
+  the SRFI-64 suites, the ~proba~ helpers and the runner that turned a
+  failure into an exit status are gone, and every case is a veritas test
+  with a name that says what it checks.  The tests moved to
+  ~test/veritas/unit~ with the fixture libraries and the fake renderers
+  beside them, and each case owns the ~/tmp~ destination it writes, so the
+  order veritas shuffles them into does not matter.  Two cases that used
+  to be expected failures --- the argument names reflection reports,
+  which depend on whether the module was loaded from source or from a
+  compiled file --- now assert the shape everywhere and the names where
+  they can be had.
+
+
 * 0.11.0 — 2026-11-22
 
 ** Added

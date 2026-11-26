@@ -1,4 +1,4 @@
-;; guile-dokgen --- tests: plotlib/plot
+;; guile-dokgen --- test: plotlib/plot
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

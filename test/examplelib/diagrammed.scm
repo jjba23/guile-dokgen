@@ -1,4 +1,4 @@
-;; guile-dokgen --- tests: examplelib/diagrammed
+;; guile-dokgen --- test: examplelib/diagrammed
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

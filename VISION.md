@@ -110,8 +110,9 @@ the output.
 
 ## Contributions that would move the needle
 
-1. **A test.** Each suite under `tests/` documents one module; a new case for
-   a shape of export the tool mishandles is both the bug report and the fix.
+1. **A test.** Each spec under `test/veritas/unit/` documents one module; a new
+   case for a shape of export the tool mishandles is both the bug report and
+   the fix.
 2. **A docstring shape.** A construct Texinfo can say and the renderer
    flattens: a table, a nested list, a `@defun` in a docstring.
 3. **A sentence in the manual** that removes a hesitation. The manual is read

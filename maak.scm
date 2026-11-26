@@ -108,20 +108,14 @@ The shell is handed the script as one word, so the script keeps its pipes, its
   (format #t "guile-dokgen ~a~%" (current-version)))
 
 (define (test)
-  "Run every test file under tests/.
+  "Run every spec the test tree holds.
 
-SRFI-64 never turns a failure into an exit status, so each file goes through
-`etc/run-test.scm', which does.  The `test-module-*' files are fixtures the
-suites document, not suites."
+The runner discovers test/veritas/unit, loads each spec in a module of its own
+and calls the `spec' it exports; it exits non-zero when one assertion failed,
+so a red suite is a red task.  `-L ./test' is what makes a spec's own module
+name, and the fixture libraries beside it, resolvable."
   (run-script
-   "set -eu
-status=0
-for file in tests/test-*.scm; do
-  case $file in tests/test-module-*) continue ;; esac
-  guile -L ./src -L . etc/run-test.scm \"$file\" || status=1
-done
-rm -f ./*.log
-exit $status"))
+   "guile -L ./src -L ./test -c '((@ (veritas runner) run-tests))'"))
 
 (define (check)
   "Compile every source and test module, so a syntax error fails the build.
@@ -131,8 +125,8 @@ itself rather than a pile of them."
   (run-script
    (string-append
     "set -eu\n"
-    "find src tests etc -name '*.scm' -print0 "
-    "| xargs -0 -n 1 sh -c 'guild compile -L ./src -L . -o \"$(mktemp)\" \"$1\"' sh")))
+    "find src test -name '*.scm' -print0 "
+    "| xargs -0 -n 1 sh -c 'guild compile -L ./src -L ./test -o \"$(mktemp)\" \"$1\"' sh")))
 
 (define (docs)
   "Regenerate the API reference and the statistics, from the sources.

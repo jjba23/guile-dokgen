@@ -160,12 +160,52 @@ of the Texinfo documentation of a given software project. |#
          (diagram-stexi (second block) (third block) owner)
          ;; NOTE: Append newline to avoid parsing error.  The error occurs
          ;; when parsing verbatim commands.  See the reproducer in
-         ;; tests/test-templates-stexi.scm for more info.
+         ;; test/veritas/unit/stexi-spec.scm for more info.
          (cdr (texi-fragment->stexi (string-append (cdr block) "\n")))))
    (diagram-blocks (unindent docstring))))
 
 
 ;;; TEMPLATES
+
+(define (source-anchor-id module-name name)
+  "Return the anchor that marks the source of NAME in MODULE-NAME.
+
+  @strong{module-name} (list of symbols):
+    The module the object belongs to.
+
+  @strong{name} (symbol):
+    The name it is exported under.
+
+  @strong{Return value} (string):
+    The name of the anchor, which the script beside the chapter looks for
+    to turn a definition's source into a panel a reader opens."
+  (format #f "dk_source_~a_~a" (module-id module-name) (symbol->string name)))
+
+(define (source-stexi name module-name)
+  "Return the source of NAME as the nodes that let a reader reveal it.
+
+  Both are ordinary Texinfo: an @@code{@@anchor} the script looks for, and
+  an @@code{@@example} holding the form.  A reader whose browser runs no
+  script still reads the code, and Info and print output show it under the
+  definition it belongs to.
+
+  @strong{name} (symbol):
+    The name the module exports.
+
+  @strong{module-name} (list of symbols):
+    The module it belongs to.
+
+  @strong{Return value} (list of stexi):
+    The nodes of the source, or the empty list when no file holds the form
+    that defines it.  @ref{dokgen_data, (dokgen data)} says what that
+    leaves out."
+  (let [(source (definition-source module-name name))]
+    (if source
+        (list `(anchor (% (name ,(source-anchor-id module-name name))))
+              ;; Texinfo wants an anchor on a line of its own.
+              "\n"
+              `(example ,source))
+        '())))
 
 (define (api-binding name value module-name)
   "Return the API binding name-value as an stexi fragment.
@@ -187,24 +227,28 @@ of the Texinfo documentation of a given software project. |#
   (let* [(name-string (symbol->string name))
          (anchor-id (string-append (module-id module-name)
                                    "_"
-                                   name-string))]
+                                   name-string))
+         (definition
+          (cond
+           [(macro? value) (macro name value)]
+           ;; NOTE: Parameter detection must come before procedure
+           ;; detection because parameters are ambiguous objects: they
+           ;; are both parameters and procedures, and we want to render
+           ;; them as the former.
+           [(parameter? value) (parameter name value)]
+           [(procedure? value) (procedure name value)]
+           [(record-type? value) (record-type name value)]
+           [(record? value) (record-variable name value)]
+           [else
+            (variable name value)]))]
 
       `(*fragment*
         (anchor (% (name ,anchor-id)))
         ;; Texinfo wants an anchor on a line of its own.
         "\n"
-        ,(cond
-          [(macro? value) (macro name value)]
-          ;; NOTE: Parameter detection must come before procedure
-          ;; detection because parameters are ambiguous objects: they
-          ;; are both parameters and procedures, and we want to render
-          ;; them as the former.
-          [(parameter? value) (parameter name value)]
-          [(procedure? value) (procedure name value)]
-          [(record-type? value) (record-type name value)]
-          [(record? value) (record-variable name value)]
-          [else
-           (variable name value)]))))
+        ;; The source goes inside the definition, where the page keeps it
+        ;; with the docstring rather than after the card.
+        ,(append definition (source-stexi name module-name)))))
 
 
 (define (definition-node? node)
@@ -369,6 +413,9 @@ with the menu button on a phone.\n")
      (item "A module section opens with its exported names and a one-line
 summary of each.  Follow a name to its definition, where its signature, its
 category and the docstring sit together.\n")
+     (item "A definition can show the code it is written with: open " (code "Source")
+" under the docstring to read the form the module holds, coloured like the
+Scheme it is.\n")
      (item "To find a name across the whole API, press " (code "/") " and type
 in the index filter.\n"))
     (heading "A generated chapter")

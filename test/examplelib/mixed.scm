@@ -1,4 +1,4 @@
-;; guile-dokgen --- tests: examplelib/mixed
+;; guile-dokgen --- test: examplelib/mixed
 ;;
 ;; SPDX-License-Identifier: MIT
 ;; Copyright © Josep Bigorra <jjbigorra@gmail.com>

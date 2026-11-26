@@ -8,7 +8,7 @@
 
 
 @c HEADER
-@set VERSION 0.11.0
+@set VERSION 0.12.0
 @settitle Guile Dokgen
 @documentlanguage en
 @documentencoding UTF-8
@@ -172,10 +172,12 @@ The behaviour: it follows the page's headings and definitions into that
 index, so the table of contents texi2any writes into the body gives way to
 the one that stays in view -- on a single-page manual, the body's own
 table of contents as well.  The index opens the top level, marks the
-heading or definition the reader has reached, filters every row, and
-copies a signature.  A reader without JavaScript keeps the body's table
-of contents, the navigation and every definition the chapter wrote, laid
-out in one readable column.
+heading or definition the reader has reached, filters every row, copies a
+signature, and opens the source a definition carries: a reader of Scheme
+colours a comment, a string, a character, a number and the words a form is
+built from.  A reader without JavaScript keeps the body's table of
+contents, the navigation and every definition the chapter wrote, laid out
+in one readable column.
 @item dokgen-mermaid.js
 A bundled copy of @url{https://mermaid.js.org/, mermaid} (version 11),
 2.5 MB, loaded only by a page whose chapter carries a diagram no renderer
@@ -234,6 +236,18 @@ bullet list: ``This record type has 2 fields: @code{name},
 the page is described by its length instead of printed; the stylesheet and
 the script are such values, and printing them would bury every other
 definition.
+
+Every definition can also be opened to show the code behind it.  The
+generated chapter carries the top-level form that defines each name, and
+the page folds it into a panel labelled @dfn{Source}: the form as the
+module's file writes it, with its comments, its docstring and its
+parentheses, coloured by the script.  The source is read from the file the
+module lives in rather than reconstructed from the object the run loaded,
+so what a reader sees is what a maintainer edits.  A name that no
+top-level form defines -- one a macro invents, or one whose module was
+compiled without its source at hand -- has no panel, and a reader whose
+browser runs no script reads the same code as an example under the
+docstring.
 @c END CHAPTER: Usage
 
 
@@ -591,6 +605,25 @@ provided, @var{DEFAULT_DOC_PATH} is used. The chapter is
 @appendix Version History
 
 @table @dfn
+@item Version 0.12.0, November 26, 2026
+@itemize
+@item
+Every definition in the HTML reference can be opened to show the code
+behind it: the chapter carries the top-level form the module's file writes,
+and the page folds it into a @dfn{Source} panel of monospaced,
+syntax-highlighted Scheme.  A reader without JavaScript reads the same code
+as an example under the docstring.
+@item
+The page is quieter: the accent is a terracotta instead of an orange, and
+the bar, the index, the definition cards and the source panels are
+translucent and blurred over a wash of it.
+@item
+The suite is written with @url{https://github.com/jjba23/veritas, veritas}
+and lives in @file{test/veritas/unit}, one spec per module.  The SRFI-64
+suites, the @code{proba} helpers and the runner that turned a failure into
+an exit status are gone.
+@end itemize
+
 @item Version 0.11.0, November 22, 2026
 @itemize
 @item

@@ -8,7 +8,7 @@
 #+options: toc:2 num:nil
 #+language: en
 
-[[https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml][https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml/badge.svg]] [[https://github.com/jjba23/guile-dokgen/releases][https://img.shields.io/badge/release-0.11.0-c96a44.svg]] [[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-c96a44.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-a8541f.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
+[[https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml][https://github.com/jjba23/guile-dokgen/actions/workflows/ci.yml/badge.svg]] [[https://github.com/jjba23/guile-dokgen/releases][https://img.shields.io/badge/release-0.12.0-c96a44.svg]] [[https://opensource.org/license/mit][https://img.shields.io/badge/license-MIT-c96a44.svg]] [[https://www.gnu.org/software/guile/][https://img.shields.io/badge/Guile-3.0%2B-a8541f.svg]] [[https://github.com/jjba23/guix-jointhefreeworld][https://img.shields.io/badge/Guix-channel-6f4e9c.svg]]
 
 /Guile Dokgen/ is a command-line program and accompanying library that
 extracts the API documentation of [[https://www.gnu.org/software/guile/][GNU Guile]] Scheme modules and writes it
@@ -46,7 +46,8 @@ manual is in [[file:manual/main.texi][manual/main.texi]]; ~maak manual~ builds i
 - *A page built to be read.*  Beside the Texinfo, ~dokgen~ writes a stylesheet,
   a script and the bundled Mermaid renderer: one index of the sections and the
   definitions (a drawer on a phone), a card for each definition with its
-  signature, copyable signatures, a warm light and dark page, and diagrams
+  signature, copyable signatures, the code behind a definition in a panel
+  coloured like the Scheme it is, a warm light and dark page, and diagrams
   that fit the column.  Include the chapter and point the HTML build at the
   files; a manual that ignores them still reads, and a page without
   JavaScript keeps its own table of contents.
@@ -93,8 +94,8 @@ The layout:
 |----------------+-------------------------------------------------------|
 | ~src/dokgen/~ | the library: data, diagrams, templates, writer, CLI   |
 | ~bin/dokgen~  | the launcher                                          |
-| ~tests/~         | one SRFI-64 suite per module                          |
-| ~etc/~           | the test runner that turns failures into exit codes   |
+| ~test/veritas/unit/~ | one spec per module, run by the veritas runner  |
+| ~test/~          | the fixture libraries and renderers the specs use     |
 | ~manual/~        | the Texinfo manual; ~api/~ is generated               |
 | ~website/~       | the project page                                      |
 | ~maak.scm~       | the tasks, and the generator of [[file:AGENTS.md][AGENTS.md]]            |
