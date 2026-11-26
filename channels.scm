@@ -19,7 +19,7 @@
        (url "https://github.com/jjba23/guix-jointhefreeworld")
        (branch "trunk")
        ;; Pinned so that `guix time-machine -C channels.scm' always builds against the same Guix.
-       (commit "24db897c6c9064ebf2018582c6dca2229dda0e62")
+       (commit "59d58acbd759cb7952dcbfade1045d5318c24344")
        (introduction
         (make-channel-introduction
          "b0ac3f05075d7959860fc9e1db5871acddea3986"
